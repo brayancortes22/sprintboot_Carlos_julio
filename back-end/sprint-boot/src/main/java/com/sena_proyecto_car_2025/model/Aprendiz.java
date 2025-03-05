@@ -1,10 +1,10 @@
 package com.sena_proyecto_car_2025.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;                              
+import jakarta.persistence.Id;                              
 
 @Entity(name = "aprendiz")
 public class Aprendiz {
@@ -29,10 +29,6 @@ public class Aprendiz {
     private boolean tipoUsuario;
 
     // Constructor
-    public Aprendiz() {
-        this.tipoUsuario = false;
-    }
-
     public Aprendiz(String nombre, long numero_documento, String correo, String contraseña) {
         this.nombre = nombre;
         this.numeroDocumento = numero_documento;

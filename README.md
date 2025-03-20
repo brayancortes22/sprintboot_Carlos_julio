@@ -112,7 +112,7 @@ Todas las respuestas siguen el siguiente formato:
 
 }
 ### instalacion del proyecto
-    ##front-end
+front-end
 1. instalar dependencias dentro de la terminal de comandos de proyecto
    
     a) ingresar a la carpeta del front con el comando : cd front-end/gestion

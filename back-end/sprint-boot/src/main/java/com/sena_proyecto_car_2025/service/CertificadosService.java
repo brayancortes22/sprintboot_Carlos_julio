@@ -16,4 +16,26 @@ public class CertificadosService {
         certificadosRepository.save(certificado);
         return true;
     }
+
+    // Obtener todos los registros
+    public Iterable<Certificados> findAll() {
+        return certificadosRepository.findAll();
+    }
+
+    // Obtener un registro por ID
+    public Certificados findById(Integer id) {
+        return certificadosRepository.findById(id).orElse(null);
+    }
+
+    // Actualizar un registro
+    public boolean update(Certificados certificado) {
+        certificadosRepository.save(certificado);
+        return true;
+    }
+
+    // Eliminar un registro
+    public boolean delete(Integer id) {
+        certificadosRepository.deleteById(id);
+        return true;
+    }
 } 

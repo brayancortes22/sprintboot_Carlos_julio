@@ -16,4 +16,26 @@ public class CursosService {
         cursosRepository.save(curso);
         return true;
     }
+
+    // Obtener todos los registros
+    public Iterable<Cursos> findAll() {
+        return cursosRepository.findAll();
+    }
+
+    // Obtener un registro por ID
+    public Cursos findById(Integer id) {
+        return cursosRepository.findById(id).orElse(null);
+    }
+
+    // Actualizar un registro
+    public boolean update(Cursos curso) {
+        cursosRepository.save(curso);
+        return true;
+    }
+
+    // Eliminar un registro
+    public boolean delete(Integer id) {
+        cursosRepository.deleteById(id);
+        return true;
+    }
 } 

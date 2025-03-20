@@ -16,4 +16,26 @@ public class LeccionesService {
         leccionesRepository.save(leccion);
         return true;
     }
+
+    // Obtener todos los registros
+    public Iterable<lecciones> findAll() {
+        return leccionesRepository.findAll();
+    }
+
+    // Obtener un registro por ID
+    public lecciones findById(Integer id) {
+        return leccionesRepository.findById(id).orElse(null);
+    }
+
+    // Actualizar un registro
+    public boolean update(lecciones leccion) {
+        leccionesRepository.save(leccion);
+        return true;
+    }
+
+    // Eliminar un registro
+    public boolean delete(Integer id) {
+        leccionesRepository.deleteById(id);
+        return true;
+    }
 } 

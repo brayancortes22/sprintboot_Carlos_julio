@@ -23,4 +23,26 @@ public class AprendizService{
         IAprendizRepository.save(aprendiz);
         return true;
     }
+
+    // Obtener todos los registros
+    public Iterable<Aprendiz> findAll() {
+        return IAprendizRepository.findAll();
+    }
+
+    // Obtener un registro por ID
+    public Aprendiz findById(Integer id) {
+        return IAprendizRepository.findById(id).orElse(null);
+    }
+
+    // Actualizar un registro
+    public boolean update(Aprendiz aprendiz) {
+        IAprendizRepository.save(aprendiz);
+        return true;
+    }
+
+    // Eliminar un registro
+    public boolean delete(Integer id) {
+        IAprendizRepository.deleteById(id);
+        return true;
+    }
 }

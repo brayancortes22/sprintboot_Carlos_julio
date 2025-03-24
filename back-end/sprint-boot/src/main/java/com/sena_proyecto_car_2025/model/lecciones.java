@@ -1,6 +1,5 @@
 package com.sena_proyecto_car_2025.model;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +18,7 @@ public class lecciones {
     private String nombre_leccion;
 
     @Column(name = "descripcion")
-    private String descripcion; 
+    private String descripcion;
 
     @Column(name = "ruta_leccion")
     private String ruta_leccion;
@@ -28,14 +27,16 @@ public class lecciones {
     @JoinColumn(name = "id_curso")
     private Cursos curso;
 
+    // Constructor vacío
+    public lecciones() {}
 
-    // Constructor
-    public lecciones(String nombre_leccion, String descripcion,
-     int id_leccion, String ruta_leccion) {
+    // Constructor con parámetros
+    public lecciones(int id_leccion, String nombre_leccion, String descripcion, String ruta_leccion, Cursos curso) {
+        this.id_leccion = id_leccion;
         this.nombre_leccion = nombre_leccion;
         this.descripcion = descripcion;
-        this.id_leccion = id_leccion;
         this.ruta_leccion = ruta_leccion;
+        this.curso = curso;
     }
 
     // Getters y Setters
@@ -61,12 +62,21 @@ public class lecciones {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
-    }  
+    }
+
     public String getRuta_leccion() {
         return ruta_leccion;
     }
 
     public void setRuta_leccion(String ruta_leccion) {
         this.ruta_leccion = ruta_leccion;
+    }
+
+    public Cursos getCurso() {
+        return curso;
+    }
+
+    public void setCurso(Cursos curso) {
+        this.curso = curso;
     }
 }

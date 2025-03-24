@@ -40,7 +40,7 @@ public class Cursos {
         this.fechaInicio = fecha_inicio;
         this.fechaFin = fecha_fin;
     }
-    
+    public Cursos() {}
     // Getters y Setters
     public int getIdCurso() {
         return idCurso;

@@ -9,11 +9,14 @@ import com.sena_proyecto_car_2025.model.Aprendiz;
 import com.sena_proyecto_car_2025.model.Cursos;
 import java.util.List;
 import java.sql.Timestamp;
+import org.springframework.lang.NonNull;
 
 public interface IAprendizCurso extends CrudRepository<aprendiz_curso, Long> {
     
     // Guardar entidad
-    <S extends aprendiz_curso> S save(S entity);
+    @NonNull
+    @Override
+    <S extends aprendiz_curso> S save(@NonNull S entity);
     
     // Buscar por aprendiz
     @Query("SELECT ac FROM aprendiz_curso ac WHERE ac.aprendiz = :aprendiz")

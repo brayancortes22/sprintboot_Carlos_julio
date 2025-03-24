@@ -8,6 +8,7 @@ import com.sena_proyecto_car_2025.model.lecciones;
 import com.sena_proyecto_car_2025.model.Cursos;
 import com.sena_proyecto_car_2025.service.LeccionesService;
 import com.sena_proyecto_car_2025.Dto.LeccionesDTO;
+import com.sena_proyecto_car_2025.Dto.CursosDTO;
 import com.sena_proyecto_car_2025.Dto.GenericResponseDTO;
 
 import java.util.ArrayList;
@@ -122,11 +123,12 @@ public class lecciones_controller {
         Cursos curso = new Cursos();
         curso.setIdCurso(dto.getId_curso());
 
-        return new lecciones(
+        return  new lecciones(
+            dto.getId_leccion(),
             dto.getNombre_leccion(),
             dto.getDescripcion(),
-            dto.getId_leccion(),
-            dto.getRuta_leccion()
+            dto.getRuta_leccion(),
+            curso 
         );
     }
-} 
+}

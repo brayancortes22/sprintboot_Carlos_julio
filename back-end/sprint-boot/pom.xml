@@ -61,6 +61,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- agrege esta dependecia para utilizarlo con mariadb -->
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>3.0.5</version>
+		</dependency>
 	</dependencies>
 
 	<build>

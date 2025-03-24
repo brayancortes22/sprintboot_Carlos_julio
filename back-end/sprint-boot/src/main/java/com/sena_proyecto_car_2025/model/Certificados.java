@@ -33,6 +33,19 @@ public class Certificados {
     @Column(name = "fecha_fin")
     private Timestamp fechaFin;
 
+    // Constructor vacío
+    public Certificados() {}
+
+    // Constructor con parámetros
+    public Certificados(int idCertificado, lecciones lecciones, Aprendiz aprendiz, String nombreCertificado, int numeroDocumentoCertificado, Timestamp fechaFin) {
+        this.idCertificado = idCertificado;
+        this.lecciones = lecciones;
+        this.aprendiz = aprendiz;
+        this.nombreCertificado = nombreCertificado;
+        this.numeroDocumentoCertificado = numeroDocumentoCertificado;
+        this.fechaFin = fechaFin;
+    }
+
     // Getters y Setters
     public int getIdCertificado() {
         return idCertificado;
@@ -40,6 +53,22 @@ public class Certificados {
 
     public void setIdCertificado(int idCertificado) {
         this.idCertificado = idCertificado;
+    }
+
+    public lecciones getLecciones() {
+        return lecciones;
+    }
+
+    public void setLecciones(lecciones lecciones) {
+        this.lecciones = lecciones;
+    }
+
+    public Aprendiz getAprendiz() {
+        return aprendiz;
+    }
+
+    public void setAprendiz(Aprendiz aprendiz) {
+        this.aprendiz = aprendiz;
     }
 
     public String getNombreCertificado() {

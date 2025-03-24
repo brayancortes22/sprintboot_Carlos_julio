@@ -11,7 +11,9 @@ public class CursosDTO {
     private Timestamp fechaFin;
 
     // Constructor
-    public CursosDTO() {}
+    public CursosDTO() {
+        
+    }
 
     // Getters y Setters
     public int getIdCurso() {

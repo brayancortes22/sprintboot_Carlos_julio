@@ -4,7 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;                              
+import jakarta.persistence.Id;
 
 @Entity(name = "aprendiz")
 public class Aprendiz {
@@ -28,14 +28,19 @@ public class Aprendiz {
     @Column(name = "tipoUsuario")
     private boolean tipoUsuario;
 
-    // Constructor
-    public Aprendiz(String nombre, long numero_documento, String correo, String contraseña) {
+    // Constructor vacío
+    public Aprendiz() {}
+
+    // Constructor con parámetros
+    public Aprendiz(int id_aprendiz, String nombre, long numeroDocumento, String correo, String contraseña, boolean tipoUsuario) {
+        this.id_aprendiz = id_aprendiz;
         this.nombre = nombre;
-        this.numeroDocumento = numero_documento;
+        this.numeroDocumento = numeroDocumento;
         this.correo = correo;
         this.contraseña = contraseña;
+        this.tipoUsuario = tipoUsuario;
     }
-    
+
     // Getters y Setters
     public int getId_aprendiz() {
         return id_aprendiz;
@@ -49,11 +54,11 @@ public class Aprendiz {
         return nombre;
     }
 
-    public void setNombre(String nombre) {  
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    public long getNumero_documento() {
+    public long getNumeroDocumento() {
         return numeroDocumento;
     }
 
@@ -61,7 +66,7 @@ public class Aprendiz {
         this.numeroDocumento = numeroDocumento;
     }
 
-    public String getCorreo() { 
+    public String getCorreo() {
         return correo;
     }
 
@@ -69,7 +74,7 @@ public class Aprendiz {
         this.correo = correo;
     }
 
-    public String getContraseña() { 
+    public String getContraseña() {
         return contraseña;
     }
 
@@ -87,5 +92,5 @@ public class Aprendiz {
 
     public String getTipoUsuario() {
         return tipoUsuario ? "Aprendiz" : "Administrador";
-    }  
-}   
+    }
+}

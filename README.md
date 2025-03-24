@@ -111,6 +111,8 @@ Todas las respuestas siguen el siguiente formato:
     "fechaInicio": "2024-03-20T00:00:00",
 
 }
+´´´
+
 ### instalacion del proyecto
 front-end
 1. instalar dependencias dentro de la terminal de comandos de proyecto

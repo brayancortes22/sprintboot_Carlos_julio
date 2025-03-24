@@ -146,13 +146,13 @@ front-end
     b) Ejecutar el backend:
     ```
     ./mvnw spring-boot:run
-    ´´´
+    ```
 ## Operaciones CRUD con Thunder Client
     Crear un Aprendiz
     Método: POST
     URL: http://localhost:8080/aprendiz/Aprendiz
     Body:
-    ```
+```json
         {
         "nombre": "Juan Perez",
         "numeroDocumento": 123456789,
@@ -160,15 +160,15 @@ front-end
         "contraseña": "password123",
         "tipoUsuario": true
         }
-    ´´´
-    ## Obtener Todos los Aprendices
+ ```
+## Obtener Todos los Aprendices
     Método: GET
     URL: http://localhost:8080/aprendiz
     Crear un Curso
     Método: POST
     URL: http://localhost:8080/api/cursos
     Body:
-    ```
+```json
         {
         "codigoFicha": 1234,
         "nombrePrograma": "Programación Java",
@@ -176,30 +176,31 @@ front-end
         "fechaInicio": "2025-03-24T00:00:00",
         "fechaFin": "2025-06-24T00:00:00"
         }
-    ´´´
-    ## Obtener Todos los Cursos
+
+```
+## Obtener Todos los Cursos
     Método: GET
     URL: http://localhost:8080/api/cursos
     Crear una Lección
     Método: POST
     URL: http://localhost:8080/api/lecciones
     Body:
-    ```
+```json
         {
             "nombre_leccion": "Introducción a Java",
             "descripcion": "Lección sobre los fundamentos de Java",
             "ruta_leccion": "/ruta/a/la/leccion",
             "id_curso": 1
         }
-    ´´´
-    ## Obtener Todas las Lecciones
+```
+## Obtener Todas las Lecciones
     Método: GET
     URL: http://localhost:8080/api/lecciones
     Crear un Certificado
     Método: POST
     URL: http://localhost:8080/api/certificados
     Body:
-    ```
+```json
     {
     "id_lecciones": 1,
     "id_aprendiz": 1,
@@ -207,7 +208,7 @@ front-end
     "numeroDocumentoCertificado": 123456,
     "fechaFin": "2025-06-24T00:00:00"
     }
-    ´´´
-    ## Obtener Todos los Certificados
+```
+## Obtener Todos los Certificados
     Método: GET
     URL: http://localhost:8080/api/certificados

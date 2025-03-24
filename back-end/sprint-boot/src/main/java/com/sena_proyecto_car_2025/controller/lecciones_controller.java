@@ -8,7 +8,7 @@ import com.sena_proyecto_car_2025.model.lecciones;
 import com.sena_proyecto_car_2025.model.Cursos;
 import com.sena_proyecto_car_2025.service.LeccionesService;
 import com.sena_proyecto_car_2025.Dto.LeccionesDTO;
-import com.sena_proyecto_car_2025.Dto.CursosDTO;
+// import com.sena_proyecto_car_2025.Dto.CursosDTO;
 import com.sena_proyecto_car_2025.Dto.GenericResponseDTO;
 
 import java.util.ArrayList;

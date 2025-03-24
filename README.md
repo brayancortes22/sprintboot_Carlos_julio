@@ -108,105 +108,197 @@ Todas las respuestas siguen el siguiente formato:
     "codigoFicha": 12345,
     "nombrePrograma": "Nombre del Curso",
     "descripcion": "Descripción del curso",
-    "fechaInicio": "2024-03-20T00:00:00",
-
+    "fechaInicio": "2024-03-20T00:00:00"
 }
-´´´
+```
 
-### instalacion del proyecto
-front-end
-1. instalar dependencias dentro de la terminal de comandos de proyecto
-   
-    a) ingresar a la carpeta del front con el comando : cd front-end/gestion
-   
-    b) descargar dependecias con el comando : npm install
-   
-    c) hacer funcionar el proyecto con el comando : npm run dev
-    
-2. correr el el backend
-    a) Configurar la base de datos en application.properties
+### Instalación del Proyecto
+#### Front-end
+1. Instalar dependencias dentro de la terminal de comandos del proyecto:
+    a) Ingresar a la carpeta del front con el comando: `cd front-end/gestion`
+    b) Descargar dependencias con el comando: `npm install`
+    c) Hacer funcionar el proyecto con el comando: `npm run dev`
+
+#### Back-end
+1. Configurar la base de datos en `application.properties`:
+    ```properties
+    spring.application.name=sprint-boot
+    # URL del servidor y base de datos
+    spring.datasource.url=jdbc:mariadb://localhost:3306/carlos_julio
+    # Usuario de la base de datos
+    spring.datasource.username=root
+    # Contraseña del usuario
+    spring.datasource.password=123456
+    # Driver de la base de datos
+    spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+    # Dialecto de Hibernate para MariaDB
+    spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MariaDBDialect
+    # Tipo de SQL
+    spring.jpa.hibernate.ddl-auto=create-drop
+    # Mostrar las consultas SQL
+    spring.jpa.show-sql=true
     ```
-        spring.application.name=sprint-boot
-        # URL del servidor y base de datos
-        spring.datasource.url=jdbc:mariadb://localhost:3306/carlos_julio
-        # Usuario de la base de datos
-        spring.datasource.username=root
-        # Contraseña del usuario
-        spring.datasource.password=123456
-        # Driver de la base de datos
-        spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
-        # Dialecto de Hibernate para MariaDB
-        spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MariaDBDialect
-        # Tipo de SQL
-        spring.jpa.hibernate.ddl-auto=create-drop
-        # Mostrar las consultas SQL
-        spring.jpa.show-sql=true
-    ´´´
-    b) Ejecutar el backend:
-    ```
+2. Ejecutar el backend:
+    ```sh
     ./mvnw spring-boot:run
-    ´´´
-## Operaciones CRUD con Thunder Client
-    Crear un Aprendiz
-    Método: POST
-    URL: http://localhost:8080/aprendiz/Aprendiz
-    Body:
     ```
-        {
+
+## Operaciones CRUD con Thunder Client
+
+### Crear un Aprendiz
+- **Método:** POST
+- **URL:** `http://localhost:8080/aprendiz/Aprendiz`
+- **Body:**
+    ```json
+    {
         "nombre": "Juan Perez",
         "numeroDocumento": 123456789,
         "correo": "juan.perez@example.com",
         "contraseña": "password123",
         "tipoUsuario": true
-        }
-    ´´´
-    ## Obtener Todos los Aprendices
-    Método: GET
-    URL: http://localhost:8080/aprendiz
-    Crear un Curso
-    Método: POST
-    URL: http://localhost:8080/api/cursos
-    Body:
+    }
     ```
-        {
+
+### Obtener Todos los Aprendices
+- **Método:** GET
+- **URL:** `http://localhost:8080/aprendiz`
+
+### Obtener Aprendiz por ID
+- **Método:** GET
+- **URL:** `http://localhost:8080/aprendiz/{id}`
+
+### Actualizar Aprendiz
+- **Método:** PUT
+- **URL:** `http://localhost:8080/aprendiz/{id}`
+- **Body:**
+    ```json
+    {
+        "nombre": "Juan Perez Actualizado",
+        "numeroDocumento": 987654321,
+        "correo": "juan.perez.actualizado@example.com",
+        "contraseña": "newpassword123",
+        "tipoUsuario": false
+    }
+    ```
+
+### Eliminar Aprendiz
+- **Método:** DELETE
+- **URL:** `http://localhost:8080/aprendiz/{id}`
+
+### Crear un Curso
+- **Método:** POST
+- **URL:** `http://localhost:8080/api/cursos`
+- **Body:**
+    ```json
+    {
         "codigoFicha": 1234,
         "nombrePrograma": "Programación Java",
         "descripcion": "Curso de programación en Java",
         "fechaInicio": "2025-03-24T00:00:00",
         "fechaFin": "2025-06-24T00:00:00"
-        }
-    ´´´
-    ## Obtener Todos los Cursos
-    Método: GET
-    URL: http://localhost:8080/api/cursos
-    Crear una Lección
-    Método: POST
-    URL: http://localhost:8080/api/lecciones
-    Body:
-    ```
-        {
-            "nombre_leccion": "Introducción a Java",
-            "descripcion": "Lección sobre los fundamentos de Java",
-            "ruta_leccion": "/ruta/a/la/leccion",
-            "id_curso": 1
-        }
-    ´´´
-    ## Obtener Todas las Lecciones
-    Método: GET
-    URL: http://localhost:8080/api/lecciones
-    Crear un Certificado
-    Método: POST
-    URL: http://localhost:8080/api/certificados
-    Body:
-    ```
-    {
-    "id_lecciones": 1,
-    "id_aprendiz": 1,
-    "nombreCertificado": "Certificado de Java",
-    "numeroDocumentoCertificado": 123456,
-    "fechaFin": "2025-06-24T00:00:00"
     }
-    ´´´
-    ## Obtener Todos los Certificados
-    Método: GET
-    URL: http://localhost:8080/api/certificados
+    ```
+
+### Obtener Todos los Cursos
+- **Método:** GET
+- **URL:** `http://localhost:8080/api/cursos`
+
+### Obtener Curso por ID
+- **Método:** GET
+- **URL:** `http://localhost:8080/api/cursos/{id}`
+
+### Actualizar Curso
+- **Método:** PUT
+- **URL:** `http://localhost:8080/api/cursos/{id}`
+- **Body:**
+    ```json
+    {
+        "codigoFicha": 5678,
+        "nombrePrograma": "Programación Avanzada en Java",
+        "descripcion": "Curso avanzado de programación en Java",
+        "fechaInicio": "2025-04-01T00:00:00",
+        "fechaFin": "2025-07-01T00:00:00"
+    }
+    ```
+
+### Eliminar Curso
+- **Método:** DELETE
+- **URL:** `http://localhost:8080/api/cursos/{id}`
+
+### Crear una Lección
+- **Método:** POST
+- **URL:** `http://localhost:8080/api/lecciones`
+- **Body:**
+    ```json
+    {
+        "nombre_leccion": "Introducción a Java",
+        "descripcion": "Lección sobre los fundamentos de Java",
+        "ruta_leccion": "/ruta/a/la/leccion",
+        "id_curso": 1
+    }
+    ```
+
+### Obtener Todas las Lecciones
+- **Método:** GET
+- **URL:** `http://localhost:8080/api/lecciones`
+
+### Obtener Lección por ID
+- **Método:** GET
+- **URL:** `http://localhost:8080/api/lecciones/{id}`
+
+### Actualizar Lección
+- **Método:** PUT
+- **URL:** `http://localhost:8080/api/lecciones/{id}`
+- **Body:**
+    ```json
+    {
+        "nombre_leccion": "Introducción a Java Actualizada",
+        "descripcion": "Lección actualizada sobre los fundamentos de Java",
+        "ruta_leccion": "/ruta/a/la/leccion/actualizada",
+        "id_curso": 1
+    }
+    ```
+
+### Eliminar Lección
+- **Método:** DELETE
+- **URL:** `http://localhost:8080/api/lecciones/{id}`
+
+### Crear un Certificado
+- **Método:** POST
+- **URL:** `http://localhost:8080/api/certificados`
+- **Body:**
+    ```json
+    {
+        "id_lecciones": 1,
+        "id_aprendiz": 1,
+        "nombreCertificado": "Certificado de Java",
+        "numeroDocumentoCertificado": 123456,
+        "fechaFin": "2025-06-24T00:00:00"
+    }
+    ```
+
+### Obtener Todos los Certificados
+- **Método:** GET
+- **URL:** `http://localhost:8080/api/certificados`
+
+### Obtener Certificado por ID
+- **Método:** GET
+- **URL:** `http://localhost:8080/api/certificados/{id}`
+
+### Actualizar Certificado
+- **Método:** PUT
+- **URL:** `http://localhost:8080/api/certificados/{id}`
+- **Body:**
+    ```json
+    {
+        "id_lecciones": 1,
+        "id_aprendiz": 1,
+        "nombreCertificado": "Certificado de Java Actualizado",
+        "numeroDocumentoCertificado": 654321,
+        "fechaFin": "2025-12-24T00:00:00"
+    }
+    ```
+
+### Eliminar Certificado
+- **Método:** DELETE
+- **URL:** `http://localhost:8080/api/certificados/{id}`

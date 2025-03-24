@@ -111,7 +111,8 @@ Todas las respuestas siguen el siguiente formato:
     "fechaInicio": "2024-03-20T00:00:00",
 
 }
-´´´
+```
+
 
 ### instalacion del proyecto
 front-end
@@ -141,7 +142,7 @@ front-end
         spring.jpa.hibernate.ddl-auto=create-drop
         # Mostrar las consultas SQL
         spring.jpa.show-sql=true
-    ´´´
+    ```
     b) Ejecutar el backend:
     ```
     ./mvnw spring-boot:run

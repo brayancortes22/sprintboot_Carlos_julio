@@ -125,7 +125,7 @@ front-end
     
 2. correr el el backend
     a) Configurar la base de datos en application.properties
-    ´´´
+    ```
         spring.application.name=sprint-boot
         # URL del servidor y base de datos
         spring.datasource.url=jdbc:mariadb://localhost:3306/carlos_julio
@@ -143,7 +143,7 @@ front-end
         spring.jpa.show-sql=true
     ´´´
     b) Ejecutar el backend:
-    ´´´
+    ```
     ./mvnw spring-boot:run
     ´´´
 ## Operaciones CRUD con Thunder Client
@@ -151,7 +151,7 @@ front-end
     Método: POST
     URL: http://localhost:8080/aprendiz/Aprendiz
     Body:
-    ´´´
+    ```
         {
         "nombre": "Juan Perez",
         "numeroDocumento": 123456789,
@@ -167,7 +167,7 @@ front-end
     Método: POST
     URL: http://localhost:8080/api/cursos
     Body:
-    ´´´
+    ```
         {
         "codigoFicha": 1234,
         "nombrePrograma": "Programación Java",
@@ -183,7 +183,7 @@ front-end
     Método: POST
     URL: http://localhost:8080/api/lecciones
     Body:
-    ´´´
+    ```
         {
             "nombre_leccion": "Introducción a Java",
             "descripcion": "Lección sobre los fundamentos de Java",
@@ -198,7 +198,7 @@ front-end
     Método: POST
     URL: http://localhost:8080/api/certificados
     Body:
-    ´´´
+    ```
     {
     "id_lecciones": 1,
     "id_aprendiz": 1,

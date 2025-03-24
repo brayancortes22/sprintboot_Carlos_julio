@@ -123,7 +123,7 @@ public class lecciones_controller {
         Cursos curso = new Cursos();
         curso.setIdCurso(dto.getId_curso());
 
-        return  new lecciones(
+        return  new lecciones (
             dto.getId_leccion(),
             dto.getNombre_leccion(),
             dto.getDescripcion(),

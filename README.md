@@ -123,5 +123,90 @@ front-end
    
     c) hacer funcionar el proyecto con el comando : npm run dev
     
-3. correr el el backend
-    a) 
+2. correr el el backend
+    a) Configurar la base de datos en application.properties
+    ´´´
+        spring.application.name=sprint-boot
+        # URL del servidor y base de datos
+        spring.datasource.url=jdbc:mariadb://localhost:3306/carlos_julio
+        # Usuario de la base de datos
+        spring.datasource.username=root
+        # Contraseña del usuario
+        spring.datasource.password=123456
+        # Driver de la base de datos
+        spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+        # Dialecto de Hibernate para MariaDB
+        spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MariaDBDialect
+        # Tipo de SQL
+        spring.jpa.hibernate.ddl-auto=create-drop
+        # Mostrar las consultas SQL
+        spring.jpa.show-sql=true
+    ´´´
+    b) Ejecutar el backend:
+    ´´´
+    ./mvnw spring-boot:run
+    ´´´
+## Operaciones CRUD con Thunder Client
+    Crear un Aprendiz
+    Método: POST
+    URL: http://localhost:8080/aprendiz/Aprendiz
+    Body:
+    ´´´
+        {
+        "nombre": "Juan Perez",
+        "numeroDocumento": 123456789,
+        "correo": "juan.perez@example.com",
+        "contraseña": "password123",
+        "tipoUsuario": true
+        }
+    ´´´
+    ## Obtener Todos los Aprendices
+    Método: GET
+    URL: http://localhost:8080/aprendiz
+    Crear un Curso
+    Método: POST
+    URL: http://localhost:8080/api/cursos
+    Body:
+    ´´´
+        {
+        "codigoFicha": 1234,
+        "nombrePrograma": "Programación Java",
+        "descripcion": "Curso de programación en Java",
+        "fechaInicio": "2025-03-24T00:00:00",
+        "fechaFin": "2025-06-24T00:00:00"
+        }
+    ´´´
+    ## Obtener Todos los Cursos
+    Método: GET
+    URL: http://localhost:8080/api/cursos
+    Crear una Lección
+    Método: POST
+    URL: http://localhost:8080/api/lecciones
+    Body:
+    ´´´
+        {
+            "nombre_leccion": "Introducción a Java",
+            "descripcion": "Lección sobre los fundamentos de Java",
+            "ruta_leccion": "/ruta/a/la/leccion",
+            "id_curso": 1
+        }
+    ´´´
+    ## Obtener Todas las Lecciones
+    Método: GET
+    URL: http://localhost:8080/api/lecciones
+    Crear un Certificado
+    Método: POST
+    URL: http://localhost:8080/api/certificados
+    Body:
+    ´´´
+    {
+    "id_lecciones": 1,
+    "id_aprendiz": 1,
+    "nombreCertificado": "Certificado de Java",
+    "numeroDocumentoCertificado": 123456,
+    "fechaFin": "2025-06-24T00:00:00"
+    }
+    ´´´
+    ## Obtener Todos los Certificados
+    Método: GET
+    URL: http://localhost:8080/api/certificados

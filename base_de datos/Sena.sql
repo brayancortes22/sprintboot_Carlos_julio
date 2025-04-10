@@ -22,22 +22,25 @@ USE `carlos_julio`;
 -- Volcando estructura para tabla carlos_julio.aprendiz
 CREATE TABLE IF NOT EXISTS `aprendiz` (
   `id_aprendiz` int(11) NOT NULL AUTO_INCREMENT,
-  `tipo_usuario` bit(1) DEFAULT NULL,
-  `numero_documento` bigint(20) DEFAULT NULL,
   `contraseña` varchar(12) DEFAULT NULL,
   `correo` varchar(150) DEFAULT NULL,
   `nombre` varchar(150) DEFAULT NULL,
+  `numero_documento` bigint(20) DEFAULT NULL,
+  `tipo_usuario` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_aprendiz`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
--- Volcando datos para la tabla carlos_julio.aprendiz: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla carlos_julio.aprendiz: ~2 rows (aproximadamente)
+INSERT INTO `aprendiz` (`id_aprendiz`, `contraseña`, `correo`, `nombre`, `numero_documento`, `tipo_usuario`) VALUES
+	(1, '1234', 'bscl@gmail.com', 'brayan', 1129844804, 1),
+	(2, '1222', 'bscl2@gmail.com', 'stid', 1129844844, 2);
 
 -- Volcando estructura para tabla carlos_julio.aprendiz_curso
 CREATE TABLE IF NOT EXISTS `aprendiz_curso` (
-  `id_aprendiz` int(11) DEFAULT NULL,
   `id_aprendiz_curso` int(11) NOT NULL AUTO_INCREMENT,
-  `id_curso` int(11) DEFAULT NULL,
   `fecha_inscripcion` datetime(6) DEFAULT NULL,
+  `id_aprendiz` int(11) DEFAULT NULL,
+  `id_curso` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_aprendiz_curso`),
   KEY `FKfpmhivqfs4oss1k8jcjsan65m` (`id_aprendiz`),
   KEY `FK24s9gvwuidw47hh4ai5hv5rjn` (`id_curso`),
@@ -49,12 +52,12 @@ CREATE TABLE IF NOT EXISTS `aprendiz_curso` (
 
 -- Volcando estructura para tabla carlos_julio.certificados
 CREATE TABLE IF NOT EXISTS `certificados` (
-  `id_aprendiz` int(11) DEFAULT NULL,
   `id_certificado` int(11) NOT NULL AUTO_INCREMENT,
-  `id_lecciones` int(11) DEFAULT NULL,
-  `numero_documento_certificado` int(11) DEFAULT NULL,
   `fecha_fin` datetime(6) DEFAULT NULL,
   `nombre_certificado` varchar(150) DEFAULT NULL,
+  `numero_documento_certificado` int(11) DEFAULT NULL,
+  `id_aprendiz` int(11) DEFAULT NULL,
+  `id_lecciones` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_certificado`),
   KEY `FKbb03eb0664h28s2led2pvlpjw` (`id_aprendiz`),
   KEY `FKclb405945tm259siknwvddss2` (`id_lecciones`),
@@ -66,24 +69,26 @@ CREATE TABLE IF NOT EXISTS `certificados` (
 
 -- Volcando estructura para tabla carlos_julio.cursos
 CREATE TABLE IF NOT EXISTS `cursos` (
-  `codigo_ficha` int(11) DEFAULT NULL,
   `id_curso` int(11) NOT NULL AUTO_INCREMENT,
+  `codigo_ficha` int(11) DEFAULT NULL,
+  `descripcion` varchar(255) DEFAULT NULL,
   `fecha_fin` datetime(6) DEFAULT NULL,
   `fecha_inicio` datetime(6) DEFAULT NULL,
   `nombre_programa` varchar(150) DEFAULT NULL,
-  `descripcion` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id_curso`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
--- Volcando datos para la tabla carlos_julio.cursos: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla carlos_julio.cursos: ~1 rows (aproximadamente)
+INSERT INTO `cursos` (`id_curso`, `codigo_ficha`, `descripcion`, `fecha_fin`, `fecha_inicio`, `nombre_programa`) VALUES
+	(1, 0, 'hola', NULL, NULL, NULL);
 
 -- Volcando estructura para tabla carlos_julio.lecciones
 CREATE TABLE IF NOT EXISTS `lecciones` (
-  `id_curso` int(11) DEFAULT NULL,
   `id_leccion` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre_leccion` varchar(150) DEFAULT NULL,
   `descripcion` varchar(255) DEFAULT NULL,
+  `nombre_leccion` varchar(150) DEFAULT NULL,
   `ruta_leccion` varchar(255) DEFAULT NULL,
+  `id_curso` int(11) DEFAULT NULL,
   PRIMARY KEY (`id_leccion`),
   KEY `FKe5h5xfr7vokjg6uc95ayho92s` (`id_curso`),
   CONSTRAINT `FKe5h5xfr7vokjg6uc95ayho92s` FOREIGN KEY (`id_curso`) REFERENCES `cursos` (`id_curso`)

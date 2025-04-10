@@ -8,6 +8,7 @@ import AdminPanel from './components/AdminPanel';
 import RegistroCurso from './components/RegistroCurso';
 import RegistroLeccion from './components/RegistroLeccion';
 import RegistroCertificado from './components/RegistroCertificado';
+import RegistroAprendiz from './components/RegistroAprendiz';
 import { Button } from './components/ui/Button';
 import './App.css';
 
@@ -54,16 +55,7 @@ function App() {
     ),
     aprendices: (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
-        <div className="text-center p-4">
-          <h2 className="text-xl font-bold">Gestión de Aprendices</h2>
-          <p>Esta sección está en desarrollo</p>
-          <Button 
-            className="mt-4 bg-red-600 hover:bg-red-700 text-white" 
-            onClick={() => setActiveSection('admin')}
-          >
-            Volver
-          </Button>
-        </div>
+        <RegistroAprendiz setActiveSection={setActiveSection} formStyles={formStyles} />
       </motion.div>
     )
   };

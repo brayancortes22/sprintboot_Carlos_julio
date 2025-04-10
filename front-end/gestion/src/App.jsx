@@ -8,37 +8,12 @@ import AdminPanel from './components/AdminPanel';
 import RegistroCurso from './components/RegistroCurso';
 import RegistroLeccion from './components/RegistroLeccion';
 import RegistroCertificado from './components/RegistroCertificado';
-import { Button } from './components/ui/Button'; // Importa el componente Button
+import { Button } from './components/ui/Button';
 import './App.css';
 
 function App() {
   const [activeSection, setActiveSection] = useState('login');
   const [loggedUser, setLoggedUser] = useState(null);
-  const [aprendiz, setAprendiz] = useState({ nombre: '', correo: '', documento: '', contrasena: '', tipoUsuario: '' });
-  const [curso, setCurso] = useState({ nombre: '', numeroPrograma: '', descripcion: '' });
-  const [leccion, setLeccion] = useState({ nombre: '', ruta: '', idCurso: '' });
-  const [certificado, setCertificado] = useState({ nombre: '', numeroDocumento: '', fechaFin: '', idAprendiz: '', idLeccion: '' });
-
-  const handleChange = (setter) => (e) => {
-    setter(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleLogin = () => {
-    if (aprendiz.documento) {
-      setLoggedUser(aprendiz.documento);
-      if (aprendiz.tipoUsuario === '1') {
-        setActiveSection('admin');
-      } else {
-        setActiveSection('certificados');
-      }
-    } else {
-      alert('Documento requerido');
-    }
-  };
-
-  const handleSubmit = (data, name) => {
-    alert(`${name}: ${JSON.stringify(data)}`);
-  };
 
   const formStyles = "border p-2 w-full mb-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500";
   const cardVariants = {
@@ -49,12 +24,12 @@ function App() {
   const sections = {
     login: (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
-        <Login handleChange={handleChange(setAprendiz)} handleLogin={handleLogin} formStyles={formStyles} />
+        <Login setActiveSection={setActiveSection} formStyles={formStyles} />
       </motion.div>
     ),
     certificados: (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
-        <Certificados loggedUser={loggedUser} setActiveSection={setActiveSection} />
+        <Certificados setActiveSection={setActiveSection} formStyles={formStyles} />
       </motion.div>
     ),
     admin: (
@@ -62,19 +37,33 @@ function App() {
         <AdminPanel setActiveSection={setActiveSection} />
       </motion.div>
     ),
-    curso: (
+    registroCurso: (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
-        <RegistroCurso curso={curso} setCurso={setCurso} handleChange={handleChange} handleSubmit={handleSubmit} setActiveSection={setActiveSection} formStyles={formStyles} />
+        <RegistroCurso setActiveSection={setActiveSection} formStyles={formStyles} />
       </motion.div>
     ),
-    leccion: (
+    registroLeccion: (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
-        <RegistroLeccion leccion={leccion} setLeccion={setLeccion} handleChange={handleChange} handleSubmit={handleSubmit} setActiveSection={setActiveSection} formStyles={formStyles} />
+        <RegistroLeccion setActiveSection={setActiveSection} formStyles={formStyles} />
       </motion.div>
     ),
-    certificado: (
+    registroCertificado: (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
-        <RegistroCertificado certificado={certificado} setCertificado={setCertificado} handleChange={handleChange} handleSubmit={handleSubmit} setActiveSection={setActiveSection} formStyles={formStyles} />
+        <RegistroCertificado setActiveSection={setActiveSection} formStyles={formStyles} />
+      </motion.div>
+    ),
+    aprendices: (
+      <motion.div variants={cardVariants} initial="hidden" animate="visible">
+        <div className="text-center p-4">
+          <h2 className="text-xl font-bold">Gestión de Aprendices</h2>
+          <p>Esta sección está en desarrollo</p>
+          <Button 
+            className="mt-4 bg-red-600 hover:bg-red-700 text-white" 
+            onClick={() => setActiveSection('admin')}
+          >
+            Volver
+          </Button>
+        </div>
       </motion.div>
     )
   };
@@ -85,8 +74,13 @@ function App() {
         <div className="container mx-auto flex justify-between">
           <span className="font-bold">Sistema Académico</span>
           <div>
-            {loggedUser && (
-              <Button className="bg-white text-indigo-600" onClick={() => setActiveSection('certificados')}>Ver Certificados</Button>
+            {activeSection !== 'login' && (
+              <Button 
+                className="bg-white text-indigo-600" 
+                onClick={() => setActiveSection('login')}
+              >
+                Cerrar Sesión
+              </Button>
             )}
           </div>
         </div>

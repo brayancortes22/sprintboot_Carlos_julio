@@ -4,9 +4,13 @@ const CertificadosService = {
     // Obtener todos los certificados
     getAllCertificados: async () => {
         try {
-            const response = await fetch(`${API_URL}/certificados`);
+            const response = await fetch(`${API_URL}/api/certificados`);
             if (!response.ok) throw new Error('Error al obtener certificados');
-            return await response.json();
+            const data = await response.json();
+            
+            // Devolver la respuesta tal como viene del servidor
+            // La estructura esperada es { code: number, message: string, data: array }
+            return data;
         } catch (error) {
             throw error;
         }
@@ -15,7 +19,7 @@ const CertificadosService = {
     // Obtener un certificado por ID
     getCertificadoById: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/certificados/${id}`);
+            const response = await fetch(`${API_URL}/api/certificados/${id}`);
             if (!response.ok) throw new Error('Error al obtener el certificado');
             return await response.json();
         } catch (error) {
@@ -26,7 +30,7 @@ const CertificadosService = {
     // Crear un nuevo certificado
     createCertificado: async (certificadoData) => {
         try {
-            const response = await fetch(`${API_URL}/certificados`, {
+            const response = await fetch(`${API_URL}/api/certificados`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,7 +47,7 @@ const CertificadosService = {
     // Actualizar un certificado
     updateCertificado: async (id, certificadoData) => {
         try {
-            const response = await fetch(`${API_URL}/certificados/${id}`, {
+            const response = await fetch(`${API_URL}/api/certificados/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,7 +64,7 @@ const CertificadosService = {
     // Eliminar un certificado
     deleteCertificado: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/certificados/${id}`, {
+            const response = await fetch(`${API_URL}/api/certificados/${id}`, {
                 method: 'DELETE'
             });
             if (!response.ok) throw new Error('Error al eliminar el certificado');

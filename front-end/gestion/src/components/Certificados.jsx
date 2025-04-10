@@ -6,6 +6,7 @@ import CertificadosService from '../services/certificadosService';
 const Certificados = ({ setActiveSection, formStyles }) => {
   const [certificados, setCertificados] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadCertificados();
@@ -13,12 +14,21 @@ const Certificados = ({ setActiveSection, formStyles }) => {
 
   const loadCertificados = async () => {
     try {
-      const data = await CertificadosService.getAllCertificados();
-      setCertificados(data);
+      const response = await CertificadosService.getAllCertificados();
+      
+      // Verificar la estructura de la respuesta
+      if (response && response.data && Array.isArray(response.data)) {
+        setCertificados(response.data);
+      } else {
+        console.error('Respuesta incorrecta del servidor:', response);
+        setError('La estructura de datos recibida no es válida');
+        setCertificados([]);
+      }
       setLoading(false);
     } catch (error) {
       console.error('Error al cargar certificados:', error);
-      alert('Error al cargar los certificados');
+      setError(error.message || 'Error al cargar los certificados');
+      setCertificados([]);
       setLoading(false);
     }
   };
@@ -44,23 +54,37 @@ const Certificados = ({ setActiveSection, formStyles }) => {
     <Card className="rounded-2xl shadow-lg bg-white">
       <CardContent>
         <h2 className="text-2xl font-bold mb-4 text-indigo-600">Certificados</h2>
-        <div className="space-y-4">
-          {certificados.map((certificado) => (
-            <div key={certificado.id} className="border p-4 rounded-lg">
-              <h3 className="font-bold">{certificado.nombre}</h3>
-              <p>ID Aprendiz: {certificado.idAprendiz}</p>
-              <p>ID Curso: {certificado.idCurso}</p>
-              <div className="mt-2 space-x-2">
-                <Button 
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                  onClick={() => handleDelete(certificado.id)}
-                >
-                  Eliminar
-                </Button>
+        
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+        
+        {certificados.length === 0 ? (
+          <div className="text-center py-4">
+            <p>No se encontraron certificados disponibles.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {certificados.map((certificado) => (
+              <div key={certificado.idCertificado} className="border p-4 rounded-lg">
+                <h3 className="font-bold">{certificado.nombreCertificado}</h3>
+                <p>ID Aprendiz: {certificado.id_aprendiz}</p>
+                <p>ID Lección: {certificado.id_lecciones}</p>
+                <div className="mt-2 space-x-2">
+                  <Button 
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                    onClick={() => handleDelete(certificado.idCertificado)}
+                  >
+                    Eliminar
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+        
         <Button 
           className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white" 
           onClick={() => setActiveSection('admin')}

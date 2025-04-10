@@ -26,13 +26,13 @@ public class Aprendiz {
     private String contraseña;
 
     @Column(name = "tipoUsuario")
-    private boolean tipoUsuario;
+    private int tipoUsuario;
 
     // Constructor vacío
     public Aprendiz() {}
 
     // Constructor con parámetros
-    public Aprendiz(int id_aprendiz, String nombre, long numeroDocumento, String correo, String contraseña, boolean tipoUsuario) {
+    public Aprendiz(int id_aprendiz, String nombre, long numeroDocumento, String correo, String contraseña, int tipoUsuario) {
         this.id_aprendiz = id_aprendiz;
         this.nombre = nombre;
         this.numeroDocumento = numeroDocumento;
@@ -82,15 +82,15 @@ public class Aprendiz {
         this.contraseña = contraseña;
     }
 
-    public boolean isTipoUsuario() {
+    public int getTipoUsuario() {
         return tipoUsuario;
     }
 
-    public void setTipoUsuario(boolean tipoUsuario) {
+    public void setTipoUsuario(int tipoUsuario) {
         this.tipoUsuario = tipoUsuario;
     }
 
-    public String getTipoUsuario() {
-        return tipoUsuario ? "Aprendiz" : "Administrador";
+    public String getTipoUsuarioTexto() {
+        return tipoUsuario == 1 ? "Administrador" : "Aprendiz";
     }
 }

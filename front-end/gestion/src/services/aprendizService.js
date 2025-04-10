@@ -23,6 +23,47 @@ const AprendizService = {
         }
     },
 
+    // Verificar credenciales de aprendiz
+    verifyCredentials: async (documento, tipoUsuario) => {
+        try {
+            // Buscamos entre todos los aprendices
+            const aprendices = await AprendizService.getAllAprendices();
+            
+            // Convertimos documento a número (eliminar comas si las hay)
+            const documentoNum = parseInt(documento.replace(/,/g, ''));
+            
+            // Buscamos el aprendiz con el documento proporcionado
+            const aprendiz = aprendices.find(a => a.numeroDocumento === documentoNum);
+            
+            // Si no se encuentra el aprendiz
+            if (!aprendiz) {
+                throw new Error('Documento no encontrado');
+            }
+            
+            console.log('Aprendiz encontrado:', aprendiz);
+            console.log('Tipo usuario en BD:', aprendiz.tipoUsuario);
+            console.log('Tipo usuario seleccionado:', tipoUsuario);
+            
+            // Verificamos el tipo de usuario
+            // tipoUsuario en la UI: '1' es Administrador, '2' es Aprendiz
+            // En el modelo: 0 es Administrador, 1 es Aprendiz
+            
+            // Si el usuario es admin (0) en BD pero intenta entrar como aprendiz ('2')
+            if (aprendiz.tipoUsuario === 0 && tipoUsuario === '2') {
+                throw new Error('Tipo de usuario incorrecto');
+            }
+            
+            // Si el usuario es aprendiz (1) en BD pero intenta entrar como admin ('1')
+            if (aprendiz.tipoUsuario === 1 && tipoUsuario === '1') {
+                throw new Error('Tipo de usuario incorrecto');
+            }
+            
+            return aprendiz;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     // Crear un nuevo aprendiz
     createAprendiz: async (aprendizData) => {
         try {

@@ -4,7 +4,7 @@ const CursosService = {
     // Obtener todos los cursos
     getAllCursos: async () => {
         try {
-            const response = await fetch(`${API_URL}/cursos`);
+            const response = await fetch(`${API_URL}/api/cursos`);
             if (!response.ok) throw new Error('Error al obtener cursos');
             return await response.json();
         } catch (error) {
@@ -15,7 +15,7 @@ const CursosService = {
     // Obtener un curso por ID
     getCursoById: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/cursos/${id}`);
+            const response = await fetch(`${API_URL}/api/cursos/${id}`);
             if (!response.ok) throw new Error('Error al obtener el curso');
             return await response.json();
         } catch (error) {
@@ -26,7 +26,7 @@ const CursosService = {
     // Crear un nuevo curso
     createCurso: async (cursoData) => {
         try {
-            const response = await fetch(`${API_URL}/cursos`, {
+            const response = await fetch(`${API_URL}/api/cursos`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const CursosService = {
     // Actualizar un curso
     updateCurso: async (id, cursoData) => {
         try {
-            const response = await fetch(`${API_URL}/cursos/${id}`, {
+            const response = await fetch(`${API_URL}/api/cursos/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const CursosService = {
     // Eliminar un curso
     deleteCurso: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/cursos/${id}`, {
+            const response = await fetch(`${API_URL}/api/cursos/${id}`, {
                 method: 'DELETE'
             });
             if (!response.ok) throw new Error('Error al eliminar el curso');

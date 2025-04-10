@@ -4,7 +4,7 @@ const AprendizCursoService = {
     // Obtener todas las relaciones aprendiz-curso
     getAllAprendizCursos: async () => {
         try {
-            const response = await fetch(`${API_URL}/aprendiz-curso`);
+            const response = await fetch(`${API_URL}/api/aprendiz-curso`);
             if (!response.ok) throw new Error('Error al obtener relaciones aprendiz-curso');
             return await response.json();
         } catch (error) {
@@ -15,7 +15,7 @@ const AprendizCursoService = {
     // Obtener una relación por ID
     getAprendizCursoById: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/aprendiz-curso/${id}`);
+            const response = await fetch(`${API_URL}/api/aprendiz-curso/${id}`);
             if (!response.ok) throw new Error('Error al obtener la relación');
             return await response.json();
         } catch (error) {
@@ -26,7 +26,7 @@ const AprendizCursoService = {
     // Crear una nueva relación
     createAprendizCurso: async (aprendizCursoData) => {
         try {
-            const response = await fetch(`${API_URL}/aprendiz-curso`, {
+            const response = await fetch(`${API_URL}/api/aprendiz-curso`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const AprendizCursoService = {
     // Actualizar una relación
     updateAprendizCurso: async (id, aprendizCursoData) => {
         try {
-            const response = await fetch(`${API_URL}/aprendiz-curso/${id}`, {
+            const response = await fetch(`${API_URL}/api/aprendiz-curso/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const AprendizCursoService = {
     // Eliminar una relación
     deleteAprendizCurso: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/aprendiz-curso/${id}`, {
+            const response = await fetch(`${API_URL}/api/aprendiz-curso/${id}`, {
                 method: 'DELETE'
             });
             if (!response.ok) throw new Error('Error al eliminar la relación');

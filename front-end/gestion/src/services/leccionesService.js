@@ -4,7 +4,7 @@ const LeccionesService = {
     // Obtener todas las lecciones
     getAllLecciones: async () => {
         try {
-            const response = await fetch(`${API_URL}/lecciones`);
+            const response = await fetch(`${API_URL}/api/lecciones`);
             if (!response.ok) throw new Error('Error al obtener lecciones');
             return await response.json();
         } catch (error) {
@@ -15,7 +15,7 @@ const LeccionesService = {
     // Obtener una lección por ID
     getLeccionById: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/lecciones/${id}`);
+            const response = await fetch(`${API_URL}/api/lecciones/${id}`);
             if (!response.ok) throw new Error('Error al obtener la lección');
             return await response.json();
         } catch (error) {
@@ -26,7 +26,7 @@ const LeccionesService = {
     // Crear una nueva lección
     createLeccion: async (leccionData) => {
         try {
-            const response = await fetch(`${API_URL}/lecciones`, {
+            const response = await fetch(`${API_URL}/api/lecciones`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const LeccionesService = {
     // Actualizar una lección
     updateLeccion: async (id, leccionData) => {
         try {
-            const response = await fetch(`${API_URL}/lecciones/${id}`, {
+            const response = await fetch(`${API_URL}/api/lecciones/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ const LeccionesService = {
     // Eliminar una lección
     deleteLeccion: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/lecciones/${id}`, {
+            const response = await fetch(`${API_URL}/api/lecciones/${id}`, {
                 method: 'DELETE'
             });
             if (!response.ok) throw new Error('Error al eliminar la lección');

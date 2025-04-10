@@ -46,6 +46,10 @@ const Certificados = ({ setActiveSection, formStyles }) => {
     }
   };
 
+  const handleLogout = () => {
+    setActiveSection('login');
+  };
+
   if (loading) {
     return <div>Cargando certificados...</div>;
   }
@@ -87,9 +91,9 @@ const Certificados = ({ setActiveSection, formStyles }) => {
         
         <Button 
           className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white" 
-          onClick={() => setActiveSection('admin')}
+          onClick={handleLogout}
         >
-          Volver
+          Cerrar Sesión
         </Button>
       </CardContent>
     </Card>

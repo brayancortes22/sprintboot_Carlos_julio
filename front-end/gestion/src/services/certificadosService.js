@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8080';
+const API_URL = 'http://172.30.5.207:8080';
 
 const CertificadosService = {
     // Obtener todos los certificados

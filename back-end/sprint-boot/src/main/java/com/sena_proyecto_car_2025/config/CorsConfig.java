@@ -15,12 +15,9 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
-        // Permitir solicitudes desde el frontend de React (Vite)
-        config.addAllowedOrigin("http://localhost:5173");
-        config.addAllowedOrigin("http://127.0.0.1:5173");
-        // Mantener el origen existente
-        config.addAllowedOrigin("http://127.0.0.1:8080");
-
+        // Permitir solicitudes desde cualquier origen durante testing
+        config.addAllowedOriginPattern("*");
+        
         // Permitir todos los métodos HTTP necesarios
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
@@ -40,8 +37,8 @@ public class CorsConfig {
             "Access-Control-Allow-Credentials"
         ));
 
-        // Permitir credenciales
-        config.setAllowCredentials(true);
+        // Deshabilitar credenciales temporalmente para pruebas
+        config.setAllowCredentials(false);
         
         // Tiempo de cache para respuestas preflight
         config.setMaxAge(3600L);

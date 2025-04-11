@@ -8,6 +8,7 @@ import com.sena_proyecto_car_2025.service.AprendizService;
 
 @RestController
 @RequestMapping("/aprendiz")
+@CrossOrigin(origins = "*")
 public class AprendizController {
 
     @Autowired

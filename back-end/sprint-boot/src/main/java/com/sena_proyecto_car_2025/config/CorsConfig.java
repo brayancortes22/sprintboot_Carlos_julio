@@ -17,6 +17,16 @@ public class CorsConfig {
         
         // Permitir solicitudes desde cualquier origen durante testing
         config.addAllowedOriginPattern("*");
+
+        // Permitir solicitudes desde el frontend de React (Vite)
+        // Permitir solicitudes desde el frontend
+        config.addAllowedOrigin("http://172.30.5.207:5173");
+        config.addAllowedOrigin("http://172.30.5.207:8080");
+        config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("http://127.0.0.1:5173");
+        // Mantener el origen existente
+        config.addAllowedOrigin("http://127.0.0.1:8080");
+
         
         // Permitir todos los métodos HTTP necesarios
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));

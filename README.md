@@ -302,3 +302,232 @@ Todas las respuestas siguen el siguiente formato:
 ### Eliminar Certificado
 - **Método:** DELETE
 - **URL:** `http://localhost:8080/api/certificados/{id}`
+
+# Configuración para Acceso Remoto a la API
+
+Este documento describe los pasos necesarios para permitir el acceso remoto a la API y realizar pruebas desde otros dispositivos en la red.
+
+## 1. Configuración de CORS en el Backend
+
+### 1.1 Modificar CorsConfig.java
+Ubicación: `back-end/sprint-boot/src/main/java/com/sena_proyecto_car_2025/config/CorsConfig.java`
+
+```java
+@Configuration
+public class CorsConfig {
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        
+        // Permitir solicitudes desde cualquier origen durante testing
+        config.addAllowedOriginPattern("*");
+        
+        // Permitir todos los métodos HTTP necesarios
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        
+        // Permitir todos los headers necesarios
+        config.setAllowedHeaders(Arrays.asList(
+            "Authorization",
+            "Content-Type",
+            "Accept",
+            "Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers"
+        ));
+        
+        // Deshabilitar credenciales para testing
+        config.setAllowCredentials(false);
+        
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+}
+```
+
+### 1.2 Agregar anotación CORS a los controladores
+Ejemplo en `AprendizController.java`:
+```java
+@RestController
+@RequestMapping("/aprendiz")
+@CrossOrigin(origins = "*")
+public class AprendizController {
+    // ... resto del código
+}
+```
+
+## 2. Configuración del Frontend
+
+### 2.1 Modificar las URLs de la API
+En todos los archivos de servicio del frontend (`src/services/*.js`), actualizar la URL base:
+
+```javascript
+// Cambiar de localhost a la IP del servidor
+const API_URL = 'http://TU_IP:8080';
+```
+
+Archivos a modificar:
+- `src/services/aprendizService.js`
+- `src/services/certificadosService.js`
+- `src/services/cursosService.js`
+- `src/services/leccionesService.js`
+- `src/services/aprendizCursoService.js`
+
+## 3. Pasos para Compartir la API
+
+1. **Obtener la IP del servidor**:
+   - En Windows: Abrir CMD y ejecutar `ipconfig`
+   - Buscar la dirección IPv4 (ejemplo: 192.168.x.x)
+
+2. **Iniciar el Backend**:
+   ```bash
+   cd back-end/sprint-boot
+   ./mvnw spring-boot:run
+   ```
+   El backend estará disponible en: `http://TU_IP:8080`
+
+3. **Iniciar el Frontend**:
+   ```bash
+   cd front-end/gestion
+   npm run dev
+   ```
+   El frontend estará disponible en: `http://TU_IP:5173`
+
+## 4. Endpoints Disponibles
+
+### 4.1 Aprendices
+- GET `/aprendiz` - Obtener todos los aprendices
+- GET `/aprendiz/{id}` - Obtener un aprendiz por ID
+- POST `/aprendiz` - Crear nuevo aprendiz
+- PUT `/aprendiz/{id}` - Actualizar aprendiz
+- DELETE `/aprendiz/{id}` - Eliminar aprendiz
+
+### 4.2 Certificados
+- GET `/api/certificados` - Obtener todos los certificados
+- GET `/api/certificados/{id}` - Obtener certificado por ID
+- POST `/api/certificados` - Crear nuevo certificado
+- PUT `/api/certificados/{id}` - Actualizar certificado
+- DELETE `/api/certificados/{id}` - Eliminar certificado
+
+### 4.3 Cursos
+- GET `/api/cursos` - Obtener todos los cursos
+- GET `/api/cursos/{id}` - Obtener curso por ID
+- POST `/api/cursos` - Crear nuevo curso
+- PUT `/api/cursos/{id}` - Actualizar curso
+- DELETE `/api/cursos/{id}` - Eliminar curso
+
+## 5. Requisitos para Testers
+
+1. Estar conectado a la misma red que el servidor
+2. Tener acceso a:
+   - Frontend: `http://TU_IP:5173`
+   - Backend: `http://TU_IP:8080`
+3. Para probar los endpoints directamente:
+   - Usar herramientas como Postman o Insomnia
+   - Configurar el header `Content-Type: application/json`
+
+## 6. Consideraciones de Seguridad
+
+⚠️ **Importante**: Esta configuración está pensada para entornos de desarrollo y pruebas. Para producción:
+
+1. No usar `allowedOriginPattern("*")`
+2. Configurar orígenes específicos
+3. Implementar autenticación
+4. Usar HTTPS
+5. Configurar firewalls apropiadamente
+
+# Solución de Problemas Comunes
+
+## Error: ERR_CONNECTION_REFUSED
+
+Si recibes el error `net::ERR_CONNECTION_REFUSED` al intentar acceder a la API, sigue estos pasos:
+
+1. **Verificar que el servidor backend está corriendo**:
+   ```bash
+   # Navegar al directorio del backend
+   cd back-end/sprint-boot
+   
+   # Iniciar el servidor
+   ./mvnw spring-boot:run
+   ```
+
+2. **Verificar el firewall de Windows**:
+   - Abrir "Firewall de Windows Defender con seguridad avanzada"
+   - Ir a "Reglas de entrada"
+   - Crear una nueva regla:
+     1. Seleccionar "Puerto"
+     2. TCP, puertos específicos: 8080, 5173
+     3. "Permitir la conexión"
+     4. Marcar todos los perfiles
+     5. Nombrar la regla (ej: "API SENA")
+
+3. **Verificar la configuración de red**:
+   - Asegurarse de que el servidor y el cliente están en la misma red
+   - Verificar que no hay restricciones de red corporativas
+   - Probar con estos comandos:
+     ```bash
+     # Verificar si el puerto está abierto localmente
+     netstat -ano | findstr :8080
+     
+     # Probar conexión desde otro dispositivo
+     ping 172.30.5.207
+     ```
+
+4. **Verificar application.properties**:
+   ```properties
+   # Agregar esta línea para permitir conexiones externas
+   server.address=0.0.0.0
+   ```
+
+5. **Verificar la URL en el frontend**:
+   ```javascript
+   // Asegurarse de usar la IP correcta
+   const API_URL = 'http://172.30.5.207:8080';
+   ```
+
+## Pasos de Verificación Rápida
+
+1. **¿Está corriendo el backend?**
+   - Abrir `http://localhost:8080/aprendiz` en el navegador del servidor
+   - Debería ver datos o un mensaje JSON
+
+2. **¿Está configurado CORS correctamente?**
+   - Revisar los headers de respuesta usando las herramientas de desarrollo
+   - Buscar `Access-Control-Allow-Origin` en los headers
+
+3. **¿Los puertos están abiertos?**
+   - Usar el comando: `netstat -ano | findstr :8080`
+   - Debería ver una entrada para el puerto 8080
+
+4. **¿La red permite la conexión?**
+   - Hacer ping a la IP del servidor: `ping 172.30.5.207`
+   - Probar telnet: `telnet 172.30.5.207 8080`
+
+## Lista de Verificación para Testers
+
+✅ El servidor backend está corriendo
+✅ Los puertos necesarios están abiertos (8080, 5173)
+✅ Estás conectado a la misma red que el servidor
+✅ La IP del servidor es accesible (puedes hacer ping)
+✅ No hay restricciones de firewall bloqueando la conexión
+✅ La configuración CORS permite tu origen
+✅ Estás usando la URL correcta con la IP y puerto adecuados
+
+## Comandos Útiles para Diagnóstico
+
+```bash
+# Ver puertos en uso
+netstat -ano | findstr :8080
+
+# Ver IP del servidor
+ipconfig
+
+# Probar conexión
+ping 172.30.5.207
+
+# Ver procesos usando el puerto 8080
+tasklist /fi "PID eq PUERTO_PID"
+
+# Matar proceso si es necesario
+taskkill /PID NUMERO_PID /F
+```

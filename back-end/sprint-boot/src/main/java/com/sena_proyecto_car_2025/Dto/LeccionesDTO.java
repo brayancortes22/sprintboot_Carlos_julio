@@ -1,11 +1,11 @@
- package com.sena_proyecto_car_2025.Dto;
+package com.sena_proyecto_car_2025.Dto;
 
 public class LeccionesDTO {
     private int id_leccion;
     private String nombre_leccion;
     private String descripcion;
     private String ruta_leccion;
-    private int id_curso; // Para la relación con Cursos
+    private Integer id_curso; // Para la relación con Cursos
 
     // Constructor
     public LeccionesDTO() {}
@@ -43,11 +43,11 @@ public class LeccionesDTO {
         this.ruta_leccion = ruta_leccion;
     }
 
-    public int getId_curso() {
+    public Integer getId_curso() {
         return id_curso;
     }
 
-    public void setId_curso(int id_curso) {
+    public void setId_curso(Integer id_curso) {
         this.id_curso = id_curso;
     }
 }

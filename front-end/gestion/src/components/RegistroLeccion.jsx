@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from './ui/Card';
-import { Button } from './ui/Button';
+import { Card, CardContent, Button } from '@mui/material';
 import LeccionesService from '../services/leccionesService';
 import CursosService from '../services/cursosService';
 
-const RegistroLeccion = ({ setActiveSection, formStyles }) => {
+const RegistroLeccion = ({ setActiveSection }) => {
+  // Estados
   const [leccion, setLeccion] = useState({
     nombre_leccion: '',
     ruta_leccion: '',
@@ -12,76 +12,89 @@ const RegistroLeccion = ({ setActiveSection, formStyles }) => {
     id_curso: ''
   });
   
-  const [errors, setErrors] = useState({
-    nombre_leccion: false,
-    ruta_leccion: false,
-    descripcion: false,
-    id_curso: false
-  });
-  
-  const [loading, setLoading] = useState(false);
   const [cursos, setCursos] = useState([]);
-  const [loadingCursos, setLoadingCursos] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  // Cargar cursos para el selector
+  // Cargar cursos al montar el componente
   useEffect(() => {
     const fetchCursos = async () => {
       try {
         const response = await CursosService.getAllCursos();
-        if (response && response.data && Array.isArray(response.data)) {
-          setCursos(response.data);
+        // Verifica si response es un array y tiene elementos
+        if (Array.isArray(response) && response.length > 0) {
+          // Mapear los datos para que coincidan con la estructura esperada
+          const cursosFormateados = response.map(curso => ({
+            id_curso: curso.idCurso,
+            nombre_programa: curso.nombrePrograma,
+            codigo_ficha: curso.codigoFicha
+          }));
+          console.log('Cursos formateados:', cursosFormateados);
+          setCursos(cursosFormateados);
         } else {
-          console.error('Respuesta incorrecta al cargar cursos:', response);
+          console.log('No se encontraron cursos');
+          setCursos([]);
         }
       } catch (error) {
-        console.error('Error al cargar cursos:', error);
-      } finally {
-        setLoadingCursos(false);
+        console.error("Error al cargar cursos:", error);
+        alert("Error al cargar la lista de cursos");
+        setCursos([]);
       }
     };
 
     fetchCursos();
   }, []);
 
+  // Manejador de cambios en los campos
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLeccion(prev => ({
       ...prev,
       [name]: value
     }));
-    
-    // Resetear el error cuando el usuario escribe
+    // Limpiar error del campo
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
-        [name]: false
+        [name]: ''
       }));
     }
   };
-  
-  const validateForm = () => {
-    const newErrors = {
-      nombre_leccion: !leccion.nombre_leccion.trim(),
-      ruta_leccion: !leccion.ruta_leccion.trim(),
-      descripcion: !leccion.descripcion.trim(),
-      id_curso: !leccion.id_curso
-    };
-    
-    setErrors(newErrors);
-    
-    // Devuelve true si no hay errores
-    return !Object.values(newErrors).some(error => error);
-  };
 
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      alert('Por favor complete todos los campos requeridos');
-      return;
+  // Validación del formulario
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!leccion.nombre_leccion.trim()) {
+      newErrors.nombre_leccion = 'El nombre de la lección es requerido';
     }
     
+    if (!leccion.ruta_leccion.trim()) {
+      newErrors.ruta_leccion = 'La ruta es requerida';
+    }
+    
+    if (!leccion.descripcion.trim()) {
+      newErrors.descripcion = 'La descripción es requerida';
+    }
+    
+    if (!leccion.id_curso) {
+      newErrors.id_curso = 'Debe seleccionar un curso';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Manejador del envío del formulario
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       setLoading(true);
-      // Asegurarnos que id_curso sea un número
       const leccionData = {
         ...leccion,
         id_curso: parseInt(leccion.id_curso)
@@ -99,93 +112,110 @@ const RegistroLeccion = ({ setActiveSection, formStyles }) => {
   };
 
   return (
-    <Card className="rounded-2xl shadow-lg bg-white">
+    <Card className="max-w-md mx-auto mt-8 p-4">
       <CardContent>
-        <h2 className="text-2xl font-bold mb-4 text-indigo-600">Registro Lección</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center text-indigo-600">
+          Registro Lección
+        </h2>
         
-        <div className="mb-3">
-          <input 
-            className={`${formStyles} ${errors.nombre_leccion ? 'border-red-500' : ''}`}
-            name="nombre_leccion" 
-            placeholder="Nombre de la Lección *" 
-            type="text" 
-            value={leccion.nombre_leccion}
-            onChange={handleChange} 
-            disabled={loading}
-          />
-          {errors.nombre_leccion && (
-            <p className="text-red-500 text-sm mt-1">El nombre de la lección es requerido</p>
-          )}
-        </div>
-        
-        <div className="mb-3">
-          <input 
-            className={`${formStyles} ${errors.ruta_leccion ? 'border-red-500' : ''}`}
-            name="ruta_leccion" 
-            placeholder="Ruta de la Lección *" 
-            type="text" 
-            value={leccion.ruta_leccion}
-            onChange={handleChange} 
-            disabled={loading}
-          />
-          {errors.ruta_leccion && (
-            <p className="text-red-500 text-sm mt-1">La ruta de la lección es requerida</p>
-          )}
-        </div>
-        
-        <div className="mb-3">
-          <textarea
-            className={`${formStyles} ${errors.descripcion ? 'border-red-500' : ''}`}
-            name="descripcion" 
-            placeholder="Descripción de la Lección *" 
-            rows="3"
-            value={leccion.descripcion}
-            onChange={handleChange} 
-            disabled={loading}
-          />
-          {errors.descripcion && (
-            <p className="text-red-500 text-sm mt-1">La descripción es requerida</p>
-          )}
-        </div>
-        
-        <div className="mb-3">
-          {loadingCursos ? (
-            <p>Cargando cursos...</p>
-          ) : (
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <input
+              type="text"
+              name="nombre_leccion"
+              placeholder="Nombre de la lección"
+              value={leccion.nombre_leccion}
+              onChange={handleChange}
+              className={`w-full p-2 border rounded ${
+                errors.nombre_leccion ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            {errors.nombre_leccion && (
+              <p className="text-red-500 text-sm mt-1">{errors.nombre_leccion}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <input
+              type="text"
+              name="ruta_leccion"
+              placeholder="Ruta de la lección"
+              value={leccion.ruta_leccion}
+              onChange={handleChange}
+              className={`w-full p-2 border rounded ${
+                errors.ruta_leccion ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            {errors.ruta_leccion && (
+              <p className="text-red-500 text-sm mt-1">{errors.ruta_leccion}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <textarea
+              name="descripcion"
+              placeholder="Descripción de la lección"
+              value={leccion.descripcion}
+              onChange={handleChange}
+              className={`w-full p-2 border rounded ${
+                errors.descripcion ? 'border-red-500' : 'border-gray-300'
+              }`}
+              rows="3"
+            />
+            {errors.descripcion && (
+              <p className="text-red-500 text-sm mt-1">{errors.descripcion}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
             <select
-              className={`${formStyles} ${errors.id_curso ? 'border-red-500' : ''}`}
               name="id_curso"
               value={leccion.id_curso}
               onChange={handleChange}
-              disabled={loading}
+              className={`w-full p-2 border rounded ${
+                errors.id_curso ? 'border-red-500' : 'border-gray-300'
+              }`}
             >
-              <option value="">Seleccionar Curso *</option>
-              {cursos.map(curso => (
-                <option key={curso.id_curso} value={curso.id_curso}>
-                  {curso.nombrePrograma || 'Curso sin nombre'} - {curso.codigoFicha || 'Sin código'}
-                </option>
-              ))}
+              <option value="">Seleccione un curso</option>
+              {Array.isArray(cursos) && cursos.length > 0 ? (
+                cursos.map((curso) => (
+                  <option key={curso.id_curso} value={curso.id_curso}>
+                    {curso.nombre_programa} - {curso.codigo_ficha}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>No hay cursos disponibles</option>
+              )}
             </select>
-          )}
-          {errors.id_curso && (
-            <p className="text-red-500 text-sm mt-1">Debe seleccionar un curso</p>
-          )}
-        </div>
-        
-        <Button 
-          className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white" 
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? 'Guardando...' : 'Registrar Lección'}
-        </Button>
-        <Button 
-          className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white" 
-          onClick={() => setActiveSection('admin')}
-          disabled={loading}
-        >
-          Volver
-        </Button>
+            {errors.id_curso && (
+              <p className="text-red-500 text-sm mt-1">{errors.id_curso}</p>
+            )}
+          </div>
+
+          <div className="flex gap-4">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={loading}
+              className="bg-indigo-600 hover:bg-indigo-700"
+            >
+              {loading ? 'Registrando...' : 'Registrar Lección'}
+            </Button>
+            
+            <Button
+              type="button"
+              variant="contained"
+              color="secondary"
+              fullWidth
+              onClick={() => setActiveSection('admin')}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Volver
+            </Button>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );

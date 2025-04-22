@@ -76,11 +76,11 @@ CREATE TABLE IF NOT EXISTS `cursos` (
   `fecha_inicio` datetime(6) DEFAULT NULL,
   `nombre_programa` varchar(150) DEFAULT NULL,
   PRIMARY KEY (`id_curso`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=938 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
--- Volcando datos para la tabla carlos_julio.cursos: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla carlos_julio.cursos: ~39 rows (aproximadamente)
 INSERT INTO `cursos` (`id_curso`, `codigo_ficha`, `descripcion`, `fecha_fin`, `fecha_inicio`, `nombre_programa`) VALUES
-	(1, 0, 'hola', NULL, NULL, NULL);
+	(937, 2901817, 'programacion orientada a objetos ', '2025-04-01 19:00:00.000000', '2025-04-17 19:00:00.000000', 'adso');
 
 -- Volcando estructura para tabla carlos_julio.lecciones
 CREATE TABLE IF NOT EXISTS `lecciones` (
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `lecciones` (
   PRIMARY KEY (`id_leccion`),
   KEY `FKe5h5xfr7vokjg6uc95ayho92s` (`id_curso`),
   CONSTRAINT `FKe5h5xfr7vokjg6uc95ayho92s` FOREIGN KEY (`id_curso`) REFERENCES `cursos` (`id_curso`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
 -- Volcando datos para la tabla carlos_julio.lecciones: ~0 rows (aproximadamente)
 

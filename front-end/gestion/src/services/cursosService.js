@@ -1,13 +1,23 @@
-const API_URL = 'http://172.30.5.207:8080';
+const API_URL = 'http://localhost:8080';
 
 const CursosService = {
-    // Obtener todos los cursos
     getAllCursos: async () => {
         try {
             const response = await fetch(`${API_URL}/api/cursos`);
-            if (!response.ok) throw new Error('Error al obtener cursos');
-            return await response.json();
+            if (!response.ok) {
+                throw new Error('Error al obtener los cursos');
+            }
+            const responseData = await response.json();
+            
+            // Verificar si la respuesta tiene la estructura esperada
+            if (responseData && responseData.data) {
+                console.log('Datos de cursos recibidos:', responseData.data);
+                return responseData.data;
+            }
+            
+            return [];
         } catch (error) {
+            console.error('Error:', error);
             throw error;
         }
     },
@@ -19,6 +29,7 @@ const CursosService = {
             if (!response.ok) throw new Error('Error al obtener el curso');
             return await response.json();
         } catch (error) {
+            console.error('Error:', error);
             throw error;
         }
     },
@@ -36,6 +47,7 @@ const CursosService = {
             if (!response.ok) throw new Error('Error al crear el curso');
             return await response.json();
         } catch (error) {
+            console.error('Error:', error);
             throw error;
         }
     },
@@ -53,6 +65,7 @@ const CursosService = {
             if (!response.ok) throw new Error('Error al actualizar el curso');
             return await response.json();
         } catch (error) {
+            console.error('Error:', error);
             throw error;
         }
     },
@@ -66,9 +79,10 @@ const CursosService = {
             if (!response.ok) throw new Error('Error al eliminar el curso');
             return true;
         } catch (error) {
+            console.error('Error:', error);
             throw error;
         }
     }
 };
 
-export default CursosService; 
+export default CursosService;

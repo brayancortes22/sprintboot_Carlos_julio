@@ -1,60 +1,17 @@
-package com.sena_proyecto_car_2025.config;
+package com.sena.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
-import java.util.Arrays;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class CorsConfig {
-
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        
-        // Permitir solicitudes desde cualquier origen durante testing
-        config.addAllowedOriginPattern("*");
-
-        // Permitir solicitudes desde el frontend de React (Vite)
-        // Permitir solicitudes desde el frontend
-        config.addAllowedOrigin("http://172.30.5.207:5173");
-        config.addAllowedOrigin("http://172.30.5.207:8080");
-        config.addAllowedOrigin("http://localhost:5173");
-        config.addAllowedOrigin("http://127.0.0.1:5173");
-        // Mantener el origen existente
-        config.addAllowedOrigin("http://127.0.0.1:8080");
-
-        
-        // Permitir todos los métodos HTTP necesarios
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        // Permitir todos los headers necesarios
-        config.setAllowedHeaders(Arrays.asList(
-            "Authorization",
-            "Content-Type",
-            "Accept",
-            "Origin",
-            "Access-Control-Request-Method",
-            "Access-Control-Request-Headers"
-        ));
-
-        // Exponer headers específicos
-        config.setExposedHeaders(Arrays.asList(
-            "Access-Control-Allow-Origin",
-            "Access-Control-Allow-Credentials"
-        ));
-
-        // Deshabilitar credenciales temporalmente para pruebas
-        config.setAllowCredentials(false);
-        
-        // Tiempo de cache para respuestas preflight
-        config.setMaxAge(3600L);
-
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+public class CorsConfig implements WebMvcConfigurer {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
-
 }

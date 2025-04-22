@@ -125,4 +125,11 @@ public class cursos_controller {
             dto.getFechaFin()
         );
     }
-} 
+
+    // En tu controlador de Cursos
+    @GetMapping("/api/cursos")
+    public ResponseEntity<List<Curso>> getAllCursos() {
+        List<Curso> cursos = cursoService.findAll();
+        return ResponseEntity.ok(cursos);
+    }
+}

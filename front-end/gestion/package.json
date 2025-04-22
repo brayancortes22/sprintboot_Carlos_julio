@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.0.2",
     "@radix-ui/react-slot": "^1.1.2",
     "framer-motion": "^12.5.0",
     "gestion": "file:",

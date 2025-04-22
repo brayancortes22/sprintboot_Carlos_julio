@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
-import AprendizService from '../services/AprendizService';
+import AprendizService from '../services/aprendizService';
 
-const Login = ({ setActiveSection, formStyles }) => {
+const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
   const [credentials, setCredentials] = useState({
     documento: '',
     tipoUsuario: ''
@@ -75,13 +75,16 @@ const Login = ({ setActiveSection, formStyles }) => {
           return;
         }
         
+        // Guardar información del usuario logueado
+        setLoggedUser(aprendiz);
+        
         // Redirigir según el tipo de usuario
         if (tipoUsuarioNum === 1) {
           // Administrador
           setActiveSection('admin');
         } else if (tipoUsuarioNum === 2) {
           // Aprendiz
-          setActiveSection('certificados');
+          setActiveSection('aprendizPanel');
         }
       } catch (error) {
         setErrorMessage(error.message || 'Error al iniciar sesión');

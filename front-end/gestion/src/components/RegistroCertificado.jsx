@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import CertificadosService from '../services/certificadosService';
-import AprendizService from '../services/AprendizService';
+import AprendizService from '../services/aprendizService';
 import LeccionesService from '../services/leccionesService';
 
 const RegistroCertificado = ({ setActiveSection, formStyles }) => {

@@ -31,4 +31,6 @@ public interface ICertificados extends JpaRepository<Certificados, Integer> {
     // Buscar por rango de fechas de finalización
     @Query("SELECT c FROM Certificados c WHERE c.fechaFin BETWEEN :fechaInicio AND :fechaFin")
     List<Certificados> findByFechaFinBetween(@Param("fechaInicio") Timestamp fechaInicio, @Param("fechaFin") Timestamp fechaFin);
+
+    List<Certificados> findByIdAprendiz(Integer idAprendiz);
 }

@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sena_proyecto_car_2025.model.aprendiz_curso;
+import com.sena_proyecto_car_2025.model.Aprendiz;
 import com.sena_proyecto_car_2025.repository.IAprendizCurso;
+import java.util.List;
 
 //se inicia el @Service para indicar que es un servicio
 @Service
@@ -14,6 +16,7 @@ public class AprendizCursoService {
     //se inyecta el repositorio
     @Autowired
     private IAprendizCurso aprendiz_cursoRepository;
+
     /*
      * crud
      * create
@@ -47,5 +50,10 @@ public class AprendizCursoService {
     public boolean delete(Long id) {
         aprendiz_cursoRepository.deleteById(id);
         return true;
+    }
+
+    // Obtener cursos por aprendiz
+    public List<aprendiz_curso> findByAprendiz(Aprendiz aprendiz) {
+        return aprendiz_cursoRepository.findByAprendiz(aprendiz);
     }
 }

@@ -16,9 +16,9 @@ const Certificados = ({ setActiveSection, formStyles }) => {
     try {
       const response = await CertificadosService.getAllCertificados();
       
-      // Verificar la estructura de la respuesta
-      if (response && response.data && Array.isArray(response.data)) {
-        setCertificados(response.data);
+      if (Array.isArray(response)) {
+        setCertificados(response);
+        setError(null);
       } else {
         console.error('Respuesta incorrecta del servidor:', response);
         setError('La estructura de datos recibida no es válida');
@@ -51,7 +51,15 @@ const Certificados = ({ setActiveSection, formStyles }) => {
   };
 
   if (loading) {
-    return <div>Cargando certificados...</div>;
+    return (
+      <Card className="rounded-2xl shadow-lg bg-white">
+        <CardContent>
+          <div className="text-center py-4">
+            <p>Cargando certificados...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
@@ -74,8 +82,8 @@ const Certificados = ({ setActiveSection, formStyles }) => {
             {certificados.map((certificado) => (
               <div key={certificado.idCertificado} className="border p-4 rounded-lg">
                 <h3 className="font-bold">{certificado.nombreCertificado}</h3>
-                <p>ID Aprendiz: {certificado.id_aprendiz}</p>
-                <p>ID Lección: {certificado.id_lecciones}</p>
+                <p>Número de Documento: {certificado.numeroDocumentoCertificado}</p>
+                <p>Fecha de Finalización: {new Date(certificado.fechaFin).toLocaleDateString()}</p>
                 <div className="mt-2 space-x-2">
                   <Button 
                     className="bg-red-600 hover:bg-red-700 text-white"

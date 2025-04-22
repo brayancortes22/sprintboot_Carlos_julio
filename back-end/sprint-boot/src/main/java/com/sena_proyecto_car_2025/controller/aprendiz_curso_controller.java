@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/aprendiz-curso")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class aprendiz_curso_controller {
     @Autowired
     private AprendizCursoService aprendizCursoService;
@@ -62,6 +62,25 @@ public class aprendiz_curso_controller {
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(new GenericResponseDTO<>(400, "Error al obtener registro: " + e.getMessage(), null));
+        }
+    }
+
+    // Obtener cursos por aprendiz
+    @GetMapping("/aprendiz/{id}")
+    public ResponseEntity<GenericResponseDTO<List<aprendiz_curso>>> getCursosByAprendiz(@PathVariable Integer id) {
+        try {
+            Aprendiz aprendiz = new Aprendiz();
+            aprendiz.setId_aprendiz(id);
+            List<aprendiz_curso> inscripciones = aprendizCursoService.findByAprendiz(aprendiz);
+            
+            if (inscripciones != null && !inscripciones.isEmpty()) {
+                return ResponseEntity.ok(new GenericResponseDTO<>(200, "Cursos encontrados", inscripciones));
+            } else {
+                return ResponseEntity.ok(new GenericResponseDTO<>(200, "El aprendiz no está inscrito en ningún curso", new ArrayList<>()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(new GenericResponseDTO<>(400, "Error al obtener los cursos del aprendiz: " + e.getMessage(), null));
         }
     }
 

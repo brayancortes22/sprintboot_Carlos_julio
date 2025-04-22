@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.sena_proyecto_car_2025.model.Certificados;
 import com.sena_proyecto_car_2025.repository.ICertificados;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class CertificadosService {
@@ -38,5 +39,9 @@ public class CertificadosService {
             return true;
         }
         return false;
+    }
+
+    public List<Certificados> findByAprendiz(Integer id) {
+        return certificadosRepository.findByIdAprendiz(id);
     }
 }

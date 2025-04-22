@@ -9,6 +9,7 @@ import RegistroCurso from './components/RegistroCurso';
 import RegistroLeccion from './components/RegistroLeccion';
 import RegistroCertificado from './components/RegistroCertificado';
 import RegistroAprendiz from './components/RegistroAprendiz';
+import AprendizPanel from './components/AprendizPanel';
 import { Button } from './components/ui/Button';
 import './App.css';
 
@@ -25,7 +26,7 @@ function App() {
   const sections = {
     login: (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
-        <Login setActiveSection={setActiveSection} formStyles={formStyles} />
+        <Login setActiveSection={setActiveSection} formStyles={formStyles} setLoggedUser={setLoggedUser} />
       </motion.div>
     ),
     certificados: (
@@ -56,6 +57,11 @@ function App() {
     aprendices: (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
         <RegistroAprendiz setActiveSection={setActiveSection} formStyles={formStyles} />
+      </motion.div>
+    ),
+    aprendizPanel: (
+      <motion.div variants={cardVariants} initial="hidden" animate="visible">
+        <AprendizPanel aprendizId={loggedUser?.id_aprendiz} />
       </motion.div>
     )
   };

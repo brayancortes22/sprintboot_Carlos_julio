@@ -1,4 +1,3 @@
-// const API_URL = 'http://172.30.5.207:8080';
 const API_URL = 'http://localhost:8080';
 
 const CertificadosService = {
@@ -6,12 +5,17 @@ const CertificadosService = {
     getAllCertificados: async () => {
         try {
             const response = await fetch(`${API_URL}/api/certificados/obtener`);
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Error al obtener certificados');
-            }
             const responseData = await response.json();
-            return responseData.data || [];
+            
+            if (!response.ok) {
+                throw new Error(responseData.message || 'Error al obtener certificados');
+            }
+            
+            if (!responseData.data) {
+                return [];
+            }
+            
+            return responseData.data;
         } catch (error) {
             console.error('Error en getAllCertificados:', error);
             throw error;
@@ -21,10 +25,16 @@ const CertificadosService = {
     // Obtener un certificado por ID
     getCertificadoById: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/api/certificados/${id}`);
-            if (!response.ok) throw new Error('Error al obtener el certificado');
-            return await response.json();
+            const response = await fetch(`${API_URL}/api/certificados/obtener/${id}`);
+            const responseData = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(responseData.message || 'Error al obtener el certificado');
+            }
+            
+            return responseData.data;
         } catch (error) {
+            console.error('Error en getCertificadoById:', error);
             throw error;
         }
     },
@@ -48,7 +58,7 @@ const CertificadosService = {
                 throw new Error(responseData.message || 'Error al crear el certificado');
             }
 
-            return responseData;
+            return responseData.data;
         } catch (error) {
             console.error('Error en createCertificado:', error);
             throw error;
@@ -58,16 +68,23 @@ const CertificadosService = {
     // Actualizar un certificado
     updateCertificado: async (id, certificadoData) => {
         try {
-            const response = await fetch(`${API_URL}/api/certificados/${id}`, {
+            const response = await fetch(`${API_URL}/api/certificados/actualizar/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(certificadoData)
             });
-            if (!response.ok) throw new Error('Error al actualizar el certificado');
-            return await response.json();
+            
+            const responseData = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(responseData.message || 'Error al actualizar el certificado');
+            }
+            
+            return responseData.data;
         } catch (error) {
+            console.error('Error en updateCertificado:', error);
             throw error;
         }
     },
@@ -75,12 +92,35 @@ const CertificadosService = {
     // Eliminar un certificado
     deleteCertificado: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/api/certificados/${id}`, {
+            const response = await fetch(`${API_URL}/api/certificados/eliminar/${id}`, {
                 method: 'DELETE'
             });
-            if (!response.ok) throw new Error('Error al eliminar el certificado');
+            
+            if (!response.ok) {
+                const responseData = await response.json();
+                throw new Error(responseData.message || 'Error al eliminar el certificado');
+            }
+            
             return true;
         } catch (error) {
+            console.error('Error en deleteCertificado:', error);
+            throw error;
+        }
+    },
+
+    // Obtener certificados por aprendiz
+    getCertificadosByAprendiz: async (aprendizId) => {
+        try {
+            const response = await fetch(`${API_URL}/api/certificados/aprendiz/${aprendizId}`);
+            const responseData = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(responseData.message || 'Error al obtener los certificados del aprendiz');
+            }
+            
+            return responseData.data || [];
+        } catch (error) {
+            console.error('Error en getCertificadosByAprendiz:', error);
             throw error;
         }
     }

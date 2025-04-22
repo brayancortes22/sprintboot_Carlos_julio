@@ -142,4 +142,20 @@ public class certificados_controller {
                 ));
         }
     }
+
+    @GetMapping("/aprendiz/{id}")
+    public ResponseEntity<GenericResponseDTO<List<Certificados>>> getCertificadosByAprendiz(@PathVariable Integer id) {
+        try {
+            List<Certificados> certificados = certificadosService.findByAprendiz(id);
+            
+            if (certificados != null && !certificados.isEmpty()) {
+                return ResponseEntity.ok(new GenericResponseDTO<>(200, "Certificados encontrados", certificados));
+            } else {
+                return ResponseEntity.ok(new GenericResponseDTO<>(200, "El aprendiz no tiene certificados", new ArrayList<>()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(new GenericResponseDTO<>(400, "Error al obtener los certificados del aprendiz: " + e.getMessage(), null));
+        }
+    }
 }

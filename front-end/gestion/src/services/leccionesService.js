@@ -1,12 +1,20 @@
-// const API_URL = 'http://172.30.5.207:8080';
 const API_URL = 'http://localhost:8080';
 
 const LeccionesService = {
-    // Obtener todas las lecciones
     getAllLecciones: async () => {
-        const response = await fetch(`${API_URL}/api/lecciones`);
-        if (!response.ok) throw new Error('Error al obtener lecciones');
-        return await response.json();
+        try {
+            const response = await fetch(`${API_URL}/api/lecciones/obtener`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al obtener las lecciones');
+            }
+            const responseData = await response.json();
+            console.log('Respuesta lecciones:', responseData);
+            return responseData;
+        } catch (error) {
+            console.error('Error en getAllLecciones:', error);
+            throw error;
+        }
     },
 
     // Obtener una lección por ID

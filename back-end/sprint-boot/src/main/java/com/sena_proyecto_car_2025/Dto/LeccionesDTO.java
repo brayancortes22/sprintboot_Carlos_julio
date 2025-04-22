@@ -1,21 +1,30 @@
 package com.sena_proyecto_car_2025.Dto;
 
 public class LeccionesDTO {
-    private int id_leccion;
+    private Integer id_leccion;
     private String nombre_leccion;
     private String descripcion;
     private String ruta_leccion;
-    private Integer id_curso; // Para la relación con Cursos
+    private Integer id_curso;
 
-    // Constructor
+    // Constructor vacío
     public LeccionesDTO() {}
 
-    // Getters y Setters
-    public int getId_leccion() {
+    // Constructor con parámetros
+    public LeccionesDTO(Integer id_leccion, String nombre_leccion, String descripcion, String ruta_leccion, Integer id_curso) {
+        this.id_leccion = id_leccion;
+        this.nombre_leccion = nombre_leccion;
+        this.descripcion = descripcion;
+        this.ruta_leccion = ruta_leccion;
+        this.id_curso = id_curso;
+    }
+
+    // Getters y setters
+    public Integer getId_leccion() {
         return id_leccion;
     }
 
-    public void setId_leccion(int id_leccion) {
+    public void setId_leccion(Integer id_leccion) {
         this.id_leccion = id_leccion;
     }
 
@@ -49,5 +58,16 @@ public class LeccionesDTO {
 
     public void setId_curso(Integer id_curso) {
         this.id_curso = id_curso;
+    }
+
+    @Override
+    public String toString() {
+        return "LeccionesDTO{" +
+                "id_leccion=" + id_leccion +
+                ", nombre_leccion='" + nombre_leccion + '\'' +
+                ", descripcion='" + descripcion + '\'' +
+                ", ruta_leccion='" + ruta_leccion + '\'' +
+                ", id_curso=" + id_curso +
+                '}';
     }
 }

@@ -1,22 +1,21 @@
 package com.sena_proyecto_car_2025.Dto;
 
 public class GenericResponseDTO<T> {
-    private int status;
+    private Integer status;
     private String message;
     private T data;
 
-    public GenericResponseDTO(int status, String message, T data) {
+    public GenericResponseDTO(Integer status, String message, T data) {
         this.status = status;
         this.message = message;
         this.data = data;
     }
 
-    // Getters y Setters
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -35,4 +34,4 @@ public class GenericResponseDTO<T> {
     public void setData(T data) {
         this.data = data;
     }
-} 
+}

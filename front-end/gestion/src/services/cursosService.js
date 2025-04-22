@@ -10,7 +10,7 @@ const CursosService = {
             const responseData = await response.json();
             
             // Verificar si la respuesta tiene la estructura esperada
-            if (responseData && responseData.data) {
+            if (responseData.data) {
                 console.log('Datos de cursos recibidos:', responseData.data);
                 return responseData.data;
             }
@@ -27,7 +27,8 @@ const CursosService = {
         try {
             const response = await fetch(`${API_URL}/api/cursos/${id}`);
             if (!response.ok) throw new Error('Error al obtener el curso');
-            return await response.json();
+            const data = await response.json();
+            return data.data;
         } catch (error) {
             console.error('Error:', error);
             throw error;
@@ -45,7 +46,8 @@ const CursosService = {
                 body: JSON.stringify(cursoData)
             });
             if (!response.ok) throw new Error('Error al crear el curso');
-            return await response.json();
+            const data = await response.json();
+            return data.data;
         } catch (error) {
             console.error('Error:', error);
             throw error;
@@ -63,7 +65,8 @@ const CursosService = {
                 body: JSON.stringify(cursoData)
             });
             if (!response.ok) throw new Error('Error al actualizar el curso');
-            return await response.json();
+            const data = await response.json();
+            return data.data;
         } catch (error) {
             console.error('Error:', error);
             throw error;

@@ -5,10 +5,19 @@ const AprendizService = {
     // Obtener todos los aprendices
     getAllAprendices: async () => {
         try {
-            const response = await fetch(`${API_URL}/aprendiz`);
-            if (!response.ok) throw new Error('Error al obtener aprendices');
-            return await response.json();
+            const response = await fetch(`${API_URL}/api/aprendices/obtener`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al obtener aprendices');
+            }
+            const responseData = await response.json();
+            console.log('Respuesta aprendices:', responseData);
+            if (responseData && responseData.data) {
+                return responseData.data;
+            }
+            return [];
         } catch (error) {
+            console.error('Error en getAllAprendices:', error);
             throw error;
         }
     },
@@ -16,10 +25,15 @@ const AprendizService = {
     // Obtener un aprendiz por ID
     getAprendizById: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/aprendiz/${id}`);
-            if (!response.ok) throw new Error('Error al obtener el aprendiz');
-            return await response.json();
+            const response = await fetch(`${API_URL}/api/aprendices/obtener/${id}`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al obtener el aprendiz');
+            }
+            const responseData = await response.json();
+            return responseData.data;
         } catch (error) {
+            console.error('Error en getAprendizById:', error);
             throw error;
         }
     },
@@ -61,6 +75,7 @@ const AprendizService = {
             
             return aprendiz;
         } catch (error) {
+            console.error('Error en la solicitud:', error);
             throw error;
         }
     },
@@ -68,16 +83,21 @@ const AprendizService = {
     // Crear un nuevo aprendiz
     createAprendiz: async (aprendizData) => {
         try {
-            const response = await fetch(`${API_URL}/aprendiz`, {
+            const response = await fetch(`${API_URL}/api/aprendices/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(aprendizData)
             });
-            if (!response.ok) throw new Error('Error al crear el aprendiz');
-            return await response.json();
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al crear el aprendiz');
+            }
+            const responseData = await response.json();
+            return responseData.data;
         } catch (error) {
+            console.error('Error en createAprendiz:', error);
             throw error;
         }
     },
@@ -85,16 +105,21 @@ const AprendizService = {
     // Actualizar un aprendiz
     updateAprendiz: async (id, aprendizData) => {
         try {
-            const response = await fetch(`${API_URL}/aprendiz/${id}`, {
+            const response = await fetch(`${API_URL}/api/aprendices/actualizar/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(aprendizData)
             });
-            if (!response.ok) throw new Error('Error al actualizar el aprendiz');
-            return await response.json();
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al actualizar el aprendiz');
+            }
+            const responseData = await response.json();
+            return responseData.data;
         } catch (error) {
+            console.error('Error en updateAprendiz:', error);
             throw error;
         }
     },
@@ -102,15 +127,19 @@ const AprendizService = {
     // Eliminar un aprendiz
     deleteAprendiz: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/aprendiz/${id}`, {
+            const response = await fetch(`${API_URL}/api/aprendices/eliminar/${id}`, {
                 method: 'DELETE'
             });
-            if (!response.ok) throw new Error('Error al eliminar el aprendiz');
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al eliminar el aprendiz');
+            }
             return true;
         } catch (error) {
+            console.error('Error en deleteAprendiz:', error);
             throw error;
         }
     }
 };
 
-export default AprendizService; 
+export default AprendizService;

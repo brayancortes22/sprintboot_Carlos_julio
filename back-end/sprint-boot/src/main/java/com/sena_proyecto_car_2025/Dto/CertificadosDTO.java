@@ -1,19 +1,19 @@
- package com.sena_proyecto_car_2025.Dto;
+package com.sena_proyecto_car_2025.Dto;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 public class CertificadosDTO {
     private int idCertificado;
-    private int id_lecciones; // Para la relación con Lecciones
-    private int id_aprendiz;  // Para la relación con Aprendiz
-    private String nombreCertificado;
-    private int numeroDocumentoCertificado;
-    private Timestamp fechaFin;
+    private String nombre_certificado;
+    private Integer numero_documento_certificado;
+    private Date fecha_fin;
+    private Integer id_aprendiz;
+    private Integer id_lecciones;
 
     // Constructor
     public CertificadosDTO() {}
 
-    // Getters y Setters
+    // Getters
     public int getIdCertificado() {
         return idCertificado;
     }
@@ -22,43 +22,44 @@ public class CertificadosDTO {
         this.idCertificado = idCertificado;
     }
 
-    public int getId_lecciones() {
-        return id_lecciones;
+    public String getNombre_certificado() {
+        return nombre_certificado;
     }
 
-    public void setId_lecciones(int id_lecciones) {
-        this.id_lecciones = id_lecciones;
+    public Integer getNumero_documento_certificado() {
+        return numero_documento_certificado;
     }
 
-    public int getId_aprendiz() {
+    public Date getFecha_fin() {
+        return fecha_fin;
+    }
+
+    public Integer getId_aprendiz() {
         return id_aprendiz;
     }
 
-    public void setId_aprendiz(int id_aprendiz) {
+    public Integer getId_lecciones() {
+        return id_lecciones;
+    }
+
+    // Setters
+    public void setNombre_certificado(String nombre_certificado) {
+        this.nombre_certificado = nombre_certificado;
+    }
+
+    public void setNumero_documento_certificado(Integer numero_documento_certificado) {
+        this.numero_documento_certificado = numero_documento_certificado;
+    }
+
+    public void setFecha_fin(Date fecha_fin) {
+        this.fecha_fin = fecha_fin;
+    }
+
+    public void setId_aprendiz(Integer id_aprendiz) {
         this.id_aprendiz = id_aprendiz;
     }
 
-    public String getNombreCertificado() {
-        return nombreCertificado;
-    }
-
-    public void setNombreCertificado(String nombreCertificado) {
-        this.nombreCertificado = nombreCertificado;
-    }
-
-    public int getNumeroDocumentoCertificado() {
-        return numeroDocumentoCertificado;
-    }
-
-    public void setNumeroDocumentoCertificado(int numeroDocumentoCertificado) {
-        this.numeroDocumentoCertificado = numeroDocumentoCertificado;
-    }
-
-    public Timestamp getFechaFin() {
-        return fechaFin;
-    }
-
-    public void setFechaFin(Timestamp fechaFin) {
-        this.fechaFin = fechaFin;
+    public void setId_lecciones(Integer id_lecciones) {
+        this.id_lecciones = id_lecciones;
     }
 }

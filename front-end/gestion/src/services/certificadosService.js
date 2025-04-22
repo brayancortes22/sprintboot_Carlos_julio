@@ -5,14 +5,15 @@ const CertificadosService = {
     // Obtener todos los certificados
     getAllCertificados: async () => {
         try {
-            const response = await fetch(`${API_URL}/api/certificados`);
-            if (!response.ok) throw new Error('Error al obtener certificados');
-            const data = await response.json();
-            
-            // Devolver la respuesta tal como viene del servidor
-            // La estructura esperada es { code: number, message: string, data: array }
-            return data;
+            const response = await fetch(`${API_URL}/api/certificados/obtener`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al obtener certificados');
+            }
+            const responseData = await response.json();
+            return responseData.data || [];
         } catch (error) {
+            console.error('Error en getAllCertificados:', error);
             throw error;
         }
     },
@@ -31,16 +32,25 @@ const CertificadosService = {
     // Crear un nuevo certificado
     createCertificado: async (certificadoData) => {
         try {
-            const response = await fetch(`${API_URL}/api/certificados`, {
+            console.log('Datos enviados al servidor:', certificadoData);
+            const response = await fetch(`${API_URL}/api/certificados/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(certificadoData)
             });
-            if (!response.ok) throw new Error('Error al crear el certificado');
-            return await response.json();
+
+            const responseData = await response.json();
+            console.log('Respuesta del servidor:', responseData);
+
+            if (!response.ok) {
+                throw new Error(responseData.message || 'Error al crear el certificado');
+            }
+
+            return responseData;
         } catch (error) {
+            console.error('Error en createCertificado:', error);
             throw error;
         }
     },
@@ -76,4 +86,4 @@ const CertificadosService = {
     }
 };
 
-export default CertificadosService; 
+export default CertificadosService;

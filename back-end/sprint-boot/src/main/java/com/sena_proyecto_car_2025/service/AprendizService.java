@@ -4,45 +4,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.sena_proyecto_car_2025.model.Aprendiz;
 import com.sena_proyecto_car_2025.repository.IAprendiz;
+import java.util.List;
 
 @Service
-public class AprendizService{
+public class AprendizService {
 
-    //se inyecta el repositorio
     @Autowired
-    private IAprendiz IAprendizRepository;
-    /*
-     * crud
-     * create  
-     * read list completo
-     * road by id
-     * update
-     * delete
-    */
-    public boolean save(Aprendiz aprendiz) {
-        IAprendizRepository.save(aprendiz);
-        return true;
+    private IAprendiz aprendizRepository;
+
+    public List<Aprendiz> findAll() {
+        return (List<Aprendiz>) aprendizRepository.findAll();
     }
 
-    // Obtener todos los registros
-    public Iterable<Aprendiz> findAll() {
-        return IAprendizRepository.findAll();
-    }
-
-    // Obtener un registro por ID
     public Aprendiz findById(Integer id) {
-        return IAprendizRepository.findById(id).orElse(null);
+        return aprendizRepository.findById(id).orElse(null);
     }
 
-    // Actualizar un registro
-    public boolean update(Aprendiz aprendiz) {
-        IAprendizRepository.save(aprendiz);
-        return true;
+    public Aprendiz save(Aprendiz aprendiz) {
+        return aprendizRepository.save(aprendiz);
     }
 
-    // Eliminar un registro
+    public Aprendiz update(Aprendiz aprendiz) {
+        return aprendizRepository.save(aprendiz);
+    }
+
     public boolean delete(Integer id) {
-        IAprendizRepository.deleteById(id);
-        return true;
+        try {
+            aprendizRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

@@ -1,97 +1,91 @@
 package com.sena_proyecto_car_2025.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import java.sql.Timestamp;
+import jakarta.persistence.*;
+import java.util.Date;
 
-@Entity(name = "certificados")
+@Entity
+@Table(name = "certificados")
 public class Certificados {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_certificado")
-    private int idCertificado;
+    private Integer idCertificado;
 
-    @ManyToOne
-    @JoinColumn(name = "id_lecciones")
-    private lecciones lecciones;
-
-    @ManyToOne
-    @JoinColumn(name = "id_aprendiz")
-    private Aprendiz aprendiz;
-
-    @Column(name = "nombre_certificado", length = 150)
+    @Column(name = "nombre_certificado")
     private String nombreCertificado;
 
-    @Column(name = "numeroDocumento_certificado")
-    private int numeroDocumentoCertificado;
+    @Column(name = "numero_documento_certificado")
+    private Integer numeroDocumentoCertificado;
 
     @Column(name = "fecha_fin")
-    private Timestamp fechaFin;
+    private Date fechaFin;
+
+    @Column(name = "id_aprendiz")
+    private Integer idAprendiz;
+
+    @Column(name = "id_lecciones")
+    private Integer idLecciones;
 
     // Constructor vacío
     public Certificados() {}
 
     // Constructor con parámetros
-    public Certificados(int idCertificado, lecciones lecciones, Aprendiz aprendiz, String nombreCertificado, int numeroDocumentoCertificado, Timestamp fechaFin) {
+    public Certificados(Integer idCertificado, String nombreCertificado, Integer numeroDocumentoCertificado, Date fechaFin, Integer idAprendiz, Integer idLecciones) {
         this.idCertificado = idCertificado;
-        this.lecciones = lecciones;
-        this.aprendiz = aprendiz;
         this.nombreCertificado = nombreCertificado;
         this.numeroDocumentoCertificado = numeroDocumentoCertificado;
         this.fechaFin = fechaFin;
+        this.idAprendiz = idAprendiz;
+        this.idLecciones = idLecciones;
     }
 
-    // Getters y Setters
-    public int getIdCertificado() {
+    // Getters
+    public Integer getIdCertificado() {
         return idCertificado;
-    }
-
-    public void setIdCertificado(int idCertificado) {
-        this.idCertificado = idCertificado;
-    }
-
-    public lecciones getLecciones() {
-        return lecciones;
-    }
-
-    public void setLecciones(lecciones lecciones) {
-        this.lecciones = lecciones;
-    }
-
-    public Aprendiz getAprendiz() {
-        return aprendiz;
-    }
-
-    public void setAprendiz(Aprendiz aprendiz) {
-        this.aprendiz = aprendiz;
     }
 
     public String getNombreCertificado() {
         return nombreCertificado;
     }
 
+    public Integer getNumeroDocumentoCertificado() {
+        return numeroDocumentoCertificado;
+    }
+
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    public Integer getIdAprendiz() {
+        return idAprendiz;
+    }
+
+    public Integer getIdLecciones() {
+        return idLecciones;
+    }
+
+    // Setters
+    public void setIdCertificado(Integer idCertificado) {
+        this.idCertificado = idCertificado;
+    }
+
     public void setNombreCertificado(String nombreCertificado) {
         this.nombreCertificado = nombreCertificado;
     }
 
-    public int getNumeroDocumentoCertificado() {
-        return numeroDocumentoCertificado;
-    }
-
-    public void setNumeroDocumentoCertificado(int numeroDocumentoCertificado) {
+    public void setNumeroDocumentoCertificado(Integer numeroDocumentoCertificado) {
         this.numeroDocumentoCertificado = numeroDocumentoCertificado;
     }
 
-    public Timestamp getFechaFin() {
-        return fechaFin;
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
-    public void setFechaFin(Timestamp fechaFin) {
-        this.fechaFin = fechaFin;
+    public void setIdAprendiz(Integer idAprendiz) {
+        this.idAprendiz = idAprendiz;
+    }
+
+    public void setIdLecciones(Integer idLecciones) {
+        this.idLecciones = idLecciones;
     }
 }

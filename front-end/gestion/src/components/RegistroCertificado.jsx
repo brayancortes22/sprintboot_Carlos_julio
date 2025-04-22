@@ -30,20 +30,26 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
   // Cargar aprendices y lecciones para los selectores
   useEffect(() => {
     const fetchData = async () => {
+      setLoadingOptions(true);
       try {
-        // Cargar aprendices
-        const aprendicesResponse = await AprendizService.getAllAprendices();
+        const [aprendicesResponse, leccionesResponse] = await Promise.all([
+          AprendizService.getAllAprendices(),
+          LeccionesService.getAllLecciones()
+        ]);
+
+        console.log('Aprendices:', aprendicesResponse);
+        console.log('Lecciones:', leccionesResponse);
+
         if (Array.isArray(aprendicesResponse)) {
           setAprendices(aprendicesResponse);
         }
-        
-        // Cargar lecciones
-        const leccionesResponse = await LeccionesService.getAllLecciones();
-        if (leccionesResponse && leccionesResponse.data && Array.isArray(leccionesResponse.data)) {
+
+        if (leccionesResponse && leccionesResponse.data) {
           setLecciones(leccionesResponse.data);
         }
       } catch (error) {
         console.error('Error al cargar datos:', error);
+        alert('Error al cargar los datos necesarios. Por favor, intente nuevamente.');
       } finally {
         setLoadingOptions(false);
       }

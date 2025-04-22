@@ -41,7 +41,7 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
   const validateForm = () => {
     const newErrors = {
       nombre: !aprendiz.nombre.trim(),
-      numero_documento: !aprendiz.numero_documento.trim(),
+      numero_documento: !aprendiz.numero_documento || parseInt(aprendiz.numero_documento) <= 0,
       correo: !aprendiz.correo.trim(),
       contraseña: !aprendiz.contraseña.trim(),
       tipo_usuario: !aprendiz.tipo_usuario
@@ -65,7 +65,7 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      alert('Por favor complete todos los campos requeridos');
+      alert('Por favor complete todos los campos requeridos correctamente');
       return;
     }
     
@@ -83,7 +83,7 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
       setActiveSection('admin');
     } catch (error) {
       console.error('Error al registrar el aprendiz:', error);
-      alert('Error al registrar el aprendiz');
+      alert(error.message || 'Error al registrar el aprendiz');
     } finally {
       setLoading(false);
     }
@@ -176,4 +176,4 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
   );
 };
 
-export default RegistroAprendiz; 
+export default RegistroAprendiz;

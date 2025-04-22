@@ -21,7 +21,7 @@ import java.util.Objects; // Importar Objects para comparación segura
 
 @RestController
 @RequestMapping("/api/lecciones")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class lecciones_controller {
 
     @Autowired
@@ -57,11 +57,19 @@ public class lecciones_controller {
     @GetMapping("/obtener")
     public ResponseEntity<GenericResponseDTO<List<LeccionesDTO>>> obtenerTodos() {
         try {
+            System.out.println("Obteniendo todas las lecciones...");
             Iterable<lecciones> entities = leccionesService.findAll();
             List<LeccionesDTO> dtos = new ArrayList<>();
-            entities.forEach(entity -> dtos.add(convertToDTO(entity)));
+            entities.forEach(entity -> {
+                LeccionesDTO dto = convertToDTO(entity);
+                System.out.println("Lección convertida: " + dto);
+                dtos.add(dto);
+            });
+            System.out.println("Total de lecciones encontradas: " + dtos.size());
             return ResponseEntity.ok(new GenericResponseDTO<>(200, "Lecciones obtenidas exitosamente", dtos));
         } catch (Exception e) {
+            System.err.println("Error al obtener lecciones: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest()
                 .body(new GenericResponseDTO<>(400, "Error al obtener lecciones: " + e.getMessage(), null));
         }

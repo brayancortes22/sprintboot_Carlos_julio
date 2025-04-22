@@ -12,9 +12,8 @@ public class CursosService {
     @Autowired
     private ICursos cursosRepository;
 
-    public boolean save(Cursos curso) {
-        cursosRepository.save(curso);
-        return true;
+    public Cursos save(Cursos curso) {
+        return cursosRepository.save(curso);
     }
 
     // Obtener todos los registros
@@ -28,14 +27,19 @@ public class CursosService {
     }
 
     // Actualizar un registro
-    public boolean update(Cursos curso) {
-        cursosRepository.save(curso);
-        return true;
+    public Cursos update(Cursos curso) {
+        if (cursosRepository.existsById(curso.getIdCurso())) {
+            return cursosRepository.save(curso);
+        }
+        return null;
     }
 
     // Eliminar un registro
     public boolean delete(Integer id) {
-        cursosRepository.deleteById(id);
-        return true;
+        if (cursosRepository.existsById(id)) {
+            cursosRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
-} 
+}

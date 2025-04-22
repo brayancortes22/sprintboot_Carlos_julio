@@ -13,22 +13,22 @@ import java.sql.Timestamp;
 public interface ICertificados extends JpaRepository<Certificados, Integer> {
     
     // Buscar por nombre de certificado
-    @Query("SELECT c FROM certificados c WHERE LOWER(c.nombreCertificado) LIKE LOWER(CONCAT('%', :nombre, '%'))")
+    @Query("SELECT c FROM Certificados c WHERE LOWER(c.nombreCertificado) LIKE LOWER(CONCAT('%', :nombre, '%'))")
     List<Certificados> findByNombreCertificadoContaining(@Param("nombre") String nombre);
     
     // Buscar por número de documento del certificado
-    @Query("SELECT c FROM certificados c WHERE c.numeroDocumentoCertificado = :numero")
+    @Query("SELECT c FROM Certificados c WHERE c.numeroDocumentoCertificado = :numero")
     Certificados findByNumeroDocumentoCertificado(@Param("numero") int numero);
     
     // Buscar por aprendiz
-    @Query("SELECT c FROM certificados c WHERE c.aprendiz = :aprendiz")
-    List<Certificados> findByAprendiz(@Param("aprendiz") Aprendiz aprendiz);
+    @Query("SELECT c FROM Certificados c WHERE c.idAprendiz = :aprendiz")
+    List<Certificados> findByAprendiz(@Param("aprendiz") Integer aprendiz);
     
     // Buscar por lección
-    @Query("SELECT c FROM certificados c WHERE c.lecciones = :leccion")
-    List<Certificados> findByLeccion(@Param("leccion") lecciones leccion);
+    @Query("SELECT c FROM Certificados c WHERE c.idLecciones = :leccion")
+    List<Certificados> findByLeccion(@Param("leccion") Integer leccion);
     
     // Buscar por rango de fechas de finalización
-    @Query("SELECT c FROM certificados c WHERE c.fechaFin BETWEEN :fechaInicio AND :fechaFin")
+    @Query("SELECT c FROM Certificados c WHERE c.fechaFin BETWEEN :fechaInicio AND :fechaFin")
     List<Certificados> findByFechaFinBetween(@Param("fechaInicio") Timestamp fechaInicio, @Param("fechaFin") Timestamp fechaFin);
-} 
+}

@@ -25,7 +25,7 @@ public class Aprendiz {
     @Column(name = "contraseña", length = 12)
     private String contraseña;
 
-    @Column(name = "tipoUsuario")
+    @Column(name = "tipo_usuario")
     private int tipoUsuario;
 
     // Constructor vacío

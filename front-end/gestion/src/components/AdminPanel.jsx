@@ -6,7 +6,7 @@ const AdminPanel = ({ setActiveSection }) => {
   const menuItems = [
     { title: 'Registro de Cursos', section: 'registroCurso' },
     { title: 'Registro de Lecciones', section: 'registroLeccion' },
-    { title: 'Gestión de Certificados', section: 'certificados' },
+    { title: 'Registro de Certificados', section: 'registroCertificado' },
     { title: 'Gestión de Aprendices', section: 'aprendices' }
   ];
 

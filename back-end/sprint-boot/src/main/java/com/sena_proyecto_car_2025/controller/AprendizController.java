@@ -66,39 +66,37 @@ public class AprendizController {
     @PostMapping("/create")
     public ResponseEntity<GenericResponseDTO<Aprendiz>> createAprendiz(@RequestBody Aprendiz aprendiz) {
         try {
-            // Validar que el número de documento no sea 0
+            System.out.println("Recibiendo petición de creación de aprendiz:");
+            System.out.println("Número de documento recibido: " + aprendiz.getNumeroDocumento());
+            System.out.println("Tipo de número de documento: " + ((Object)aprendiz.getNumeroDocumento()).getClass().getSimpleName());
+            
+            // Validar que el número de documento no sea 0 o negativo
             if (aprendiz.getNumeroDocumento() <= 0) {
+                String mensaje = "El número de documento debe ser mayor que 0. Valor recibido: " + aprendiz.getNumeroDocumento();
+                System.out.println("Error de validación: " + mensaje);
                 return ResponseEntity.badRequest()
-                    .body(new GenericResponseDTO<>(
-                        400,
-                        "El número de documento debe ser mayor que 0",
-                        null
-                    ));
+                    .body(new GenericResponseDTO<>(400, mensaje, null));
             }
 
             // Validar que el tipo de usuario sea 1 o 2
             if (aprendiz.getTipoUsuario() != 1 && aprendiz.getTipoUsuario() != 2) {
+                String mensaje = "El tipo de usuario debe ser 1 (Administrador) o 2 (Aprendiz). Valor recibido: " + aprendiz.getTipoUsuario();
+                System.out.println("Error de validación: " + mensaje);
                 return ResponseEntity.badRequest()
-                    .body(new GenericResponseDTO<>(
-                        400,
-                        "El tipo de usuario debe ser 1 (Administrador) o 2 (Aprendiz)",
-                        null
-                    ));
+                    .body(new GenericResponseDTO<>(400, mensaje, null));
             }
 
+            System.out.println("Validaciones pasadas correctamente, procediendo a guardar el aprendiz...");
             Aprendiz savedAprendiz = aprendizService.save(aprendiz);
-            return ResponseEntity.ok(new GenericResponseDTO<>(
-                200,
-                "Aprendiz creado exitosamente",
-                savedAprendiz
-            ));
+            System.out.println("Aprendiz guardado exitosamente con ID: " + savedAprendiz.getId_aprendiz());
+            
+            return ResponseEntity.ok(new GenericResponseDTO<>(200, "Aprendiz creado exitosamente", savedAprendiz));
         } catch (Exception e) {
+            String mensaje = "Error al crear el aprendiz: " + e.getMessage();
+            System.err.println(mensaje);
+            e.printStackTrace();
             return ResponseEntity.badRequest()
-                .body(new GenericResponseDTO<>(
-                    400,
-                    "Error al crear el aprendiz: " + e.getMessage(),
-                    null
-                ));
+                .body(new GenericResponseDTO<>(400, mensaje, null));
         }
     }
 

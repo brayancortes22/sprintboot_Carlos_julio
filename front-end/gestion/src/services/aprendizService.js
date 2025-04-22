@@ -83,6 +83,10 @@ const AprendizService = {
     // Crear un nuevo aprendiz
     createAprendiz: async (aprendizData) => {
         try {
+            console.log('Datos a enviar al servidor:', aprendizData);
+            console.log('Tipo de numero_documento:', typeof aprendizData.numero_documento);
+            console.log('Valor de numero_documento:', aprendizData.numero_documento);
+            
             const response = await fetch(`${API_URL}/api/aprendices/create`, {
                 method: 'POST',
                 headers: {
@@ -90,15 +94,18 @@ const AprendizService = {
                 },
                 body: JSON.stringify(aprendizData)
             });
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Error al crear el aprendiz');
             }
+
             const responseData = await response.json();
-            return responseData.data;
+            console.log('Respuesta del servidor:', responseData);
+            return responseData;
         } catch (error) {
-            console.error('Error en createAprendiz:', error);
-            throw error;
+            console.error('Error completo:', error);
+            throw new Error(error.message || 'Error al crear el aprendiz');
         }
     },
 

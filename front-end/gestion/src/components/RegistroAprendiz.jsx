@@ -6,18 +6,18 @@ import AprendizService from '../services/AprendizService';
 const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
   const [aprendiz, setAprendiz] = useState({
     nombre: '',
-    numero_documento: '',
+    numeroDocumento: '',
     correo: '',
     contraseña: '',
-    tipo_usuario: ''
+    tipoUsuario: ''
   });
   
   const [errors, setErrors] = useState({
     nombre: false,
-    numero_documento: false,
+    numeroDocumento: false,
     correo: false,
     contraseña: false,
-    tipo_usuario: false
+    tipoUsuario: false
   });
   
   const [loading, setLoading] = useState(false);
@@ -39,43 +39,34 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
   };
   
   const validateForm = () => {
+    const documentNumber = parseInt(aprendiz.numeroDocumento);
     const newErrors = {
       nombre: !aprendiz.nombre.trim(),
-      numero_documento: !aprendiz.numero_documento || parseInt(aprendiz.numero_documento) <= 0,
-      correo: !aprendiz.correo.trim(),
-      contraseña: !aprendiz.contraseña.trim(),
-      tipo_usuario: !aprendiz.tipo_usuario
+      numeroDocumento: !aprendiz.numeroDocumento || isNaN(documentNumber) || documentNumber <= 0 || aprendiz.numeroDocumento.includes('.'),
+      correo: !aprendiz.correo.trim() || !/\S+@\S+\.\S+/.test(aprendiz.correo),
+      contraseña: !aprendiz.contraseña.trim() || aprendiz.contraseña.length < 4,
+      tipoUsuario: !aprendiz.tipoUsuario
     };
     
-    // Validación adicional para el correo electrónico
-    if (!newErrors.correo && !/\S+@\S+\.\S+/.test(aprendiz.correo)) {
-      newErrors.correo = true;
-    }
-    
-    // Validación para la longitud de la contraseña
-    if (!newErrors.contraseña && aprendiz.contraseña.length < 4) {
-      newErrors.contraseña = true;
-    }
-    
     setErrors(newErrors);
-    
-    // Devuelve true si no hay errores
     return !Object.values(newErrors).some(error => error);
   };
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      alert('Por favor complete todos los campos requeridos correctamente');
+      const errorMessage = errors.numeroDocumento ? 
+        'El número de documento debe ser un número entero positivo' : 
+        'Por favor complete todos los campos requeridos correctamente';
+      alert(errorMessage);
       return;
     }
     
     try {
       setLoading(true);
-      // Convertir a los tipos de datos correctos
       const aprendizData = {
         ...aprendiz,
-        numero_documento: parseInt(aprendiz.numero_documento),
-        tipo_usuario: parseInt(aprendiz.tipo_usuario)
+        numeroDocumento: parseInt(aprendiz.numeroDocumento),
+        tipoUsuario: parseInt(aprendiz.tipoUsuario)
       };
       
       await AprendizService.createAprendiz(aprendizData);
@@ -107,14 +98,14 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
         
         <div className="mb-3">
           <input 
-            className={`${formStyles} ${errors.numero_documento ? 'border-red-500' : ''}`} 
-            name="numero_documento" 
+            className={`${formStyles} ${errors.numeroDocumento ? 'border-red-500' : ''}`} 
+            name="numeroDocumento" 
             placeholder="Número de documento *" 
-            value={aprendiz.numero_documento} 
+            value={aprendiz.numeroDocumento} 
             onChange={handleChange} 
             type="number"
           />
-          {errors.numero_documento && <p className="text-red-500 text-sm">El número de documento es requerido</p>}
+          {errors.numeroDocumento && <p className="text-red-500 text-sm">El número de documento debe ser mayor que 0</p>}
         </div>
         
         <div className="mb-3">
@@ -143,16 +134,16 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
         
         <div className="mb-3">
           <select
-            className={`${formStyles} ${errors.tipo_usuario ? 'border-red-500' : ''}`}
-            name="tipo_usuario"
-            value={aprendiz.tipo_usuario}
+            className={`${formStyles} ${errors.tipoUsuario ? 'border-red-500' : ''}`}
+            name="tipoUsuario"
+            value={aprendiz.tipoUsuario}
             onChange={handleChange}
           >
             <option value="">Seleccione tipo de usuario *</option>
             <option value="1">Administrador</option>
             <option value="2">Aprendiz</option>
           </select>
-          {errors.tipo_usuario && <p className="text-red-500 text-sm">Seleccione un tipo de usuario</p>}
+          {errors.tipoUsuario && <p className="text-red-500 text-sm">Seleccione un tipo de usuario</p>}
         </div>
         
         <div className="flex justify-between">

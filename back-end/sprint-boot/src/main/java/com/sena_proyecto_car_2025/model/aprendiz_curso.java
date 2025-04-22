@@ -30,7 +30,10 @@ public class aprendiz_curso{
     @Column(name = "fecha_inscripcion")
     private Timestamp fechaInscripcion;
     
-    // Constructor
+    // Constructor vacío requerido por JPA/Hibernate
+    public aprendiz_curso() {}
+    
+    // Constructor con parámetros
     public aprendiz_curso(Cursos curso, Aprendiz aprendiz, Timestamp fechaInscripcion) {
         this.curso = curso;
         this.aprendiz = aprendiz;

@@ -11,6 +11,7 @@ import com.sena_proyecto_car_2025.Dto.GenericResponseDTO;
 import com.sena_proyecto_car_2025.model.Aprendiz;
 import com.sena_proyecto_car_2025.model.Cursos;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,11 @@ public class aprendiz_curso_controller {
     @PostMapping("")
     public ResponseEntity<GenericResponseDTO<AprendizCursoDTO>> crear(@RequestBody AprendizCursoDTO dto) {
         try {
+            // Asegurarnos de que la fecha de inscripción no sea nula
+            if (dto.getFechaInscripcion() == null) {
+                dto.setFechaInscripcion(new Timestamp(System.currentTimeMillis()));
+            }
+            
             aprendiz_curso entity = convertToEntity(dto);
             aprendizCursoService.save(entity);
             return ResponseEntity.ok(new GenericResponseDTO<>(200, "Registro creado exitosamente", dto));

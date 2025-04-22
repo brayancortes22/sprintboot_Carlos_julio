@@ -40,10 +40,11 @@ const AprendizPanel = ({ aprendizId }) => {
   const inscribirseEnCurso = async (cursoId) => {
     try {
       setLoading(true);
+      const fecha = new Date();
       await AprendizCursoService.createAprendizCurso({
         id_aprendiz: aprendizId,
         id_curso: cursoId,
-        fecha_inscripcion: new Date().toISOString()
+        fecha_inscripcion: fecha.toISOString().slice(0, 19).replace('T', ' ')
       });
       alert('Inscripción exitosa');
       await cargarDatos();

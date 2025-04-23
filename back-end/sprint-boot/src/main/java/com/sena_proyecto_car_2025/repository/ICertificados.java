@@ -5,8 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.sena_proyecto_car_2025.model.Certificados;
-import com.sena_proyecto_car_2025.model.Aprendiz;
-import com.sena_proyecto_car_2025.model.lecciones;
 import java.util.List;
 import java.sql.Timestamp;
 

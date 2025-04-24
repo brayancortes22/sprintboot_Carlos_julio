@@ -87,6 +87,237 @@ export function initializeSecurityProtection() {
     }
     lastReloadAttempt = now;
   });
+  
+  // Prevenir ejecución de scripts en la consola del navegador
+  preventConsoleExecution();
+}
+
+// Nueva función para prevenir la ejecución de scripts en la consola
+function preventConsoleExecution() {
+  // Detector de ejecución de comandos en la consola
+  let consoleOpenCount = 0;
+  let lastConsoleCheck = Date.now();
+  let loginInProgress = false;
+  let navigationInProgress = false;
+
+  // Detector específico para formularios de login para evitar falsos positivos
+  document.addEventListener('submit', function(e) {
+    // Si el formulario contiene campos de usuario/contraseña, consideramos que es un login
+    const form = e.target;
+    const inputs = form.querySelectorAll('input');
+    const hasPasswordField = Array.from(inputs).some(input => input.type === 'password');
+    
+    if (hasPasswordField) {
+      // Marcar que hay un login en progreso para evitar falsos positivos
+      loginInProgress = true;
+      setTimeout(() => {
+        loginInProgress = false;
+      }, 5000); // Dar 5 segundos para que se complete el proceso
+    }
+  });
+
+  // Detectar navegación y clics para reducir falsos positivos
+  document.addEventListener('click', function(e) {
+    // Cualquier clic en un elemento interactivo puede generar logs
+    // así que desactivamos temporalmente la detección
+    navigationInProgress = true;
+    setTimeout(() => {
+      navigationInProgress = false;
+    }, 3000); // 3 segundos de gracia después de un clic
+    
+    // Si es un botón de login, dar más tiempo
+    if (e.target.tagName === 'BUTTON' || 
+        (e.target.tagName === 'INPUT' && e.target.type === 'submit') ||
+        e.target.closest('button') || 
+        e.target.classList.contains('btn') || 
+        e.target.classList.contains('button')) {
+      
+      // Verificamos si hay campos de contraseña cerca
+      const form = e.target.closest('form');
+      if (form) {
+        const hasPasswordField = form.querySelector('input[type="password"]');
+        if (hasPasswordField) {
+          loginInProgress = true;
+          setTimeout(() => {
+            loginInProgress = false;
+          }, 5000);
+        }
+      }
+    }
+  });
+  
+  // Detectar cambios de ruta/navegación
+  window.addEventListener('popstate', function() {
+    navigationInProgress = true;
+    setTimeout(() => {
+      navigationInProgress = false;
+    }, 3000);
+  });
+  
+  // También detectar navegación al cargar la página
+  window.addEventListener('DOMContentLoaded', function() {
+    navigationInProgress = true;
+    setTimeout(() => {
+      navigationInProgress = false;
+    }, 5000); // Dar más tiempo al cargarse la página
+  });
+
+  // Protección contra eval, Function, etc.
+  const protectFromConsole = () => {
+    // Proteger eval para evitar inyección de código
+    const originalEval = window.eval;
+    window.eval = function() {
+      const stack = new Error().stack || '';
+      if (stack.includes('console')) {
+        // Recargar la página inmediatamente si se detecta ejecución desde consola
+        forceReload("Ejecución de scripts bloqueada");
+        return undefined;
+      }
+      return originalEval.apply(window, arguments);
+    };
+
+    // Proteger Function constructor que también puede ejecutar código
+    const originalFunction = window.Function;
+    window.Function = function() {
+      const stack = new Error().stack || '';
+      if (stack.includes('console')) {
+        forceReload("Ejecución de scripts bloqueada");
+        return function(){};
+      }
+      return originalFunction.apply(window, arguments);
+    };
+    
+    // Proteger setTimeout y setInterval que pueden ejecutar código
+    const originalSetTimeout = window.setTimeout;
+    window.setTimeout = function(callback, timeout) {
+      const stack = new Error().stack || '';
+      if (typeof callback === 'string' || stack.includes('console')) {
+        // Bloquear setTimeout con string callback (ejecuta código) o desde consola
+        if (typeof callback === 'string') {
+          forceReload("Ejecución de scripts bloqueada");
+          return 0;
+        }
+      }
+      return originalSetTimeout.apply(window, arguments);
+    };
+    
+    const originalSetInterval = window.setInterval;
+    window.setInterval = function(callback, timeout) {
+      const stack = new Error().stack || '';
+      if (typeof callback === 'string' || stack.includes('console')) {
+        // Bloquear setInterval con string callback (ejecuta código) o desde consola
+        if (typeof callback === 'string') {
+          forceReload("Ejecución de scripts bloqueada");
+          return 0;
+        }
+      }
+      return originalSetInterval.apply(window, arguments);
+    };
+    
+    // Proteger createElement para detectar inyección de scripts
+    const originalCreateElement = document.createElement;
+    document.createElement = function(tagName) {
+      const element = originalCreateElement.call(document, tagName);
+      if (tagName.toLowerCase() === 'script') {
+        const stack = new Error().stack || '';
+        if (stack.includes('console')) {
+          forceReload("Ejecución de scripts bloqueada");
+          return element;
+        }
+        
+        // Monitor de cambios en el script
+        const originalSetAttribute = element.setAttribute;
+        element.setAttribute = function(name, value) {
+          if (name === 'src' || name === 'textContent' || name === 'text') {
+            const stack = new Error().stack || '';
+            if (stack.includes('console')) {
+              forceReload("Ejecución de scripts bloqueada");
+              return;
+            }
+          }
+          return originalSetAttribute.call(this, name, value);
+        };
+      }
+      return element;
+    };
+    
+    // Sobrescribir métodos de consola para detectar su uso frecuente
+    ['log', 'warn', 'error', 'info', 'debug'].forEach(method => {
+      const original = console[method];
+      console[method] = function() {
+        // No activar detección si estamos en login o navegación
+        if (loginInProgress || navigationInProgress) {
+          return original.apply(console, arguments);
+        }
+        
+        // Verificar si realmente es un intento de escribir comandos en la consola
+        // y no solo logs automáticos de la aplicación
+        const stack = new Error().stack || '';
+        const isConsoleInput = stack.includes('console-api') || 
+                              stack.includes('console.js') || 
+                              stack.includes('debugger');
+        
+        // Solo contar los logs que parecen venir directamente de la consola
+        if (isConsoleInput) {
+          // Verificar si las ejecuciones de consola son demasiado frecuentes
+          const now = Date.now();
+          if (now - lastConsoleCheck < 1000) { // 1 segundo
+            consoleOpenCount++;
+            // Umbral muy alto para eliminar falsos positivos
+            if (consoleOpenCount > 30) { // Mucho más tolerante
+              forceReload("Uso excesivo de consola detectado");
+              consoleOpenCount = 0;
+            }
+          } else {
+            consoleOpenCount = 1;
+            lastConsoleCheck = now;
+          }
+        }
+        
+        return original.apply(console, arguments);
+      };
+    });
+  };
+  
+  // Ejecutar la protección
+  protectFromConsole();
+  
+  // Seguir monitoreando para asegurarse de que no sobreescriban nuestros protectores
+  setInterval(protectFromConsole, 1000);
+}
+
+// Función para forzar una recarga de la página
+function forceReload(reason) {
+  // Reportar uso de herramientas de desarrollo
+  reportDevToolsUsage();
+  
+  // Forzar recarga para interrumpir cualquier ejecución
+  try {
+    // Crear elemento que ocupe toda la pantalla para bloquear interacción
+    const blocker = document.createElement('div');
+    blocker.style.position = 'fixed';
+    blocker.style.top = '0';
+    blocker.style.left = '0';
+    blocker.style.width = '100vw';
+    blocker.style.height = '100vh';
+    blocker.style.backgroundColor = 'black';
+    blocker.style.color = 'white';
+    blocker.style.zIndex = '999999999';
+    blocker.style.fontSize = '24px';
+    blocker.style.display = 'flex';
+    blocker.style.justifyContent = 'center';
+    blocker.style.alignItems = 'center';
+    blocker.textContent = reason || 'Acceso denegado';
+    document.body.appendChild(blocker);
+    
+    // Forzar recarga después de mostrar el mensaje
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  } catch (e) {
+    // Si hay algún error, simplemente recargar
+    window.location.reload();
+  }
 }
 
 // Verificar si el usuario está bloqueado (asíncrono)

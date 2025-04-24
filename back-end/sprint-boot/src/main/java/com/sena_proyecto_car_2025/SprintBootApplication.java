@@ -9,3 +9,4 @@ public class SprintBootApplication {
         SpringApplication.run(SprintBootApplication.class, args);
     }
 }
+

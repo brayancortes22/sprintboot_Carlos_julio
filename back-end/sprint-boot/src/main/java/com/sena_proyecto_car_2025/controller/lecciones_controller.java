@@ -9,19 +9,18 @@ import com.sena_proyecto_car_2025.model.lecciones;
 import com.sena_proyecto_car_2025.model.Cursos;
 import com.sena_proyecto_car_2025.service.LeccionesService;
 import com.sena_proyecto_car_2025.Dto.LeccionesDTO;
-// import com.sena_proyecto_car_2025.Dto.CursosDTO;
 import com.sena_proyecto_car_2025.Dto.GenericResponseDTO;
-// Importar el repositorio de Cursos
 import com.sena_proyecto_car_2025.repository.ICursos; 
-import com.sena_proyecto_car_2025.exceptions.ResourceNotFoundException; // Para manejar curso no encontrado
+import com.sena_proyecto_car_2025.exceptions.ResourceNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects; // Importar Objects para comparación segura
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/lecciones")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+// Corregimos la anotación CrossOrigin para usar valores literales
+@CrossOrigin(origins = {"http://localhost:5173", "http://192.168.1.23:5173"}, allowCredentials = "true")
 public class lecciones_controller {
 
     @Autowired

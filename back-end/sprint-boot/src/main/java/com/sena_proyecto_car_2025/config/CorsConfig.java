@@ -22,4 +22,7 @@ public class CorsConfig implements WebMvcConfigurer {
             }
         };
     }
+    
+    // Esta propiedad será usada para identificar los orígenes válidos en filtros de seguridad
+    public static final String[] ALLOWED_ORIGINS = {"http://localhost:5173", "http://192.168.1.23:5173"};
 }

@@ -1,16 +1,11 @@
-const API_URL = 'http://localhost:8080';
+import HttpClient from '../utils/httpClient';
 
 const LeccionesService = {
     getAllLecciones: async () => {
         try {
-            const response = await fetch(`${API_URL}/api/lecciones/obtener`);
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Error al obtener las lecciones');
-            }
-            const responseData = await response.json();
-            console.log('Respuesta lecciones:', responseData);
-            return responseData;
+            const response = await HttpClient.get('/api/lecciones/obtener');
+            console.log('Respuesta lecciones:', response);
+            return response;
         } catch (error) {
             console.error('Error en getAllLecciones:', error);
             throw error;
@@ -19,50 +14,43 @@ const LeccionesService = {
 
     // Obtener una lección por ID
     getLeccionById: async (id) => {
-        const response = await fetch(`${API_URL}/api/lecciones/obtener/${id}`);
-        if (!response.ok) throw new Error('Error al obtener la lección');
-        return await response.json();
+        try {
+            return await HttpClient.get(`/api/lecciones/obtener/${id}`);
+        } catch (error) {
+            console.error('Error en getLeccionById:', error);
+            throw error;
+        }
     },
 
     // Crear una nueva lección
     createLeccion: async (leccionData) => {
-        const response = await fetch(`${API_URL}/api/lecciones/create`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(leccionData)
-        });
-        
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Error al crear la lección');
+        try {
+            return await HttpClient.post('/api/lecciones/create', leccionData);
+        } catch (error) {
+            console.error('Error en createLeccion:', error);
+            throw error;
         }
-        
-        return await response.json();
     },
 
     // Actualizar una lección
     updateLeccion: async (id, leccionData) => {
-        
-        const response = await fetch(`${API_URL}/api/lecciones/Actualizar/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(leccionData)
-        });
-        if (!response.ok) throw new Error('Error al actualizar la lección');
-        return await response.json();
+        try {
+            return await HttpClient.put(`/api/lecciones/actualizar/${id}`, leccionData);
+        } catch (error) {
+            console.error('Error en updateLeccion:', error);
+            throw error;
+        }
     },
 
     // Eliminar una lección
     deleteLeccion: async (id) => {
-        const response = await fetch(`${API_URL}/api/lecciones/Eliminar/${id}`, {
-            method: 'DELETE'
-        });
-        if (!response.ok) throw new Error('Error al eliminar la lección');
-        return true;
+        try {
+            await HttpClient.delete(`/api/lecciones/eliminar/${id}`);
+            return true;
+        } catch (error) {
+            console.error('Error en deleteLeccion:', error);
+            throw error;
+        }
     }
 };
 

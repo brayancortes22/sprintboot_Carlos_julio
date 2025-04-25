@@ -14,9 +14,10 @@ public class CorsConfig implements WebMvcConfigurer {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                    .allowedOrigins("http://localhost:5173", "http://192.168.1.23:5173", "http://172.30.1.191:5173") // Fixed missing quote
+                    .allowedOrigins("http://localhost:5173", "http://192.168.1.23:5173", "http://172.30.1.191:5173")
                     .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
                     .allowedHeaders("*")
+                    .exposedHeaders("Authorization")
                     .allowCredentials(true)
                     .maxAge(3600);
             }
@@ -24,5 +25,5 @@ public class CorsConfig implements WebMvcConfigurer {
     }
     
     // Esta propiedad será usada para identificar los orígenes válidos en filtros de seguridad
-    public static final String[] ALLOWED_ORIGINS = {"http://localhost:5173", "http://192.168.1.23:5173"};
+    public static final String[] ALLOWED_ORIGINS = {"http://localhost:5173", "http://192.168.1.23:5173", "http://172.30.1.191:5173"};
 }

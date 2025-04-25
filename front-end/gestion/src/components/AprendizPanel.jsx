@@ -4,18 +4,44 @@ import { Button } from './ui/Button';
 import AprendizCursoService from '../services/aprendizCursoService';
 import CursosService from '../services/cursosService';
 import CertificadosService from '../services/certificadosService';
+import AuthService from '../services/authService';
 
-const AprendizPanel = ({ aprendizId }) => {
+const AprendizPanel = ({ aprendizId, setActiveSection }) => {
   const [cursos, setCursos] = useState([]);
   const [misCursos, setMisCursos] = useState([]);
   const [certificados, setCertificados] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    cargarDatos();
-  }, [aprendizId]);
+    // Verificar autenticación y rol al cargar el componente
+    const checkAuth = () => {
+      if (AuthService.isAuthenticated()) {
+        const userData = AuthService.getUserData();
+        // Verificar si el usuario es aprendiz (tipoUsuario === 2)
+        if (userData && userData.tipoUsuario === 2) {
+          setIsAuthorized(true);
+          setUserId(userData.id);
+          return userData.id;
+        } else {
+          // Si no es aprendiz, redirigir al login
+          setActiveSection && setActiveSection('login');
+        }
+      } else {
+        // Si no está autenticado, redirigir al login
+        setActiveSection && setActiveSection('login');
+      }
+      return null;
+    };
+    
+    const id = aprendizId || checkAuth();
+    if (id) {
+      cargarDatos(id);
+    }
+  }, [aprendizId, setActiveSection]);
 
-  const cargarDatos = async () => {
+  const cargarDatos = async (id) => {
     try {
       setLoading(true);
       // Cargar cursos disponibles
@@ -23,11 +49,11 @@ const AprendizPanel = ({ aprendizId }) => {
       setCursos(cursosDisponibles);
 
       // Cargar cursos inscritos
-      const misInscripciones = await AprendizCursoService.getCursosByAprendiz(aprendizId);
+      const misInscripciones = await AprendizCursoService.getCursosByAprendiz(id);
       setMisCursos(misInscripciones);
 
       // Cargar certificados del aprendiz
-      const misCertificados = await CertificadosService.getCertificadosByAprendiz(aprendizId);
+      const misCertificados = await CertificadosService.getCertificadosByAprendiz(id);
       setCertificados(misCertificados);
     } catch (error) {
       console.error('Error al cargar datos:', error);
@@ -40,14 +66,15 @@ const AprendizPanel = ({ aprendizId }) => {
   const inscribirseEnCurso = async (cursoId) => {
     try {
       setLoading(true);
+      const idToUse = aprendizId || userId;
       const fecha = new Date();
       await AprendizCursoService.createAprendizCurso({
-        id_aprendiz: aprendizId,
+        id_aprendiz: idToUse,
         id_curso: cursoId,
         fecha_inscripcion: fecha.toISOString().slice(0, 19).replace('T', ' ')
       });
       alert('Inscripción exitosa');
-      await cargarDatos();
+      await cargarDatos(idToUse);
     } catch (error) {
       console.error('Error al inscribirse:', error);
       alert('Error al inscribirse al curso');
@@ -55,6 +82,11 @@ const AprendizPanel = ({ aprendizId }) => {
       setLoading(false);
     }
   };
+
+  // Si no está autorizado y no se provee un ID de aprendiz explícito, no renderizar el contenido
+  if (!isAuthorized && !aprendizId) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">

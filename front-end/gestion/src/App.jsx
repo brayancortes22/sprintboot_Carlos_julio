@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 import Login from './components/Login';
@@ -11,16 +10,45 @@ import RegistroCertificado from './components/RegistroCertificado';
 import RegistroAprendiz from './components/RegistroAprendiz';
 import AprendizPanel from './components/AprendizPanel';
 import { Button } from './components/ui/Button';
+import AuthService from './services/authService';
 import './App.css';
 
 function App() {
   const [activeSection, setActiveSection] = useState('login');
   const [loggedUser, setLoggedUser] = useState(null);
 
+  // Verificar si hay usuario autenticado al cargar la aplicación
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      if (AuthService.isAuthenticated()) {
+        const userData = AuthService.getUserData();
+        if (userData) {
+          setLoggedUser(userData);
+          
+          // Redireccionar según el tipo de usuario
+          if (userData.tipoUsuario === 1) {
+            setActiveSection('admin');
+          } else if (userData.tipoUsuario === 2) {
+            setActiveSection('aprendizPanel');
+          }
+        }
+      }
+    };
+    
+    checkAuthStatus();
+  }, []);
+
   const formStyles = "border p-2 w-full mb-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500";
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 }
+  };
+
+  // Función para cerrar sesión
+  const handleLogout = () => {
+    AuthService.logout();
+    setLoggedUser(null);
+    setActiveSection('login');
   };
 
   const sections = {
@@ -75,7 +103,7 @@ function App() {
             {activeSection !== 'login' && (
               <Button 
                 className="bg-white text-indigo-600" 
-                onClick={() => setActiveSection('login')}
+                onClick={handleLogout}
               >
                 Cerrar Sesión
               </Button>

@@ -1,11 +1,25 @@
 // const API_URL = 'http://172.30.5.207:8080';
 const API_URL = 'http://localhost:8080';
+import AuthService from './authService';
 
 const AprendizService = {
     // Obtener todos los aprendices
     getAllAprendices: async () => {
         try {
-            const response = await fetch(`${API_URL}/api/aprendices/obtener`);
+            const token = AuthService.getToken();
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // Agregar token de autorización si existe
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            const response = await fetch(`${API_URL}/api/aprendices/obtener`, {
+                headers
+            });
+            
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Error al obtener aprendices');
@@ -25,7 +39,19 @@ const AprendizService = {
     // Obtener un aprendiz por ID
     getAprendizById: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/api/aprendices/obtener/${id}`);
+            const token = AuthService.getToken();
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            const response = await fetch(`${API_URL}/api/aprendices/${id}`, {
+                headers
+            });
+            
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Error al obtener el aprendiz');
@@ -38,8 +64,10 @@ const AprendizService = {
         }
     },
 
-    // Verificar credenciales de aprendiz
+    // Verificar credenciales de aprendiz (esta función será reemplazada por AuthService.login)
     verifyCredentials: async (documento, tipoUsuario) => {
+        // Esta función ya no será necesaria una vez que implementemos completamente JWT
+        // Se mantiene temporalmente para compatibilidad
         try {
             // Buscamos entre todos los aprendices
             const aprendices = await AprendizService.getAllAprendices();
@@ -55,21 +83,8 @@ const AprendizService = {
                 throw new Error('Documento no encontrado');
             }
             
-            console.log('Aprendiz encontrado:', aprendiz);
-            console.log('Tipo usuario en BD:', aprendiz.tipoUsuario);
-            console.log('Tipo usuario seleccionado:', tipoUsuario);
-            
             // Verificamos el tipo de usuario
-            // tipoUsuario en la UI: '1' es Administrador, '2' es Aprendiz
-            // En el modelo: 0 es Administrador, 1 es Aprendiz
-            
-            // Si el usuario es admin (0) en BD pero intenta entrar como aprendiz ('2')
-            if (aprendiz.tipoUsuario === 0 && tipoUsuario === '2') {
-                throw new Error('Tipo de usuario incorrecto');
-            }
-            
-            // Si el usuario es aprendiz (1) en BD pero intenta entrar como admin ('1')
-            if (aprendiz.tipoUsuario === 1 && tipoUsuario === '1') {
+            if (aprendiz.tipoUsuario !== parseInt(tipoUsuario)) {
                 throw new Error('Tipo de usuario incorrecto');
             }
             
@@ -83,15 +98,18 @@ const AprendizService = {
     // Crear un nuevo aprendiz
     createAprendiz: async (aprendizData) => {
         try {
-            console.log('Datos a enviar al servidor:', aprendizData);
-            console.log('Tipo de numero_documento:', typeof aprendizData.numero_documento);
-            console.log('Valor de numero_documento:', aprendizData.numero_documento);
+            const token = AuthService.getToken();
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
             
             const response = await fetch(`${API_URL}/api/aprendices/create`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers,
                 body: JSON.stringify(aprendizData)
             });
 
@@ -101,7 +119,6 @@ const AprendizService = {
             }
 
             const responseData = await response.json();
-            console.log('Respuesta del servidor:', responseData);
             return responseData;
         } catch (error) {
             console.error('Error completo:', error);
@@ -112,13 +129,21 @@ const AprendizService = {
     // Actualizar un aprendiz
     updateAprendiz: async (id, aprendizData) => {
         try {
+            const token = AuthService.getToken();
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
             const response = await fetch(`${API_URL}/api/aprendices/actualizar/${id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers,
                 body: JSON.stringify(aprendizData)
             });
+            
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Error al actualizar el aprendiz');
@@ -134,9 +159,20 @@ const AprendizService = {
     // Eliminar un aprendiz
     deleteAprendiz: async (id) => {
         try {
+            const token = AuthService.getToken();
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
             const response = await fetch(`${API_URL}/api/aprendices/eliminar/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers
             });
+            
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Error al eliminar el aprendiz');

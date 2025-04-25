@@ -1,18 +1,14 @@
-const API_URL = 'http://localhost:8080';
+import HttpClient from '../utils/httpClient';
 
 const CursosService = {
     getAllCursos: async () => {
         try {
-            const response = await fetch(`${API_URL}/api/cursos`);
-            if (!response.ok) {
-                throw new Error('Error al obtener los cursos');
-            }
-            const responseData = await response.json();
+            const response = await HttpClient.get('/api/cursos');
             
             // Verificar si la respuesta tiene la estructura esperada
-            if (responseData.data) {
-                console.log('Datos de cursos recibidos:', responseData.data);
-                return responseData.data;
+            if (response.data) {
+                console.log('Datos de cursos recibidos:', response.data);
+                return response.data;
             }
             
             return [];
@@ -25,10 +21,8 @@ const CursosService = {
     // Obtener un curso por ID
     getCursoById: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/api/cursos/${id}`);
-            if (!response.ok) throw new Error('Error al obtener el curso');
-            const data = await response.json();
-            return data.data;
+            const response = await HttpClient.get(`/api/cursos/${id}`);
+            return response.data;
         } catch (error) {
             console.error('Error:', error);
             throw error;
@@ -38,16 +32,8 @@ const CursosService = {
     // Crear un nuevo curso
     createCurso: async (cursoData) => {
         try {
-            const response = await fetch(`${API_URL}/api/cursos`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(cursoData)
-            });
-            if (!response.ok) throw new Error('Error al crear el curso');
-            const data = await response.json();
-            return data.data;
+            const response = await HttpClient.post('/api/cursos', cursoData);
+            return response.data;
         } catch (error) {
             console.error('Error:', error);
             throw error;
@@ -57,16 +43,8 @@ const CursosService = {
     // Actualizar un curso
     updateCurso: async (id, cursoData) => {
         try {
-            const response = await fetch(`${API_URL}/api/cursos/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(cursoData)
-            });
-            if (!response.ok) throw new Error('Error al actualizar el curso');
-            const data = await response.json();
-            return data.data;
+            const response = await HttpClient.put(`/api/cursos/${id}`, cursoData);
+            return response.data;
         } catch (error) {
             console.error('Error:', error);
             throw error;
@@ -76,10 +54,7 @@ const CursosService = {
     // Eliminar un curso
     deleteCurso: async (id) => {
         try {
-            const response = await fetch(`${API_URL}/api/cursos/${id}`, {
-                method: 'DELETE'
-            });
-            if (!response.ok) throw new Error('Error al eliminar el curso');
+            await HttpClient.delete(`/api/cursos/${id}`);
             return true;
         } catch (error) {
             console.error('Error:', error);

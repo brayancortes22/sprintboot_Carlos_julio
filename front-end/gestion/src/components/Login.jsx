@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
-import AprendizService from '../services/aprendizService';
+import AuthService from '../services/authService';
 
 const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
   const [credentials, setCredentials] = useState({
-    documento: '',
+    correo: '',
+    contraseña: '',
     tipoUsuario: ''
   });
   const [errors, setErrors] = useState({
-    documento: false,
+    correo: false,
+    contraseña: false,
     tipoUsuario: false
   });
   const [loading, setLoading] = useState(false);
@@ -36,7 +38,8 @@ const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
 
   const validateFields = () => {
     const newErrors = {
-      documento: !credentials.documento.trim(),
+      correo: !credentials.correo.trim(),
+      contraseña: !credentials.contraseña.trim(),
       tipoUsuario: !credentials.tipoUsuario
     };
     
@@ -55,34 +58,29 @@ const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
       setErrorMessage('');
 
       try {
-        // Verificar que el documento existe en la base de datos
-        const aprendices = await AprendizService.getAllAprendices();
-        const documentoNum = parseInt(credentials.documento.replace(/,/g, ''));
-        const aprendiz = aprendices.find(a => a.numeroDocumento === documentoNum);
+        // Preparar datos para la autenticación
+        const authData = {
+          correo: credentials.correo,
+          contraseña: credentials.contraseña,
+          tipoUsuario: parseInt(credentials.tipoUsuario)
+        };
         
-        if (!aprendiz) {
-          setErrorMessage('El documento ingresado no está registrado en el sistema.');
-          setLoading(false);
-          return;
-        }
-        
-        // Validar que el tipo de usuario coincida con el seleccionado
-        const tipoUsuarioNum = parseInt(credentials.tipoUsuario);
-        
-        if (aprendiz.tipoUsuario !== tipoUsuarioNum) {
-          setErrorMessage('No tienes permisos para acceder con este tipo de usuario.');
-          setLoading(false);
-          return;
-        }
+        // Llamar al servicio de autenticación
+        const userData = await AuthService.login(authData);
         
         // Guardar información del usuario logueado
-        setLoggedUser(aprendiz);
+        setLoggedUser({
+          id_aprendiz: userData.id_aprendiz,
+          nombre: userData.nombre,
+          correo: userData.correo,
+          tipoUsuario: userData.tipoUsuario
+        });
         
         // Redirigir según el tipo de usuario
-        if (tipoUsuarioNum === 1) {
+        if (userData.tipoUsuario === 1) {
           // Administrador
           setActiveSection('admin');
-        } else if (tipoUsuarioNum === 2) {
+        } else if (userData.tipoUsuario === 2) {
           // Aprendiz
           setActiveSection('aprendizPanel');
         }
@@ -110,18 +108,34 @@ const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
         
         <div className="mb-3">
           <input 
-            className={`${formStyles} ${errors.documento ? 'border-red-500' : ''}`}
-            name="documento" 
-            placeholder="Documento" 
-            type="text" 
-            value={credentials.documento}
+            className={`${formStyles} ${errors.correo ? 'border-red-500' : ''}`}
+            name="correo" 
+            placeholder="Correo electrónico" 
+            type="email" 
+            value={credentials.correo}
             onChange={handleChange} 
             disabled={loading}
           />
-          {errors.documento && (
-            <p className="text-red-500 text-sm mt-1">El documento es requerido</p>
+          {errors.correo && (
+            <p className="text-red-500 text-sm mt-1">El correo es requerido</p>
           )}
         </div>
+        
+        <div className="mb-3">
+          <input 
+            className={`${formStyles} ${errors.contraseña ? 'border-red-500' : ''}`}
+            name="contraseña" 
+            placeholder="Contraseña" 
+            type="password" 
+            value={credentials.contraseña}
+            onChange={handleChange} 
+            disabled={loading}
+          />
+          {errors.contraseña && (
+            <p className="text-red-500 text-sm mt-1">La contraseña es requerida</p>
+          )}
+        </div>
+        
         <div className="mb-3">
           <select 
             className={`${formStyles} ${errors.tipoUsuario ? 'border-red-500' : ''}`}

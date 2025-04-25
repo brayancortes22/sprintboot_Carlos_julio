@@ -1,6 +1,7 @@
 import AuthService from '../services/authService';
 
-const API_URL = 'http://localhost:8080/api';
+// const API_URL = 'http://localhost:8080/api';
+const API_URL = 'http://172.30.1.191:8080/api';
 
 const handleErrorResponse = (response, url) => {
   if (!response.ok) {
@@ -29,11 +30,14 @@ const HttpClient = {
       
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
+        console.log(`GET ${url}: Usando token válido`);
       }
       
       const response = await fetch(`${API_URL}${url}`, {
         headers,
-        credentials: 'include' // Esto enviará cookies con la solicitud
+        // Cambiado de same-origin a include para permitir CORS con credenciales
+        credentials: 'include',
+        mode: 'cors'
       });
       
       await handleErrorResponse(response, url);
@@ -64,8 +68,23 @@ const HttpClient = {
         method: 'POST',
         headers,
         body: JSON.stringify(data),
-        credentials: 'include' // Esto enviará cookies con la solicitud
+        // Cambiado a include para permitir CORS con credenciales
+        credentials: 'include',
+        mode: 'cors'
       });
+      
+      // Si es un 403, vamos a mostrar más detalles para depuración
+      if (response.status === 403) {
+        console.error('Error 403 Forbidden. Detalles de la solicitud:');
+        console.error('- URL:', `${API_URL}${url}`);
+        console.error('- Headers:', headers);
+        console.error('- Payload:', data);
+        
+        // Intenta renovar el token o verificar su validez
+        if (AuthService.isAuthenticated()) {
+          console.log('El token existe pero posiblemente ha expirado o no tiene permisos suficientes');
+        }
+      }
       
       await handleErrorResponse(response, url);
       const responseData = await response.json();
@@ -92,7 +111,9 @@ const HttpClient = {
         method: 'PUT',
         headers,
         body: JSON.stringify(data),
-        credentials: 'include' // Esto enviará cookies con la solicitud
+        // Cambiado a include para permitir CORS con credenciales
+        credentials: 'include',
+        mode: 'cors'
       });
       
       await handleErrorResponse(response, url);
@@ -117,7 +138,9 @@ const HttpClient = {
       const response = await fetch(`${API_URL}${url}`, {
         method: 'DELETE',
         headers,
-        credentials: 'include' // Esto enviará cookies con la solicitud
+        // Cambiado a include para permitir CORS con credenciales
+        credentials: 'include',
+        mode: 'cors'
       });
       
       await handleErrorResponse(response, url);

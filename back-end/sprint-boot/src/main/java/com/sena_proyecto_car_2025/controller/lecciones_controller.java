@@ -19,8 +19,6 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/lecciones")
-// Corregimos la anotación CrossOrigin para usar valores literales
-@CrossOrigin(origins = {"http://localhost:5173", "http://192.168.1.23:5173", "http://172.30.1.191:5173"}, allowCredentials = "true")
 public class lecciones_controller {
 
     @Autowired

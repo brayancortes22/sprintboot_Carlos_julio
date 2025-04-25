@@ -8,22 +8,23 @@ import com.sena_proyecto_car_2025.model.aprendiz_curso;
 import com.sena_proyecto_car_2025.service.AprendizCursoService;
 import com.sena_proyecto_car_2025.Dto.AprendizCursoDTO;
 import com.sena_proyecto_car_2025.Dto.GenericResponseDTO;
+
 import com.sena_proyecto_car_2025.model.Aprendiz;
 import com.sena_proyecto_car_2025.model.Cursos;
+
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/aprendiz-curso")
-@CrossOrigin(origins = {"http://localhost:5173", "http://192.168.1.23:5173", "http://172.30.1.191:5173"}, allowCredentials = "true")
+@RequestMapping("/api/aprendices-cursos")
 public class aprendiz_curso_controller {
     @Autowired
     private AprendizCursoService aprendizCursoService;
 
     // Crear nuevo registro
-    @PostMapping("")
+    @PostMapping("/api/aprendiz_curso")
     public ResponseEntity<GenericResponseDTO<AprendizCursoDTO>> crear(@RequestBody AprendizCursoDTO dto) {
         try {
             // Asegurarnos de que la fecha de inscripción no sea nula
@@ -41,7 +42,7 @@ public class aprendiz_curso_controller {
     }
 
     // Obtener todos los registros
-    @GetMapping("")
+    @GetMapping("/obtener")
     public ResponseEntity<GenericResponseDTO<List<AprendizCursoDTO>>> obtenerTodos() {
         try {
             Iterable<aprendiz_curso> entities = aprendizCursoService.findAll();
@@ -72,7 +73,7 @@ public class aprendiz_curso_controller {
     }
 
     // Obtener cursos por aprendiz
-    @GetMapping("/aprendiz/{id}")
+    @GetMapping("/aprendiz_curso/{id}")
     public ResponseEntity<GenericResponseDTO<List<aprendiz_curso>>> getCursosByAprendiz(@PathVariable Integer id) {
         try {
             Aprendiz aprendiz = new Aprendiz();

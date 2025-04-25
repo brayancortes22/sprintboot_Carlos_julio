@@ -1,11 +1,12 @@
 import HttpClient from '../utils/httpClient';
 import AuthService from './authService';
+import { CERTIFICADOS_ENDPOINTS } from '../config/apiConfig';
 
 const CertificadosService = {
     // Obtener todos los certificados
     getAllCertificados: async () => {
         try {
-            const response = await HttpClient.get('/certificados/obtener');
+            const response = await HttpClient.get(CERTIFICADOS_ENDPOINTS.GET_ALL);
             
             if (!response.data) {
                 return [];
@@ -21,7 +22,7 @@ const CertificadosService = {
     // Obtener un certificado por ID
     getCertificadoById: async (id) => {
         try {
-            const response = await HttpClient.get(`/certificados/obtener/${id}`);
+            const response = await HttpClient.get(CERTIFICADOS_ENDPOINTS.GET_BY_ID(id));
             return response.data;
         } catch (error) {
             console.error('Error en getCertificadoById:', error);
@@ -40,7 +41,7 @@ const CertificadosService = {
             }
             
             console.log('Datos enviados al servidor:', certificadoData);
-            const response = await HttpClient.post('/certificados/create', certificadoData);
+            const response = await HttpClient.post(CERTIFICADOS_ENDPOINTS.CREATE, certificadoData);
             console.log('Respuesta del servidor:', response);
             return response.data;
         } catch (error) {
@@ -59,7 +60,7 @@ const CertificadosService = {
                 throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
             }
             
-            const response = await HttpClient.put(`/certificados/actualizar/${id}`, certificadoData);
+            const response = await HttpClient.put(CERTIFICADOS_ENDPOINTS.UPDATE(id), certificadoData);
             return response.data;
         } catch (error) {
             console.error('Error en updateCertificado:', error);
@@ -77,7 +78,7 @@ const CertificadosService = {
                 throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
             }
             
-            await HttpClient.delete(`/certificados/eliminar/${id}`);
+            await HttpClient.delete(CERTIFICADOS_ENDPOINTS.DELETE(id));
             return true;
         } catch (error) {
             console.error('Error en deleteCertificado:', error);
@@ -88,7 +89,7 @@ const CertificadosService = {
     // Obtener certificados por aprendiz
     getCertificadosByAprendiz: async (aprendizId) => {
         try {
-            const response = await HttpClient.get(`/certificados/aprendiz/${aprendizId}`);
+            const response = await HttpClient.get(CERTIFICADOS_ENDPOINTS.GET_BY_APRENDIZ(aprendizId));
             return response.data || [];
         } catch (error) {
             console.error('Error en getCertificadosByAprendiz:', error);

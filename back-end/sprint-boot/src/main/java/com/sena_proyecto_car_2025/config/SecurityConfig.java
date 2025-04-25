@@ -36,14 +36,31 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 // URLs públicas (no requieren autenticación)
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/aprendices/create").permitAll()
-                .requestMatchers("/api/aprendices/obtener").permitAll()
+                
+                // Endpoints públicos de aprendices
+                .requestMatchers("/api/aprendiz/create").permitAll()
+                .requestMatchers("/api/aprendiz/obtener").permitAll()
+                
+                // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                // Rutas para cursos - permitir operaciones para administradores
-                .requestMatchers(HttpMethod.POST, "/api/cursos/**").authenticated()
-                .requestMatchers(HttpMethod.PUT, "/api/cursos/**").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/cursos/**").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/cursos/**").authenticated()
+                
+                // Endpoints protegidos por autenticación
+                
+                // Aprendices - requieren autenticación
+                .requestMatchers("/api/aprendiz/**").authenticated()
+                
+                // Cursos - todos los métodos requieren autenticación
+                .requestMatchers("/api/cursos/**").authenticated()
+                
+                // Lecciones - todos los métodos requieren autenticación
+                .requestMatchers("/api/lecciones/**").authenticated()
+                
+                // Certificados - todos los métodos requieren autenticación
+                .requestMatchers("/api/certificados/**").authenticated()
+                
+                // Aprendiz-Curso - todos los métodos requieren autenticación
+                .requestMatchers("/api/aprendices-cursos/**").authenticated()
+                
                 // El resto de URLs requieren autenticación
                 .anyRequest().authenticated()
             )

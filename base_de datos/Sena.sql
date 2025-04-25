@@ -30,11 +30,11 @@ CREATE TABLE IF NOT EXISTS `aprendiz` (
   PRIMARY KEY (`id_aprendiz`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
--- Volcando datos para la tabla carlos_julio.aprendiz: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla carlos_julio.aprendiz: ~2 rows (aproximadamente)
 INSERT INTO `aprendiz` (`id_aprendiz`, `contraseña`, `correo`, `nombre`, `numero_documento`, `tipo_usuario`) VALUES
-	(2, '$2a$10$3BYVaTl8POzD1.OQSRbcFeaT9Z1kzvXoX42svmM6rN/mXUfZdAe8u', 'bscl2@gmail.com', 'stid', 1129844844, 2),
 	(11, '$2a$10$iX63FwIIRQxcHsoUoKPeJOv1f47JJNABeh2SYHIW2CyBi8veNQm5.', 'bscl@gmail.com', 'brayan cortes', 1129844804, 1),
-	(13, '$2a$10$XVu3duDxaSZla1mdkrfqNufUKov7m1sRv/4ePSlLDqexs7ZXe1A.S', 'aprendiz@gmail.com', 'aprendiz', 1129844804, 2);
+	(16, '$2a$10$K.EeNT8TD63Cx0XupWft9.2UHIkRvokFW/Q55pb6LYBWHB61Go9RC', 'bscl@gmail.com', 'prueba', 123456789, 2),
+	(17, '$2a$10$Eujr3.Qu0UKi9s/c3KihOeeBjVq96iJaBjwWO0NkDcqkzz6VKYB0y', 'bscl@gmail.com', 'jjsjjsjs', 123231, 2);
 
 -- Volcando estructura para tabla carlos_julio.aprendiz_curso
 CREATE TABLE IF NOT EXISTS `aprendiz_curso` (
@@ -49,11 +49,7 @@ CREATE TABLE IF NOT EXISTS `aprendiz_curso` (
   CONSTRAINT `FKfpmhivqfs4oss1k8jcjsan65m` FOREIGN KEY (`id_aprendiz`) REFERENCES `aprendiz` (`id_aprendiz`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
--- Volcando datos para la tabla carlos_julio.aprendiz_curso: ~1 rows (aproximadamente)
-INSERT INTO `aprendiz_curso` (`id_aprendiz_curso`, `fecha_inscripcion`, `id_aprendiz`, `id_curso`) VALUES
-	(5, '2025-04-22 14:40:24.649000', 2, 937),
-	(6, '2025-04-25 02:37:15.670000', 13, 944),
-	(7, '2025-04-25 02:37:19.740000', 13, 938);
+-- Volcando datos para la tabla carlos_julio.aprendiz_curso: ~0 rows (aproximadamente)
 
 -- Volcando estructura para tabla carlos_julio.certificados
 CREATE TABLE IF NOT EXISTS `certificados` (
@@ -70,10 +66,11 @@ CREATE TABLE IF NOT EXISTS `certificados` (
   CONSTRAINT `FKclb405945tm259siknwvddss2` FOREIGN KEY (`id_lecciones`) REFERENCES `lecciones` (`id_leccion`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
--- Volcando datos para la tabla carlos_julio.certificados: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla carlos_julio.certificados: ~3 rows (aproximadamente)
 INSERT INTO `certificados` (`id_certificado`, `fecha_fin`, `nombre_certificado`, `numero_documento_certificado`, `id_aprendiz`, `id_lecciones`) VALUES
-	(1, '2025-04-22 19:00:00.000000', 'certificado', 1129844804, 2, 36),
-	(2, '2025-04-29 19:00:00.000000', 'prueba final', 1129844844, 2, 38);
+	(7, '2025-04-24 19:00:00.000000', NULL, NULL, NULL, NULL),
+	(8, '2025-04-21 19:00:00.000000', 'hool', NULL, 16, 41),
+	(9, '2025-05-01 19:00:00.000000', 'hola', NULL, 16, 41);
 
 -- Volcando estructura para tabla carlos_julio.cursos
 CREATE TABLE IF NOT EXISTS `cursos` (
@@ -87,15 +84,12 @@ CREATE TABLE IF NOT EXISTS `cursos` (
   PRIMARY KEY (`id_curso`)
 ) ENGINE=InnoDB AUTO_INCREMENT=944 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
--- Volcando datos para la tabla carlos_julio.cursos: ~7 rows (aproximadamente)
+-- Volcando datos para la tabla carlos_julio.cursos: ~0 rows (aproximadamente)
 INSERT INTO `cursos` (`id_curso`, `codigo_ficha`, `descripcion`, `fecha_fin`, `fecha_inicio`, `nombre_programa`, `activo`) VALUES
-	(937, 2901817, 'programacion orientada a objetos ', '2025-04-01 19:00:00.000000', '2025-04-17 19:00:00.000000', 'adso', NULL),
-	(938, 2901818, 'nose', '2025-04-29 19:00:00.000000', '2025-04-21 19:00:00.000000', 'prueba', NULL),
-	(939, 21223, 'huggu', '2025-05-21 19:00:00.000000', '2025-04-21 19:00:00.000000', 'bb', NULL),
-	(940, 12121, 'knknsdn', '2025-04-22 19:00:00.000000', '2025-04-22 19:00:00.000000', 'prueba final', NULL),
-	(941, 12288, 'hdsbchjjjjj', '2025-04-22 19:00:00.000000', '2025-04-21 19:00:00.000000', 'bbsb', NULL),
-	(942, 182, 'jdjd', '2025-04-24 19:00:00.000000', '2025-04-23 19:00:00.000000', 'djdj', NULL),
-	(944, 290182, 'sbhbshd', '2025-05-07 19:00:00.000000', '2025-04-24 19:00:00.000000', 'hola', NULL);
+	(946, 2901817, 'hola', '2025-04-24 19:00:00.000000', '2025-04-24 19:00:00.000000', 'prueba curso', NULL),
+	(947, 1234, 'rdrdtt', '2025-05-09 19:00:00.000000', '2025-04-23 19:00:00.000000', 'ghfgh', NULL),
+	(948, 29011, 'jjdjdjd', '2025-04-29 19:00:00.000000', '2025-04-24 19:00:00.000000', 'hola', NULL),
+	(949, 290101, 'jjxjjx', '2025-04-29 19:00:00.000000', '2025-04-24 19:00:00.000000', 'hola', NULL);
 
 -- Volcando estructura para tabla carlos_julio.lecciones
 CREATE TABLE IF NOT EXISTS `lecciones` (
@@ -109,11 +103,10 @@ CREATE TABLE IF NOT EXISTS `lecciones` (
   CONSTRAINT `FKe5h5xfr7vokjg6uc95ayho92s` FOREIGN KEY (`id_curso`) REFERENCES `cursos` (`id_curso`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
--- Volcando datos para la tabla carlos_julio.lecciones: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla carlos_julio.lecciones: ~1 rows (aproximadamente)
 INSERT INTO `lecciones` (`id_leccion`, `descripcion`, `nombre_leccion`, `ruta_leccion`, `id_curso`) VALUES
-	(36, 'kkksksskkskkskkaksdp}ad}dc}', 'prueba', 'xd', 937),
-	(37, 'hvuv', 'ccd', 'jbj', 939),
-	(38, 'debde de salie con ......', 'prueba leccion final', 'aprender a .....', 940);
+	(41, 'amama jj', 'leccion prueba', 'jajjja', 946),
+	(42, 'kjcv d jhzdjdfzh', 'holla', 'adjksdc ds cvdkas vjdb svburugtr dglesghabrlvgilseybgosebzg sip bgñsb', 949);
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

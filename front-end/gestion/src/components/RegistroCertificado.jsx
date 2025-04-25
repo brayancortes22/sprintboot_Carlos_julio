@@ -3,7 +3,6 @@ import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import CertificadosService from '../services/certificadosService';
 import AprendizService from '../services/aprendizService';
-import CursosService from '../services/cursosService';
 import LeccionesService from '../services/leccionesService';
 import SecurityUtils from '../utils/securityUtils';
 import AuthService from '../services/authService';
@@ -11,18 +10,20 @@ import AuthService from '../services/authService';
 const RegistroCertificado = ({ setActiveSection, formStyles }) => {
   const [certificado, setCertificado] = useState({
     nombreCertificado: '',
+    numeroDocumentoCertificado: '', // Añadido para manejar correctamente el campo
     descripcion: '',
     fechaFin: '',
     idAprendiz: '',
-    idLeccion: '' // Cambiado de idCurso a idLeccion
+    idLeccion: ''
   });
   
   const [errors, setErrors] = useState({
     nombreCertificado: false,
+    numeroDocumentoCertificado: false,
     descripcion: false,
     fechaFin: false,
     idAprendiz: false,
-    idLeccion: false // Cambiado de idCurso a idLeccion
+    idLeccion: false
   });
   
   const [aprendices, setAprendices] = useState([]);
@@ -30,6 +31,7 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [editableNombre, setEditableNombre] = useState(false); // Estado para controlar si el nombre es editable
 
   useEffect(() => {
     // Verificar si el usuario es administrador
@@ -53,33 +55,46 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
       console.log('Solicitando datos al servidor...');
       
       // Obtener aprendices y lecciones en paralelo
-      const [aprendicesData, leccionesResponse] = await Promise.all([
+      const [aprendicesData, leccionesData] = await Promise.all([
         AprendizService.getAllAprendices(),
         LeccionesService.getAllLecciones()
       ]);
       
       console.log('Respuesta de aprendices:', aprendicesData);
-      console.log('Respuesta de lecciones:', leccionesResponse);
+      console.log('Respuesta de lecciones:', leccionesData);
       
       // Procesar aprendices
       if (Array.isArray(aprendicesData)) {
         setAprendices(aprendicesData);
+      } else if (aprendicesData && aprendicesData.data && Array.isArray(aprendicesData.data)) {
+        // Manejar el caso donde los aprendices vienen en formato {data: [...]}
+        setAprendices(aprendicesData.data);
       } else {
         console.error('Error: Los datos de aprendices no son un array', aprendicesData);
         setAprendices([]);
       }
       
-      // Procesar lecciones - leccionesResponse tiene estructura con data
-      if (leccionesResponse && leccionesResponse.data && Array.isArray(leccionesResponse.data)) {
-        setLecciones(leccionesResponse.data);
+      // Procesar lecciones
+      if (Array.isArray(leccionesData)) {
+        // Caso 1: La respuesta es directamente un array de lecciones
+        setLecciones(leccionesData);
         
         // Mostrar estructura de la primera lección para depuración
-        if (leccionesResponse.data.length > 0) {
-          console.log('Estructura de la primera lección:', Object.keys(leccionesResponse.data[0]));
-          console.log('Ejemplo de lección:', leccionesResponse.data[0]);
+        if (leccionesData.length > 0) {
+          console.log('Estructura de la primera lección:', Object.keys(leccionesData[0]));
+          console.log('Ejemplo de lección:', leccionesData[0]);
+        }
+      } else if (leccionesData && leccionesData.data && Array.isArray(leccionesData.data)) {
+        // Caso 2: La respuesta tiene estructura {data: [...]}
+        setLecciones(leccionesData.data);
+        
+        // Mostrar estructura de la primera lección para depuración
+        if (leccionesData.data.length > 0) {
+          console.log('Estructura de la primera lección:', Object.keys(leccionesData.data[0]));
+          console.log('Ejemplo de lección:', leccionesData.data[0]);
         }
       } else {
-        console.error('Error: Los datos de lecciones no tienen el formato esperado', leccionesResponse);
+        console.error('Error: Los datos de lecciones no tienen el formato esperado', leccionesData);
         setLecciones([]);
       }
     } catch (error) {
@@ -105,14 +120,51 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
       }));
     }
   };
+
+  // Función para manejar la selección del aprendiz y autocompletar campos
+  const handleAprendizChange = (e) => {
+    const selectedAprendizId = e.target.value;
+    setCertificado(prev => ({
+      ...prev,
+      idAprendiz: selectedAprendizId
+    }));
+
+    // Resetear el error
+    if (errors.idAprendiz) {
+      setErrors(prev => ({
+        ...prev,
+        idAprendiz: false
+      }));
+    }
+
+    // Autocompletar el número de documento del certificado
+    if (selectedAprendizId) {
+      const selectedAprendiz = aprendices.find(aprendiz => 
+        aprendiz.id_aprendiz.toString() === selectedAprendizId.toString()
+      );
+      if (selectedAprendiz) {
+        setCertificado(prev => ({
+          ...prev,
+          nombreCertificado: `${selectedAprendiz.nombre}`, // Autocompletar el nombre
+          numeroDocumentoCertificado: selectedAprendiz.numeroDocumento.toString() // Autocompletar el número de documento
+        }));
+      }
+    }
+  };
+
+  // Función para habilitar/deshabilitar edición del nombre
+  const toggleNombreEditable = () => {
+    setEditableNombre(!editableNombre);
+  };
   
   const validateForm = () => {
     const newErrors = {
       nombreCertificado: !certificado.nombreCertificado.trim(),
+      numeroDocumentoCertificado: !certificado.numeroDocumentoCertificado,
       descripcion: !certificado.descripcion.trim(),
       fechaFin: !certificado.fechaFin,
       idAprendiz: !certificado.idAprendiz,
-      idLeccion: !certificado.idLeccion // Cambiado de idCurso a idLeccion
+      idLeccion: !certificado.idLeccion
     };
     
     setErrors(newErrors);
@@ -138,10 +190,11 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
       // Crear el objeto con los nombres exactos que espera el backend
       const certificadoData = {
         nombre_certificado: certificado.nombreCertificado,
+        numero_documento_certificado: parseInt(certificado.numeroDocumentoCertificado), // Convertir a número entero
         descripcion: certificado.descripcion,
         fecha_fin: certificado.fechaFin,
         id_aprendiz: parseInt(certificado.idAprendiz),
-        id_lecciones: parseInt(certificado.idLeccion) // Enviar el ID de la lección, no del curso
+        id_lecciones: parseInt(certificado.idLeccion)
       };
       
       console.log('Enviando datos de certificado al servidor:', certificadoData);
@@ -178,33 +231,44 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
         <h2 className="text-2xl font-bold mb-4 text-indigo-600">Registro de Certificado</h2>
         
         <div className="mb-3">
-          <input 
-            className={`${formStyles} ${errors.nombreCertificado ? 'border-red-500' : ''}`}
-            name="nombreCertificado" 
-            placeholder="Nombre del Certificado *" 
-            type="text" 
-            value={certificado.nombreCertificado}
-            onChange={handleChange} 
-            disabled={loading}
-          />
+          <div className="flex items-center">
+            <input 
+              className={`${formStyles} ${errors.nombreCertificado ? 'border-red-500' : ''} ${!editableNombre ? 'bg-gray-100' : ''} flex-grow`}
+              name="nombreCertificado" 
+              placeholder="Nombre del Certificado *" 
+              type="text" 
+              value={certificado.nombreCertificado}
+              onChange={handleChange} 
+              disabled={loading || !editableNombre}
+            />
+            <Button 
+              className="ml-2 bg-blue-500 hover:bg-blue-600 text-white" 
+              onClick={toggleNombreEditable}
+              disabled={loading}
+            >
+              {editableNombre ? 'Bloquear' : 'Editar'}
+            </Button>
+          </div>
           {errors.nombreCertificado && (
             <p className="text-red-500 text-sm mt-1">El nombre del certificado es requerido</p>
           )}
         </div>
+        
         <div className="mb-3">
           <input 
-            className={`${formStyles} ${errors.numeroDocumentoCertificado ? 'border-red-500' : ''}`}
+            className={`${formStyles} ${errors.numeroDocumentoCertificado ? 'border-red-500' : ''} bg-gray-100`}
             name="numeroDocumentoCertificado" 
-            placeholder="numero de Documento del Certificado *" 
+            placeholder="Número de Documento del Certificado *" 
             type="text" 
             value={certificado.numeroDocumentoCertificado}
             onChange={handleChange} 
-            disabled={loading}
+            disabled={true} // Siempre deshabilitado para que se llene automáticamente
           />
           {errors.numeroDocumentoCertificado && (
-            <p className="text-red-500 text-sm mt-1">Codigo del certificado es requerido</p>
+            <p className="text-red-500 text-sm mt-1">Código del certificado es requerido</p>
           )}
         </div>
+        
         <div className="mb-3">
           <input 
             className={`${formStyles} ${errors.descripcion ? 'border-red-500' : ''}`}
@@ -242,7 +306,7 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
             className={`${formStyles} ${errors.idAprendiz ? 'border-red-500' : ''}`}
             name="idAprendiz"
             value={certificado.idAprendiz}
-            onChange={handleChange}
+            onChange={handleAprendizChange} // Usamos la nueva función para manejar los cambios
             disabled={loading}
           >
             <option value="">Seleccionar Aprendiz *</option>

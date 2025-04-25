@@ -3,7 +3,7 @@ import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import CertificadosService from '../services/certificadosService';
 
-const Certificados = ({ setActiveSection, formStyles }) => {
+const Certificados = ({ setActiveSection}) => {
   const [certificados, setCertificados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

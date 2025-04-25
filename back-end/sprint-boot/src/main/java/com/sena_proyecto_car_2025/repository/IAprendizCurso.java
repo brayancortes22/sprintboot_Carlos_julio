@@ -1,6 +1,7 @@
 package com.sena_proyecto_car_2025.repository;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -36,4 +37,9 @@ public interface IAprendizCurso extends CrudRepository<aprendiz_curso, Long> {
     // Buscar inscripciones activas (basado en la fecha de fin del curso)
     @Query("SELECT ac FROM aprendiz_curso ac WHERE ac.curso.fechaFin > :fechaActual")
     List<aprendiz_curso> findActiveEnrollments(@Param("fechaActual") Timestamp fechaActual);
+    
+    // Eliminar todas las inscripciones asociadas a un curso
+    @Modifying
+    @Query("DELETE FROM aprendiz_curso ac WHERE ac.curso.idCurso = :idCurso")
+    void deleteByIdCurso(@Param("idCurso") Integer idCurso);
 }

@@ -66,25 +66,42 @@ const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
         };
         
         // Llamar al servicio de autenticación
-        const userData = await AuthService.login(authData);
+        const response = await AuthService.login(authData);
+        console.log("Respuesta completa del login:", response);
+        
+        // La respuesta ahora contiene la estructura correcta desde las modificaciones a authService
+        const userData = AuthService.getUserData();
+        console.log("Datos de usuario recuperados:", userData);
+        
+        if (!userData) {
+          throw new Error("No se pudieron obtener los datos del usuario");
+        }
         
         // Guardar información del usuario logueado
         setLoggedUser({
-          id_aprendiz: userData.id_aprendiz,
-          nombre: userData.nombre,
-          correo: userData.correo,
-          tipoUsuario: userData.tipoUsuario
+          id: userData.id || null,
+          nombre: userData.nombre || "Usuario",
+          correo: userData.correo || credentials.correo,
+          tipoUsuario: userData.tipoUsuario || parseInt(credentials.tipoUsuario)
         });
+        
+        console.log("Redirigiendo al usuario con tipo:", userData.tipoUsuario);
         
         // Redirigir según el tipo de usuario
         if (userData.tipoUsuario === 1) {
           // Administrador
           setActiveSection('admin');
+          console.log("Usuario administrador, redirigiendo a panel admin");
         } else if (userData.tipoUsuario === 2) {
           // Aprendiz
           setActiveSection('aprendizPanel');
+          console.log("Usuario aprendiz, redirigiendo a panel aprendiz");
+        } else {
+          console.error("Tipo de usuario desconocido:", userData.tipoUsuario);
+          setErrorMessage("Tipo de usuario no reconocido");
         }
       } catch (error) {
+        console.error("Error detallado:", error);
         setErrorMessage(error.message || 'Error al iniciar sesión');
       }
     } catch (error) {

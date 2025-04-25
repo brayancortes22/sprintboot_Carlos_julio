@@ -1,6 +1,7 @@
 package com.sena_proyecto_car_2025.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -31,4 +32,14 @@ public interface ICertificados extends JpaRepository<Certificados, Integer> {
     List<Certificados> findByFechaFinBetween(@Param("fechaInicio") Timestamp fechaInicio, @Param("fechaFin") Timestamp fechaFin);
 
     List<Certificados> findByIdAprendiz(Integer idAprendiz);
+    
+    // Eliminar certificados por ID de lección
+    @Modifying
+    @Query("DELETE FROM Certificados c WHERE c.idLecciones = :idLeccion")
+    void deleteByIdLeccion(@Param("idLeccion") Integer idLeccion);
+    
+    // Eliminar certificados asociados con lecciones de un curso específico
+    @Modifying
+    @Query("DELETE FROM Certificados c WHERE c.idLecciones IN (SELECT l.id_leccion FROM lecciones l WHERE l.curso.idCurso = :idCurso)")
+    void deleteByCursoId(@Param("idCurso") Integer idCurso);
 }

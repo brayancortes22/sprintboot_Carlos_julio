@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cursos")
-@CrossOrigin(origins = {"http://localhost:5173", "http://192.168.1.23:5173", "http://172.30.1.191:5173"}, allowCredentials = "true")
 public class cursos_controller {
 
     @Autowired
@@ -157,5 +156,38 @@ public class cursos_controller {
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<GenericResponseDTO<Void>> deleteCursoAlt(@PathVariable Integer id) {
         return deleteCurso(id);
+    }
+
+    // para la tabla de obtener cursos por nombre
+    // Endpoint para buscar cursos por nombre
+    @GetMapping("/buscar/{nombre}")
+    public ResponseEntity<GenericResponseDTO<List<Cursos>>> getCursosByNombre(@PathVariable String nombre) {
+        try {
+            Iterable<Cursos> cursosIterable = cursosService.findByNombreCurso(nombre);
+            List<Cursos> cursos = new ArrayList<>();
+            cursosIterable.forEach(cursos::add);
+            
+            if (cursos != null && !cursos.isEmpty()) {
+                return ResponseEntity.ok(new GenericResponseDTO<>(
+                    200,
+                    "Cursos encontrados exitosamente",
+                    cursos
+                ));
+            } else {
+                return ResponseEntity.status(404)
+                    .body(new GenericResponseDTO<>(
+                        404,
+                        "No se encontraron cursos con el nombre: " + nombre,
+                        null
+                    ));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(new GenericResponseDTO<>(
+                    400,
+                    "Error al buscar cursos: " + e.getMessage(),
+                    null
+                ));
+        }
     }
 }

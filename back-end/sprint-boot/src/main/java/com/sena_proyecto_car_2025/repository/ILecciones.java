@@ -1,6 +1,7 @@
 package com.sena_proyecto_car_2025.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -25,4 +26,9 @@ public interface ILecciones extends JpaRepository<lecciones, Integer> {
     // Buscar por ruta de lección
     @Query("SELECT l FROM lecciones l WHERE l.ruta_leccion = :ruta")
     lecciones findByRutaLeccion(@Param("ruta") String ruta);
-} 
+    
+    // Eliminar todas las lecciones asociadas a un curso
+    @Modifying
+    @Query("DELETE FROM lecciones l WHERE l.curso.idCurso = :idCurso")
+    void deleteByIdCurso(@Param("idCurso") Integer idCurso);
+}

@@ -2,7 +2,8 @@
  * Servicio para gestionar el bloqueo de seguridad por uso de herramientas de desarrollo
  */
 
-const API_URL = 'http://localhost:8080/api/security';
+// const API_URL = 'http://localhost:8080/api/security';
+const API_URL = 'http://172.30.5.207:8080/api/security';
 
 export const SecurityService = {
   /**

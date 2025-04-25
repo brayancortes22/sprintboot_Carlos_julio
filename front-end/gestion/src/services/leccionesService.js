@@ -1,98 +1,58 @@
-import httpClient from '../utils/httpClient';
-import AuthService from './authService';
-
-const BASE_URL = '/lecciones';
+import HttpClient from '../utils/httpClient';
+import { LECCIONES_ENDPOINTS } from '../config/apiConfig';
 
 const LeccionesService = {
+  // Obtener todas las lecciones
   getAllLecciones: async () => {
     try {
-      const response = await httpClient.get(`${BASE_URL}/obtener`);
-      return response;
+      const response = await HttpClient.get(LECCIONES_ENDPOINTS.GET_ALL);
+      return response.data;
     } catch (error) {
-      console.error('Error al obtener lecciones:', error);
+      console.error('Error al obtener las lecciones:', error);
       throw error;
     }
   },
 
+  // Obtener una lección por ID
   getLeccionById: async (id) => {
     try {
-      const response = await httpClient.get(`${BASE_URL}/obtener/${id}`);
-      return response;
+      const response = await HttpClient.get(LECCIONES_ENDPOINTS.GET_BY_ID(id));
+      return response.data;
     } catch (error) {
-      console.error(`Error al obtener lección con ID ${id}:`, error);
+      console.error(`Error al obtener la lección con ID ${id}:`, error);
       throw error;
     }
   },
 
+  // Crear una nueva lección
   createLeccion: async (leccionData) => {
     try {
-      console.log('Enviando datos de lección:', leccionData);
-      
-      // Verificar que exista el token de autenticación
-      const token = AuthService.getToken();
-      if (!token) {
-        console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
-        throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
-      }
-      
-      // Mapear los datos para que coincidan con lo que espera el backend
-      const mappedData = {
-        nombre_leccion: leccionData.nombre_leccion,
-        ruta_leccion: leccionData.ruta_leccion,
-        descripcion: leccionData.descripcion,
-        id_curso: leccionData.id_curso
-      };
-      
-      console.log('Datos mapeados que se enviarán al backend:', mappedData);
-      
-      const response = await httpClient.post(`${BASE_URL}/create`, mappedData);
-      return response;
+      const response = await HttpClient.post(LECCIONES_ENDPOINTS.CREATE, leccionData);
+      return response.data;
     } catch (error) {
-      console.error('Error al crear lección:', error);
+      console.error('Error al crear la lección:', error);
       throw error;
     }
   },
 
+  // Actualizar una lección existente
   updateLeccion: async (id, leccionData) => {
     try {
-      // Verificar que exista el token de autenticación
-      const token = AuthService.getToken();
-      if (!token) {
-        console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
-        throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
-      }
-      
-      const response = await httpClient.put(`${BASE_URL}/actualizar/${id}`, leccionData);
-      return response;
+      const response = await HttpClient.put(LECCIONES_ENDPOINTS.UPDATE(id), leccionData);
+      return response.data;
     } catch (error) {
-      console.error(`Error al actualizar lección con ID ${id}:`, error);
+      console.error(`Error al actualizar la lección con ID ${id}:`, error);
       throw error;
     }
   },
 
+  // Eliminar una lección
   deleteLeccion: async (id) => {
     try {
-      // Verificar que exista el token de autenticación
-      const token = AuthService.getToken();
-      if (!token) {
-        console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
-        throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
-      }
-      
-      const response = await httpClient.delete(`${BASE_URL}/eliminar/${id}`);
-      return response;
+      const response = await HttpClient.delete(LECCIONES_ENDPOINTS.DELETE(id));
+      return response.data;
     } catch (error) {
-      console.error(`Error al eliminar lección con ID ${id}:`, error);
-      throw error;
-    }
-  },
-
-  getLeccionesByCursoId: async (cursoId) => {
-    try {
-      const response = await httpClient.get(`${BASE_URL}/curso/${cursoId}`);
-      return response;
-    } catch (error) {
-      console.error(`Error al obtener lecciones para el curso con ID ${cursoId}:`, error);
+      console.error(`Error al eliminar la lección con ID ${id}:`, error);
       throw error;
     }
   }

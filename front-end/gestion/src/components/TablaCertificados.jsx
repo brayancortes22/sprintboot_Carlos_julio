@@ -42,11 +42,14 @@ const TablaCertificados = ({ setActiveSection }) => {
         LeccionesService.getAllLecciones()
       ]);
       
+      console.log("Certificados cargados:", certificadosData);
       setCertificados(certificadosData);
       setAprendices(aprendicesData);
       
       if (leccionesData && leccionesData.data) {
         setLecciones(leccionesData.data);
+      } else if (Array.isArray(leccionesData)) {
+        setLecciones(leccionesData);
       }
     } catch (error) {
       console.error('Error al cargar datos:', error);
@@ -65,6 +68,7 @@ const TablaCertificados = ({ setActiveSection }) => {
   };
 
   const handleEditar = (certificado) => {
+    console.log("Editando certificado:", certificado);
     setEditando(certificado.idCertificado);
     setCertificadoEditado({
       ...certificado,
@@ -87,8 +91,19 @@ const TablaCertificados = ({ setActiveSection }) => {
         return;
       }
       
+      // Convertir el objeto del estado local al formato que espera el backend
+      const datosCertificado = {
+        nombre_certificado: certificadoEditado.nombreCertificado,
+        numero_documento_certificado: parseInt(certificadoEditado.numeroDocumentoCertificado) || null,
+        fecha_fin: certificadoEditado.fecha_fin,
+        id_aprendiz: parseInt(certificadoEditado.idAprendiz) || null,
+        id_lecciones: parseInt(certificadoEditado.idLecciones) || null
+      };
+      
+      console.log("Enviando datos al backend:", datosCertificado);
+      
       setLoading(true);
-      await CertificadosService.updateCertificado(editando, certificadoEditado);
+      await CertificadosService.updateCertificado(editando, datosCertificado);
       alert('Certificado actualizado correctamente');
       cargarDatos();
       setEditando(null);
@@ -109,12 +124,26 @@ const TablaCertificados = ({ setActiveSection }) => {
       setLoading(false);
     }
   };
-
   
   const handleChange = (e) => {
     setCertificadoEditado({
       ...certificadoEditado,
       [e.target.name]: e.target.value
+    });
+  };
+
+  // Función para autocompletar el número de documento cuando se selecciona un aprendiz
+  const handleAprendizChange = (e) => {
+    const selectedAprendizId = parseInt(e.target.value);
+    const selectedAprendiz = aprendices.find(a => a.id_aprendiz === selectedAprendizId);
+    
+    setCertificadoEditado({
+      ...certificadoEditado,
+      idAprendiz: selectedAprendizId,
+      // Si no hay nombre de certificado o está siendo editado, usar el nombre del aprendiz
+      nombreCertificado: certificadoEditado.nombreCertificado || (selectedAprendiz ? selectedAprendiz.nombre : ''),
+      // Autocompletar el número de documento con el del aprendiz
+      numeroDocumentoCertificado: selectedAprendiz ? selectedAprendiz.numeroDocumento : ''
     });
   };
 
@@ -177,13 +206,13 @@ const TablaCertificados = ({ setActiveSection }) => {
                         <select
                           name="idAprendiz"
                           value={certificadoEditado.idAprendiz || ''}
-                          onChange={handleChange}
+                          onChange={handleAprendizChange} // Usar la función especial que autocompleta datos
                           className="w-full p-1 border rounded"
                         >
                           <option value="">Seleccionar aprendiz</option>
                           {aprendices.map(aprendiz => (
                             <option key={aprendiz.id_aprendiz} value={aprendiz.id_aprendiz}>
-                              {aprendiz.nombre}
+                              {aprendiz.nombre} - {aprendiz.numeroDocumento}
                             </option>
                           ))}
                         </select>
@@ -222,8 +251,8 @@ const TablaCertificados = ({ setActiveSection }) => {
                     </>
                   ) : (
                     <>
-                      <td className="px-4 py-2">{certificado.nombreCertificado}</td>
-                      <td className="px-4 py-2">{certificado.numeroDocumentoCertificado}</td>
+                      <td className="px-4 py-2">{certificado.nombreCertificado || 'No asignado'}</td>
+                      <td className="px-4 py-2">{certificado.numeroDocumentoCertificado || 'No asignado'}</td>
                       <td className="px-4 py-2">{new Date(certificado.fechaFin).toLocaleDateString()}</td>
                       <td className="px-4 py-2">
                         {aprendices.find(a => a.id_aprendiz === certificado.idAprendiz)?.nombre || 'No asignado'}
@@ -239,7 +268,6 @@ const TablaCertificados = ({ setActiveSection }) => {
                         >
                           Editar
                         </Button>
-                        
                       </td>
                     </>
                   )}

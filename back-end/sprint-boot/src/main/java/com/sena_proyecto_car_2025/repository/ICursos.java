@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.sena_proyecto_car_2025.model.Cursos;
 import java.util.List;
+import java.util.Optional;
 import java.sql.Timestamp;
 
 public interface ICursos extends JpaRepository<Cursos, Integer> {
@@ -25,4 +26,12 @@ public interface ICursos extends JpaRepository<Cursos, Integer> {
     // Buscar cursos por rango de fechas
     @Query("SELECT c FROM cursos c WHERE c.fechaInicio >= :fechaInicio AND c.fechaFin <= :fechaFin")
     List<Cursos> findByDateRange(@Param("fechaInicio") Timestamp fechaInicio, @Param("fechaFin") Timestamp fechaFin);
-} 
+
+    // Buscar por nombre
+    @Query("SELECT c FROM cursos c WHERE LOWER(c.nombrePrograma) LIKE LOWER(CONCAT('%', :nombre, '%'))")
+    List<Cursos> findByNombreCurso(@Param("nombre") String nombre);
+    
+    // Buscar por nombre exacto
+    @Query("SELECT c FROM cursos c WHERE LOWER(c.nombrePrograma) = LOWER(:nombre)")
+    Optional<Cursos> findByNombreCursoExacto(@Param("nombre") String nombre);
+}

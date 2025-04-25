@@ -41,6 +41,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/aprendiz/create").permitAll()
                 .requestMatchers("/api/aprendiz/obtener").permitAll()
                 
+                // Endpoints públicos de cursos - permitir acceso a GET
+                .requestMatchers(HttpMethod.GET, "/api/cursos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/cursos").permitAll()
+                
                 // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 
@@ -49,8 +53,10 @@ public class SecurityConfig {
                 // Aprendices - requieren autenticación
                 .requestMatchers("/api/aprendiz/**").authenticated()
                 
-                // Cursos - todos los métodos requieren autenticación
-                .requestMatchers("/api/cursos/**").authenticated()
+                // Cursos - solo POST, PUT, DELETE requieren autenticación
+                .requestMatchers(HttpMethod.POST, "/api/cursos/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/cursos/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/cursos/**").authenticated()
                 
                 // Lecciones - todos los métodos requieren autenticación
                 .requestMatchers("/api/lecciones/**").authenticated()

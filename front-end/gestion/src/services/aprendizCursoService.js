@@ -1,5 +1,6 @@
 import HttpClient from '../utils/httpClient';
 import { APRENDIZ_CURSO_ENDPOINTS } from '../config/apiConfig';
+
 const AprendizCursoService = {
     // Obtener todas las relaciones aprendiz-curso
     getAllAprendizCursos: async () => {
@@ -15,7 +16,7 @@ const AprendizCursoService = {
     // Obtener una relación por ID
     getAprendizCursoById: async (id) => {
         try {
-            const response = await HttpClient.get(`${APRENDIZ_CURSO_ENDPOINTS.GET_BY_ID}/${id}`);
+            const response = await HttpClient.get(`${APRENDIZ_CURSO_ENDPOINTS.GET_BY_ID(id)}`);
             return response;
         } catch (error) {
             console.error('Error en getAprendizCursoById:', error);
@@ -26,6 +27,8 @@ const AprendizCursoService = {
     // Crear una nueva relación
     createAprendizCurso: async (aprendizCursoData) => {
         try {
+            console.log('Creando inscripción con datos:', aprendizCursoData);
+            console.log('Endpoint utilizado:', APRENDIZ_CURSO_ENDPOINTS.CREATE);
             const response = await HttpClient.post(APRENDIZ_CURSO_ENDPOINTS.CREATE, aprendizCursoData);
             return response;
         } catch (error) {
@@ -59,7 +62,9 @@ const AprendizCursoService = {
     // Obtener cursos por aprendiz
     getCursosByAprendiz: async (aprendizId) => {
         try {
-            const response = await HttpClient.get(`${APRENDIZ_CURSO_ENDPOINTS.GET_CURSOS_BY_APRENDIZ}/${aprendizId}`);
+            console.log('Obteniendo cursos para el aprendiz ID:', aprendizId);
+            console.log('Endpoint utilizado:', APRENDIZ_CURSO_ENDPOINTS.GET_BY_APRENDIZ(aprendizId));
+            const response = await HttpClient.get(APRENDIZ_CURSO_ENDPOINTS.GET_BY_APRENDIZ(aprendizId));
             return response.data || [];
         } catch (error) {
             console.error('Error en getCursosByAprendiz:', error);

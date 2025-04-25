@@ -69,35 +69,69 @@ const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
         const response = await AuthService.login(authData);
         console.log("Respuesta completa del login:", response);
         
-        // La respuesta ahora contiene la estructura correcta desde las modificaciones a authService
-        const userData = AuthService.getUserData();
-        console.log("Datos de usuario recuperados:", userData);
+        // Extraer datos de la respuesta para asegurar que obtengamos el ID
+        let userId = null;
         
-        if (!userData) {
-          throw new Error("No se pudieron obtener los datos del usuario");
+        // Intentar obtener el ID directamente de la respuesta del login
+        if (response && response.data) {
+          const responseData = response.data;
+          // Buscar el ID en diferentes lugares posibles
+          if (responseData.id !== undefined) userId = responseData.id;
+          else if (responseData.idUsuario !== undefined) userId = responseData.idUsuario;
+          else if (responseData.user && responseData.user.id !== undefined) userId = responseData.user.id;
+          else if (responseData.userData && responseData.userData.id !== undefined) userId = responseData.userData.id;
+          else if (responseData.aprendiz && responseData.aprendiz.idAprendiz !== undefined) 
+            userId = responseData.aprendiz.idAprendiz;
         }
         
-        // Guardar información del usuario logueado
-        setLoggedUser({
-          id: userData.id || null,
-          nombre: userData.nombre || "Usuario",
+        // Verificar si hay ID en el localStorage (puede haberlo guardado authService)
+        const userData = AuthService.getUserData() || {};
+        if (!userId && userData.id) {
+          userId = userData.id;
+        }
+        
+        console.log("ID del usuario encontrado:", userId);
+        
+        // Si aún no tenemos ID pero tenemos tipoUsuario=2 (aprendiz), generar ID temporal
+        // Esto es un workaround si el backend no devuelve ID
+        if (!userId && parseInt(credentials.tipoUsuario) === 2) {
+          // Usamos el correo como identificador alternativo
+          // Esto asume que el correo es único en el sistema
+          userId = `temp_${credentials.correo.replace(/[^a-zA-Z0-9]/g, '_')}`;
+          console.log("Generado ID temporal basado en correo:", userId);
+        }
+        
+        // Guardar el ID en localStorage independientemente - CRÍTICO para la inscripción
+        localStorage.setItem('userId', userId || 'unknown');
+        
+        // Crear objeto de usuario con datos completos
+        const userDataToStore = {
+          id: userId,
+          nombre: userData.nombre || response.data?.nombre || "Usuario",
           correo: userData.correo || credentials.correo,
           tipoUsuario: userData.tipoUsuario || parseInt(credentials.tipoUsuario)
-        });
+        };
         
-        console.log("Redirigiendo al usuario con tipo:", userData.tipoUsuario);
+        // Guardar en localStorage (esto es redundante con AuthService, pero es una capa extra de seguridad)
+        localStorage.setItem('userData', JSON.stringify(userDataToStore));
+        console.log("Datos completos guardados en localStorage:", userDataToStore);
+        
+        // Actualizar estado de la aplicación
+        setLoggedUser(userDataToStore);
+        
+        console.log("Redirigiendo al usuario con tipo:", userDataToStore.tipoUsuario);
         
         // Redirigir según el tipo de usuario
-        if (userData.tipoUsuario === 1) {
+        if (userDataToStore.tipoUsuario === 1) {
           // Administrador
           setActiveSection('admin');
           console.log("Usuario administrador, redirigiendo a panel admin");
-        } else if (userData.tipoUsuario === 2) {
+        } else if (userDataToStore.tipoUsuario === 2) {
           // Aprendiz
           setActiveSection('aprendizPanel');
           console.log("Usuario aprendiz, redirigiendo a panel aprendiz");
         } else {
-          console.error("Tipo de usuario desconocido:", userData.tipoUsuario);
+          console.error("Tipo de usuario desconocido:", userDataToStore.tipoUsuario);
           setErrorMessage("Tipo de usuario no reconocido");
         }
       } catch (error) {

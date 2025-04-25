@@ -4,7 +4,7 @@
  */
 
 // URL base de la API
-export const API_URL = ''; // URL configurada para el entorno actual
+export const API_URL = ''; // nula porque la manda el backend
 
 // Endpoints de autenticación
 export const AUTH_ENDPOINTS = {

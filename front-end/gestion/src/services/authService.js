@@ -23,17 +23,65 @@ class AuthService {
           localStorage.setItem('token', token);
           console.log('Token almacenado correctamente');
           
+          // La respuesta desde el backend debería incluir los datos del usuario
+          // incluyendo el ID del aprendiz (id_aprendiz según la BD)
+          let userId = null;
+          
+          // Intentar obtener el ID del aprendiz de la respuesta
+          // La estructura de respuesta desde nuestro backend Spring es:
+          // { datos: { id_aprendiz: X, nombre: "...", ... } }
+          if (response.datos) {
+            userId = response.datos.id_aprendiz || response.datos.id;
+          }
+          // O podría estar en response.data.datos
+          else if (response.data.datos) {
+            userId = response.data.datos.id_aprendiz || response.data.datos.id;
+          }
+          // O podría estar directamente en datos
+          else if (response.data) {
+            userId = response.data.id_aprendiz || response.data.id || response.data.idAprendiz;
+          }
+          
+          console.log('ID de aprendiz encontrado en respuesta:', userId);
+          
+          // Si aún no se encuentra, buscar en todas las propiedades
+          if (!userId) {
+            console.log('Buscando ID en la estructura completa de respuesta...');
+            // Función recursiva para buscar en toda la estructura
+            const findId = (obj) => {
+              if (!obj || typeof obj !== 'object') return null;
+              
+              if (obj.id_aprendiz !== undefined) return obj.id_aprendiz;
+              if (obj.idAprendiz !== undefined) return obj.idAprendiz;
+              if (obj.id !== undefined) return obj.id;
+              
+              for (const key in obj) {
+                const result = findId(obj[key]);
+                if (result !== null) return result;
+              }
+              return null;
+            };
+            
+            userId = findId(response);
+            console.log('ID encontrado en búsqueda recursiva:', userId);
+          }
+          
           // Extraer y guardar los datos del usuario
-          const userData = response.data.user || response.data.userData || response.data;
-          const userDataToStore = {
-            id: userData.id || null,
-            nombre: userData.nombre || null,
-            correo: userData.correo || credentials.correo,
-            tipoUsuario: userData.tipoUsuario || parseInt(credentials.tipoUsuario)
+          const userData = {
+            id: userId,
+            nombre: this.extractValue(response, 'nombre'),
+            correo: this.extractValue(response, 'correo') || credentials.correo,
+            tipoUsuario: this.extractValue(response, 'tipoUsuario') || parseInt(credentials.tipoUsuario)
           };
           
-          localStorage.setItem('userData', JSON.stringify(userDataToStore));
-          console.log('Datos de usuario almacenados:', userDataToStore);
+          localStorage.setItem('userData', JSON.stringify(userData));
+          console.log('Datos de usuario almacenados:', userData);
+          
+          // También guardar el ID de forma independiente para mayor seguridad
+          if (userId) {
+            localStorage.setItem('userId', userId);
+            console.log('ID de usuario guardado separadamente:', userId);
+          }
         } else {
           console.warn('No se encontró token en la respuesta:', response.data);
         }
@@ -45,6 +93,18 @@ class AuthService {
       console.error('Error durante el login:', error);
       throw error;
     }
+  }
+  
+  // Método auxiliar para extraer valores de objetos anidados
+  extractValue(obj, key) {
+    if (!obj || typeof obj !== 'object') return null;
+    
+    if (obj[key] !== undefined) return obj[key];
+    if (obj.data && obj.data[key] !== undefined) return obj.data[key];
+    if (obj.datos && obj.datos[key] !== undefined) return obj.datos[key];
+    if (obj.data && obj.data.datos && obj.data.datos[key] !== undefined) return obj.data.datos[key];
+    
+    return null;
   }
 
   /**
@@ -68,6 +128,7 @@ class AuthService {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
+    localStorage.removeItem('userId');
   }
 
   /**
@@ -101,6 +162,20 @@ class AuthService {
       localStorage.removeItem('userData');
       return null;
     }
+  }
+
+  /**
+   * Obtiene el ID del usuario actual
+   * @returns {string|number|null} - ID del usuario o null si no está disponible
+   */
+  getUserId() {
+    // Primero intentar obtener el ID directamente
+    const directId = localStorage.getItem('userId');
+    if (directId) return directId;
+    
+    // Si no está disponible, intentar obtenerlo de los datos completos
+    const userData = this.getUserData();
+    return userData ? userData.id : null;
   }
 
   /**

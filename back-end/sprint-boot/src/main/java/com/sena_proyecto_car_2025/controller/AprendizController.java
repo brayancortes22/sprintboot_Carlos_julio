@@ -9,6 +9,7 @@ import com.sena_proyecto_car_2025.Dto.GenericResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/aprendices")
@@ -64,11 +65,55 @@ public class AprendizController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<GenericResponseDTO<Aprendiz>> createAprendiz(@RequestBody Aprendiz aprendiz) {
+    public ResponseEntity<GenericResponseDTO<Aprendiz>> createAprendiz(@RequestBody Map<String, Object> payload) {
         try {
             System.out.println("Recibiendo petición de creación de aprendiz:");
-            System.out.println("Número de documento recibido: " + aprendiz.getNumeroDocumento());
-            System.out.println("Tipo de número de documento: " + ((Object)aprendiz.getNumeroDocumento()).getClass().getSimpleName());
+            System.out.println("Payload completo: " + payload);
+            
+            // Extraer datos del payload
+            Aprendiz aprendiz = new Aprendiz();
+            aprendiz.setNombre((String) payload.get("nombre"));
+            aprendiz.setCorreo((String) payload.get("correo"));
+            
+            // Extraer y procesar el número de documento
+            long numeroDocumento = 0;
+            if (payload.get("numeroDocumento") instanceof Number) {
+                numeroDocumento = ((Number) payload.get("numeroDocumento")).longValue();
+            } else if (payload.get("numeroDocumento") instanceof String) {
+                numeroDocumento = Long.parseLong((String) payload.get("numeroDocumento"));
+            }
+            aprendiz.setNumeroDocumento(numeroDocumento);
+            
+            // Extraer y procesar el tipo de usuario
+            int tipoUsuario = 0;
+            if (payload.get("tipoUsuario") instanceof Number) {
+                tipoUsuario = ((Number) payload.get("tipoUsuario")).intValue();
+            } else if (payload.get("tipoUsuario") instanceof String) {
+                tipoUsuario = Integer.parseInt((String) payload.get("tipoUsuario"));
+            }
+            aprendiz.setTipoUsuario(tipoUsuario);
+            
+            // Procesar la contraseña - probando ambas formas de obtenerla
+            String contraseña = null;
+            if (payload.containsKey("contraseña")) {
+                contraseña = (String) payload.get("contraseña");
+                System.out.println("Contraseña obtenida con 'contraseña': " + (contraseña != null ? "PRESENTE" : "null"));
+            } else if (payload.containsKey("contrasena")) {
+                contraseña = (String) payload.get("contrasena");
+                System.out.println("Contraseña obtenida con 'contrasena': " + (contraseña != null ? "PRESENTE" : "null"));
+            } else if (payload.containsKey("password")) {
+                contraseña = (String) payload.get("password");
+                System.out.println("Contraseña obtenida con 'password': " + (contraseña != null ? "PRESENTE" : "null"));
+            } else {
+                System.out.println("No se encontró contraseña en el payload. Claves disponibles: " + payload.keySet());
+            }
+            
+            if (contraseña != null && !contraseña.isEmpty()) {
+                aprendiz.setPassword(contraseña); // Usar el método setPassword para evitar problemas con la ñ
+                System.out.println("Contraseña establecida correctamente");
+            } else {
+                System.out.println("ADVERTENCIA: No se estableció contraseña");
+            }
             
             // Validar que el número de documento no sea 0 o negativo
             if (aprendiz.getNumeroDocumento() <= 0) {
@@ -89,6 +134,7 @@ public class AprendizController {
             System.out.println("Validaciones pasadas correctamente, procediendo a guardar el aprendiz...");
             Aprendiz savedAprendiz = aprendizService.save(aprendiz);
             System.out.println("Aprendiz guardado exitosamente con ID: " + savedAprendiz.getId_aprendiz());
+            System.out.println("¿La contraseña se guardó? " + (savedAprendiz.getPassword() != null ? "SÍ" : "NO"));
             
             return ResponseEntity.ok(new GenericResponseDTO<>(200, "Aprendiz creado exitosamente", savedAprendiz));
         } catch (Exception e) {

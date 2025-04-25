@@ -2,16 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import AprendizService from '../services/aprendizService';
+import SecurityUtils from '../utils/securityUtils';
 
-const TablaAprendices = () => {
+const TablaAprendices = ({ setActiveSection }) => {
   const [aprendices, setAprendices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editando, setEditando] = useState(null);
   const [aprendizEditado, setAprendizEditado] = useState({});
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    cargarAprendices();
-  }, []);
+    // Verificar si el usuario es administrador
+    const checkAuth = () => {
+      if (SecurityUtils.isAdmin()) {
+        setIsAuthorized(true);
+        cargarAprendices();
+      } else {
+        setIsAuthorized(false);
+        // Redirigir al login si no está autorizado
+        setActiveSection && setActiveSection('login');
+      }
+    };
+    
+    checkAuth();
+  }, [setActiveSection]);
 
   const cargarAprendices = async () => {
     try {
@@ -66,6 +80,11 @@ const TablaAprendices = () => {
       [e.target.name]: e.target.value
     });
   };
+
+  // Si no está autorizado, no renderizar el contenido
+  if (!isAuthorized) {
+    return null;
+  }
 
   if (loading) return <p>Cargando...</p>;
 

@@ -3,17 +3,31 @@ import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import LeccionesService from '../services/leccionesService';
 import CursosService from '../services/cursosService';
+import SecurityUtils from '../utils/securityUtils';
 
-const TablaLecciones = () => {
+const TablaLecciones = ({ setActiveSection }) => {
   const [lecciones, setLecciones] = useState([]);
   const [cursos, setCursos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editando, setEditando] = useState(null);
   const [leccionEditada, setLeccionEditada] = useState({});
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    cargarDatos();
-  }, []);
+    // Verificar si el usuario es administrador
+    const checkAuth = () => {
+      if (SecurityUtils.isAdmin()) {
+        setIsAuthorized(true);
+        cargarDatos();
+      } else {
+        setIsAuthorized(false);
+        // Redirigir al login si no está autorizado
+        setActiveSection && setActiveSection('login');
+      }
+    };
+    
+    checkAuth();
+  }, [setActiveSection]);
 
   const cargarDatos = async () => {
     try {
@@ -21,7 +35,8 @@ const TablaLecciones = () => {
         LeccionesService.getAllLecciones(),
         CursosService.getAllCursos()
       ]);
-      setLecciones(leccionesData.data || []);
+      
+      setLecciones(leccionesData.data);
       setCursos(cursosData);
     } catch (error) {
       console.error('Error al cargar datos:', error);
@@ -72,6 +87,11 @@ const TablaLecciones = () => {
       [e.target.name]: e.target.value
     });
   };
+
+  // Si no está autorizado, no renderizar el contenido
+  if (!isAuthorized) {
+    return null;
+  }
 
   if (loading) return <p>Cargando...</p>;
 

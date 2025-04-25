@@ -26,7 +26,8 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return aprendiz.getContraseña();
+        // Usar el nuevo método sin caracteres especiales
+        return aprendiz.getPassword();
     }
 
     @Override

@@ -22,7 +22,7 @@ public class Aprendiz {
     @Column(name = "correo", length = 150)
     private String correo;
 
-    @Column(name = "contraseña", length = 12)
+    @Column(name = "contraseña", length = 255)
     private String contraseña;
 
     @Column(name = "tipo_usuario")
@@ -74,12 +74,13 @@ public class Aprendiz {
         this.correo = correo;
     }
 
-    public String getContraseña() {
+    // Método adicional para obtener la contraseña sin caracteres especiales
+    public String getPassword() {
         return contraseña;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setPassword(String password) {
+        this.contraseña = password;
     }
 
     public int getTipoUsuario() {

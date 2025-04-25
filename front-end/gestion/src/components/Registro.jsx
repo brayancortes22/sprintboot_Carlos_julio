@@ -1,43 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import AprendizService from '../services/aprendizService';
-import SecurityUtils from '../utils/securityUtils';
 
-const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
+const Registro = ({ setActiveSection, formStyles }) => {
   const [aprendiz, setAprendiz] = useState({
     nombre: '',
     numeroDocumento: '',
     correo: '',
-    contraseña: '',
-    tipoUsuario: ''
+    contraseña: '', // Mantenemos este nombre para la interfaz de usuario
+    tipoUsuario: '2' // Por defecto, se registra como aprendiz
   });
   
   const [errors, setErrors] = useState({
     nombre: false,
     numeroDocumento: false,
     correo: false,
-    contraseña: false,
-    tipoUsuario: false
+    contraseña: false
   });
   
   const [loading, setLoading] = useState(false);
-  const [isAuthorized, setIsAuthorized] = useState(false);
-
-  useEffect(() => {
-    // Verificar si el usuario es administrador
-    const checkAuth = () => {
-      if (SecurityUtils.isAdmin()) {
-        setIsAuthorized(true);
-      } else {
-        setIsAuthorized(false);
-        // Redirigir al login si no está autorizado
-        setActiveSection && setActiveSection('login');
-      }
-    };
-    
-    checkAuth();
-  }, [setActiveSection]);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +37,12 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
         [name]: false
       }));
     }
+    
+    // Limpiar mensajes
+    if (successMessage || errorMessage) {
+      setSuccessMessage('');
+      setErrorMessage('');
+    }
   };
   
   const validateForm = () => {
@@ -61,8 +51,7 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
       nombre: !aprendiz.nombre.trim(),
       numeroDocumento: !aprendiz.numeroDocumento || isNaN(documentNumber) || documentNumber <= 0 || aprendiz.numeroDocumento.includes('.'),
       correo: !aprendiz.correo.trim() || !/\S+@\S+\.\S+/.test(aprendiz.correo),
-      contraseña: !aprendiz.contraseña.trim() || aprendiz.contraseña.length < 4,
-      tipoUsuario: !aprendiz.tipoUsuario
+      contraseña: !aprendiz.contraseña.trim() || aprendiz.contraseña.length < 4
     };
     
     setErrors(newErrors);
@@ -74,38 +63,65 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
       const errorMessage = errors.numeroDocumento ? 
         'El número de documento debe ser un número entero positivo' : 
         'Por favor complete todos los campos requeridos correctamente';
-      alert(errorMessage);
+      setErrorMessage(errorMessage);
       return;
     }
     
     try {
       setLoading(true);
+      console.log('Datos a enviar (original):', aprendiz); // Log para depurar
+      
+      // Crear un nuevo objeto con los datos formateados y renombrando contraseña a password
       const aprendizData = {
-        ...aprendiz,
+        nombre: aprendiz.nombre,
         numeroDocumento: parseInt(aprendiz.numeroDocumento),
+        correo: aprendiz.correo,
+        password: aprendiz.contraseña, // Usar 'password' en lugar de 'contraseña' para evitar problemas con la ñ
         tipoUsuario: parseInt(aprendiz.tipoUsuario)
       };
       
+      console.log('Datos formateados:', JSON.stringify(aprendizData)); // Log para depurar
+      
       await AprendizService.createAprendiz(aprendizData);
-      alert('Aprendiz registrado exitosamente');
-      setActiveSection('admin');
+      setSuccessMessage('¡Registro exitoso! Ahora puedes iniciar sesión con tus credenciales.');
+      
+      // Limpiar el formulario
+      setAprendiz({
+        nombre: '',
+        numeroDocumento: '',
+        correo: '',
+        contraseña: '',
+        tipoUsuario: '2'
+      });
+      
+      // Después de 3 segundos, redirigir al login
+      setTimeout(() => {
+        setActiveSection('login');
+      }, 3000);
     } catch (error) {
-      console.error('Error al registrar el aprendiz:', error);
-      alert(error.message || 'Error al registrar el aprendiz');
+      console.error('Error al registrar:', error);
+      setErrorMessage(error.message || 'Error al registrar el usuario');
     } finally {
       setLoading(false);
     }
   };
 
-  // Si no está autorizado, no renderizar el contenido
-  if (!isAuthorized) {
-    return null;
-  }
-
   return (
     <Card className="rounded-2xl shadow-lg bg-white">
       <CardContent>
-        <h2 className="text-2xl font-bold mb-4 text-indigo-600">Registro Aprendiz</h2>
+        <h2 className="text-2xl font-bold mb-4 text-indigo-600">Crear una cuenta</h2>
+        
+        {successMessage && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {successMessage}
+          </div>
+        )}
+        
+        {errorMessage && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {errorMessage}
+          </div>
+        )}
         
         <div className="mb-3">
           <input 
@@ -154,39 +170,28 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
           {errors.contraseña && <p className="text-red-500 text-sm">La contraseña debe tener al menos 4 caracteres</p>}
         </div>
         
-        <div className="mb-3">
-          <select
-            className={`${formStyles} ${errors.tipoUsuario ? 'border-red-500' : ''}`}
-            name="tipoUsuario"
-            value={aprendiz.tipoUsuario}
-            onChange={handleChange}
-          >
-            <option value="">Seleccione tipo de usuario *</option>
-            <option value="1">Administrador</option>
-            <option value="2">Aprendiz</option>
-          </select>
-          {errors.tipoUsuario && <p className="text-red-500 text-sm">Seleccione un tipo de usuario</p>}
-        </div>
+        <Button 
+          className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white" 
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? 'Registrando...' : 'Registrarme'}
+        </Button>
         
-        <div className="flex justify-between">
-          <Button 
-            className="bg-red-600 hover:bg-red-700 text-white mr-2" 
-            onClick={() => setActiveSection('admin')}
-            disabled={loading}
-          >
-            Cancelar
-          </Button>
-          <Button 
-            className="bg-indigo-600 hover:bg-indigo-700 text-white" 
-            onClick={handleSubmit}
-            disabled={loading}
-          >
-            {loading ? 'Registrando...' : 'Registrar Aprendiz'}
-          </Button>
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            ¿Ya tienes una cuenta?{' '}
+            <button 
+              className="text-indigo-600 hover:underline" 
+              onClick={() => setActiveSection('login')}
+            >
+              Iniciar sesión
+            </button>
+          </p>
         </div>
       </CardContent>
     </Card>
   );
 };
 
-export default RegistroAprendiz;
+export default Registro;

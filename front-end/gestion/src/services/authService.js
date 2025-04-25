@@ -1,24 +1,41 @@
 // Servicio para manejar la autenticación y JWT
+import HttpClient from '../utils/httpClient';
+
 const API_URL = 'http://localhost:8080';
 
-export const AuthService = {
+const AuthService = {
     // Iniciar sesión
     login: async (credentials) => {
         try {
+            console.log("Enviando credenciales:", credentials);
+            
+            // Asegurar que las credenciales tengan el formato correcto para el backend
+            const authData = {
+                correo: credentials.correo,
+                contraseña: credentials.contraseña,
+                tipoUsuario: parseInt(credentials.tipoUsuario)
+            };
+            
+            console.log("Datos enviados al servidor:", JSON.stringify(authData));
+            
             const response = await fetch(`${API_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(credentials)
+                body: JSON.stringify(authData)
             });
 
+            console.log("Respuesta del servidor:", response.status);
+            
             if (!response.ok) {
                 const errorData = await response.json();
+                console.error("Error detallado:", errorData);
                 throw new Error(errorData.message || 'Error en la autenticación');
             }
 
             const responseData = await response.json();
+            console.log("Datos de respuesta:", responseData);
             
             // Guardar el token en localStorage
             if (responseData.data && responseData.data.token) {

@@ -1,51 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Button } from '@mui/material';
+import { Card, CardContent } from './ui/Card';
+import { Button } from './ui/Button';
 import LeccionesService from '../services/leccionesService';
 import CursosService from '../services/cursosService';
+import SecurityUtils from '../utils/securityUtils';
 
-const RegistroLeccion = ({ setActiveSection }) => {
-  // Estados
+const RegistroLeccion = ({ setActiveSection, }) => {
   const [leccion, setLeccion] = useState({
     nombre_leccion: '',
-    ruta_leccion: '',
     descripcion: '',
+    ruta_leccion: '',
     id_curso: ''
+  });
+  
+  const [errors, setErrors] = useState({
+    nombre_leccion: false,
+    descripcion: false,
+    ruta_leccion: false,
+    id_curso: false
   });
   
   const [cursos, setCursos] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [loadingCursos, setLoadingCursos] = useState(true);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
-  // Cargar cursos al montar el componente
   useEffect(() => {
-    const fetchCursos = async () => {
-      try {
-        const response = await CursosService.getAllCursos();
-        // Verifica si response es un array y tiene elementos
-        if (Array.isArray(response) && response.length > 0) {
-          // Mapear los datos para que coincidan con la estructura esperada
-          const cursosFormateados = response.map(curso => ({
-            id_curso: curso.idCurso,
-            nombre_programa: curso.nombrePrograma,
-            codigo_ficha: curso.codigoFicha
-          }));
-          console.log('Cursos formateados:', cursosFormateados);
-          setCursos(cursosFormateados);
-        } else {
-          console.log('No se encontraron cursos');
-          setCursos([]);
-        }
-      } catch (error) {
-        console.error("Error al cargar cursos:", error);
-        alert("Error al cargar la lista de cursos");
-        setCursos([]);
+    // Verificar si el usuario es administrador
+    const checkAuth = () => {
+      if (SecurityUtils.isAdmin()) {
+        setIsAuthorized(true);
+        cargarCursos();
+      } else {
+        setIsAuthorized(false);
+        // Redirigir al login si no está autorizado
+        setActiveSection && setActiveSection('login');
       }
     };
+    
+    checkAuth();
+  }, [setActiveSection]);
 
-    fetchCursos();
-  }, []);
+  const cargarCursos = async () => {
+    try {
+      const data = await CursosService.getAllCursos();
+      setCursos(data);
+    } catch (error) {
+      console.error('Error al cargar cursos:', error);
+      alert('Error al cargar los cursos');
+    } finally {
+      setLoadingCursos(false);
+    }
+  };
 
-  // Manejador de cambios en los campos
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLeccion(prev => ({
@@ -60,8 +67,7 @@ const RegistroLeccion = ({ setActiveSection }) => {
       }));
     }
   };
-
-  // Validación del formulario
+  
   const validateForm = () => {
     const newErrors = {};
     
@@ -85,10 +91,7 @@ const RegistroLeccion = ({ setActiveSection }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Manejador del envío del formulario
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!validateForm()) {
       return;
     }
@@ -111,12 +114,17 @@ const RegistroLeccion = ({ setActiveSection }) => {
     }
   };
 
+  // Si no está autorizado, no renderizar el contenido
+  if (!isAuthorized) {
+    return null;
+  }
+
+  if (loadingCursos) return <p>Cargando cursos...</p>;
+
   return (
-    <Card className="max-w-md mx-auto mt-8 p-4">
+    <Card className="rounded-2xl shadow-lg bg-white">
       <CardContent>
-        <h2 className="text-2xl font-bold mb-4 text-center text-indigo-600">
-          Registro Lección
-        </h2>
+        <h2 className="text-2xl font-bold mb-4 text-indigo-600">Registro de Lección</h2>
         
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -192,27 +200,20 @@ const RegistroLeccion = ({ setActiveSection }) => {
             )}
           </div>
 
-          <div className="flex gap-4">
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
+          <div className="flex justify-between">
+            <Button 
+              className="bg-red-600 hover:bg-red-700 text-white mr-2" 
+              onClick={() => setActiveSection('admin')}
               disabled={loading}
-              className="bg-indigo-600 hover:bg-indigo-700"
+            >
+              Cancelar
+            </Button>
+            <Button 
+              className="bg-indigo-600 hover:bg-indigo-700 text-white" 
+              onClick={handleSubmit}
+              disabled={loading}
             >
               {loading ? 'Registrando...' : 'Registrar Lección'}
-            </Button>
-            
-            <Button
-              type="button"
-              variant="contained"
-              color="secondary"
-              fullWidth
-              onClick={() => setActiveSection('admin')}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Volver
             </Button>
           </div>
         </form>

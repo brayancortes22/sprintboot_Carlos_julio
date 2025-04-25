@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import CursosService from '../services/cursosService';
+import SecurityUtils from '../utils/securityUtils';
 
 const RegistroCurso = ({ setActiveSection, formStyles }) => {
   const [curso, setCurso] = useState({
@@ -21,6 +22,22 @@ const RegistroCurso = ({ setActiveSection, formStyles }) => {
   });
   
   const [loading, setLoading] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+
+  useEffect(() => {
+    // Verificar si el usuario es administrador
+    const checkAuth = () => {
+      if (SecurityUtils.isAdmin()) {
+        setIsAuthorized(true);
+      } else {
+        setIsAuthorized(false);
+        // Redirigir al login si no está autorizado
+        setActiveSection && setActiveSection('login');
+      }
+    };
+    
+    checkAuth();
+  }, [setActiveSection]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,6 +94,11 @@ const RegistroCurso = ({ setActiveSection, formStyles }) => {
       setLoading(false);
     }
   };
+
+  // Si no está autorizado, no renderizar el contenido
+  if (!isAuthorized) {
+    return null;
+  }
 
   return (
     <Card className="rounded-2xl shadow-lg bg-white">

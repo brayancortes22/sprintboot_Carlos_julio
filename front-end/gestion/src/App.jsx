@@ -9,6 +9,7 @@ import RegistroLeccion from './components/RegistroLeccion';
 import RegistroCertificado from './components/RegistroCertificado';
 import RegistroAprendiz from './components/RegistroAprendiz';
 import AprendizPanel from './components/AprendizPanel';
+import Registro from './components/Registro';
 import { Button } from './components/ui/Button';
 import AuthService from './services/authService';
 import './App.css';
@@ -57,6 +58,11 @@ function App() {
         <Login setActiveSection={setActiveSection} formStyles={formStyles} setLoggedUser={setLoggedUser} />
       </motion.div>
     ),
+    registro: (
+      <motion.div variants={cardVariants} initial="hidden" animate="visible">
+        <Registro setActiveSection={setActiveSection} formStyles={formStyles} />
+      </motion.div>
+    ),
     certificados: (
       <motion.div variants={cardVariants} initial="hidden" animate="visible">
         <Certificados setActiveSection={setActiveSection} formStyles={formStyles} />
@@ -100,13 +106,29 @@ function App() {
         <div className="container mx-auto flex justify-between">
           <span className="font-bold">Sistema Académico</span>
           <div>
-            {activeSection !== 'login' && (
+            {activeSection !== 'login' && activeSection !== 'registro' && (
               <Button 
                 className="bg-white text-indigo-600" 
                 onClick={handleLogout}
               >
                 Cerrar Sesión
               </Button>
+            )}
+            {(activeSection === 'login' || activeSection === 'registro') && (
+              <div className="flex space-x-2">
+                <Button 
+                  className={`${activeSection === 'login' ? 'bg-white text-indigo-600' : 'bg-indigo-500 text-white'}`}
+                  onClick={() => setActiveSection('login')}
+                >
+                  Iniciar Sesión
+                </Button>
+                <Button 
+                  className={`${activeSection === 'registro' ? 'bg-white text-indigo-600' : 'bg-indigo-500 text-white'}`}
+                  onClick={() => setActiveSection('registro')}
+                >
+                  Registrarse
+                </Button>
+              </div>
             )}
           </div>
         </div>

@@ -159,6 +159,18 @@ const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
         >
           {loading ? 'Verificando...' : 'Ingresar'}
         </Button>
+        
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            ¿No tienes una cuenta?{' '}
+            <button 
+              className="text-indigo-600 hover:underline" 
+              onClick={() => setActiveSection('registro')}
+            >
+              Regístrate aquí
+            </button>
+          </p>
+        </div>
       </CardContent>
     </Card>
   );

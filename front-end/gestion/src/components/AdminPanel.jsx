@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import RegistroAprendiz from './RegistroAprendiz';
 import RegistroCurso from './RegistroCurso';
 import RegistroLeccion from './RegistroLeccion';

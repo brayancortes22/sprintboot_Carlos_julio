@@ -3,30 +3,45 @@ import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import CertificadosService from '../services/certificadosService';
 import AprendizService from '../services/aprendizService';
-import LeccionesService from '../services/leccionesService';
+import CursosService from '../services/cursosService';
+import SecurityUtils from '../utils/securityUtils';
 
-const TablaCertificados = () => {
+const TablaCertificados = ({ setActiveSection }) => {
   const [certificados, setCertificados] = useState([]);
   const [aprendices, setAprendices] = useState([]);
-  const [lecciones, setLecciones] = useState([]);
+  const [cursos, setCursos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editando, setEditando] = useState(null);
   const [certificadoEditado, setCertificadoEditado] = useState({});
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    cargarDatos();
-  }, []);
+    // Verificar si el usuario es administrador
+    const checkAuth = () => {
+      if (SecurityUtils.isAdmin()) {
+        setIsAuthorized(true);
+        cargarDatos();
+      } else {
+        setIsAuthorized(false);
+        // Redirigir al login si no está autorizado
+        setActiveSection && setActiveSection('login');
+      }
+    };
+    
+    checkAuth();
+  }, [setActiveSection]);
 
   const cargarDatos = async () => {
     try {
-      const [certificadosData, aprendicesData, leccionesData] = await Promise.all([
+      const [certificadosData, aprendicesData, cursosData] = await Promise.all([
         CertificadosService.getAllCertificados(),
         AprendizService.getAllAprendices(),
-        LeccionesService.getAllLecciones()
+        CursosService.getAllCursos()
       ]);
+      
       setCertificados(certificadosData);
       setAprendices(aprendicesData);
-      setLecciones(leccionesData.data || []);
+      setCursos(cursosData);
     } catch (error) {
       console.error('Error al cargar datos:', error);
       alert('Error al cargar los datos');
@@ -79,6 +94,11 @@ const TablaCertificados = () => {
       [e.target.name]: e.target.value
     });
   };
+
+  // Si no está autorizado, no renderizar el contenido
+  if (!isAuthorized) {
+    return null;
+  }
 
   if (loading) return <p>Cargando...</p>;
 
@@ -153,9 +173,9 @@ const TablaCertificados = () => {
                           className="w-full p-1 border rounded"
                         >
                           <option value="">Seleccionar lección</option>
-                          {lecciones.map(leccion => (
-                            <option key={leccion.id_leccion} value={leccion.id_leccion}>
-                              {leccion.nombre_leccion}
+                          {cursos.map(curso => (
+                            <option key={curso.id_curso} value={curso.id_curso}>
+                              {curso.nombre_curso}
                             </option>
                           ))}
                         </select>
@@ -178,7 +198,7 @@ const TablaCertificados = () => {
                         {aprendices.find(a => a.id_aprendiz === certificado.idAprendiz)?.nombre || 'No asignado'}
                       </td>
                       <td className="px-4 py-2">
-                        {lecciones.find(l => l.id_leccion === certificado.idLecciones)?.nombre_leccion || 'No asignado'}
+                        {cursos.find(c => c.id_curso === certificado.idLecciones)?.nombre_curso || 'No asignado'}
                       </td>
                       <td className="px-4 py-2">
                         <Button onClick={() => handleEditar(certificado)} className="bg-blue-500 hover:bg-blue-600 text-white mr-2">

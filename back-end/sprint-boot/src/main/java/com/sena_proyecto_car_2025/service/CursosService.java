@@ -2,15 +2,24 @@ package com.sena_proyecto_car_2025.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sena_proyecto_car_2025.model.Cursos;
+import com.sena_proyecto_car_2025.repository.IAprendizCurso;
 import com.sena_proyecto_car_2025.repository.ICursos;
+import com.sena_proyecto_car_2025.repository.ILecciones;
 
 @Service
 public class CursosService {
 
     @Autowired
     private ICursos cursosRepository;
+    
+    @Autowired
+    private ILecciones leccionesRepository;
+    
+    @Autowired
+    private IAprendizCurso aprendizCursoRepository;
 
     public Cursos save(Cursos curso) {
         return cursosRepository.save(curso);
@@ -34,12 +43,5 @@ public class CursosService {
         return null;
     }
 
-    // Eliminar un registro
-    public boolean delete(Integer id) {
-        if (cursosRepository.existsById(id)) {
-            cursosRepository.deleteById(id);
-            return true;
-        }
-        return false;
-    }
+    
 }

@@ -3,6 +3,7 @@ import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import AprendizService from '../services/aprendizService';
 import SecurityUtils from '../utils/securityUtils';
+import AuthService from '../services/authService';
 
 const TablaAprendices = ({ setActiveSection }) => {
   const [aprendices, setAprendices] = useState([]);
@@ -29,11 +30,20 @@ const TablaAprendices = ({ setActiveSection }) => {
 
   const cargarAprendices = async () => {
     try {
+      setLoading(true);
       const data = await AprendizService.getAllAprendices();
       setAprendices(data);
     } catch (error) {
       console.error('Error al cargar aprendices:', error);
-      alert('Error al cargar los aprendices');
+      
+      // Verificar si es un error de autenticación
+      if (error.message && error.message.includes('sesión')) {
+        alert('Su sesión ha expirado. Por favor inicie sesión nuevamente.');
+        AuthService.logout();
+        setActiveSection('login');
+      } else {
+        alert('Error al cargar los aprendices: ' + (error.message || 'Error desconocido'));
+      }
     } finally {
       setLoading(false);
     }
@@ -51,25 +61,67 @@ const TablaAprendices = ({ setActiveSection }) => {
 
   const handleGuardarEdicion = async () => {
     try {
+      // Verificar que existe token
+      const token = AuthService.getToken();
+      if (!token) {
+        alert('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+        setActiveSection('login');
+        return;
+      }
+      
+      setLoading(true);
       await AprendizService.updateAprendiz(editando, aprendizEditado);
       alert('Aprendiz actualizado correctamente');
       cargarAprendices();
       setEditando(null);
     } catch (error) {
       console.error('Error al actualizar:', error);
-      alert('Error al actualizar el aprendiz');
+      
+      // Mostrar mensaje específico según el tipo de error
+      if (error.message && error.message.includes('sesión')) {
+        alert('Su sesión ha expirado. Por favor inicie sesión nuevamente.');
+        AuthService.logout();
+        setActiveSection('login');
+      } else if (error.message && error.message.includes('403')) {
+        alert('No tiene permisos para actualizar este aprendiz. Por favor verifique su rol.');
+      } else {
+        alert('Error al actualizar el aprendiz: ' + (error.message || 'Error desconocido'));
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleEliminar = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este aprendiz?')) {
       try {
+        // Verificar que existe token
+        const token = AuthService.getToken();
+        if (!token) {
+          alert('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+          setActiveSection('login');
+          return;
+        }
+        
+        setLoading(true);
         await AprendizService.deleteAprendiz(id);
         alert('Aprendiz eliminado correctamente');
         cargarAprendices();
       } catch (error) {
         console.error('Error al eliminar:', error);
-        alert('Error al eliminar el aprendiz');
+        
+        // Mostrar mensaje específico según el tipo de error
+        if (error.message && error.message.includes('sesión')) {
+          alert('Su sesión ha expirado. Por favor inicie sesión nuevamente.');
+          AuthService.logout();
+          setActiveSection('login');
+        } else if (error.message && error.message.includes('403')) {
+          alert('No tiene permisos para eliminar este aprendiz. Por favor verifique su rol.');
+        } else {
+          alert('Error al eliminar el aprendiz: ' + (error.message || 'Error desconocido'));
+        }
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -147,10 +199,18 @@ const TablaAprendices = ({ setActiveSection }) => {
                         </select>
                       </td>
                       <td className="px-4 py-2">
-                        <Button onClick={handleGuardarEdicion} className="bg-green-500 hover:bg-green-600 text-white mr-2">
-                          Guardar
+                        <Button 
+                          onClick={handleGuardarEdicion} 
+                          className="bg-green-500 hover:bg-green-600 text-white mr-2"
+                          disabled={loading}
+                        >
+                          {loading ? 'Guardando...' : 'Guardar'}
                         </Button>
-                        <Button onClick={handleCancelarEdicion} className="bg-gray-500 hover:bg-gray-600 text-white">
+                        <Button 
+                          onClick={handleCancelarEdicion} 
+                          className="bg-gray-500 hover:bg-gray-600 text-white"
+                          disabled={loading}
+                        >
                           Cancelar
                         </Button>
                       </td>
@@ -162,10 +222,18 @@ const TablaAprendices = ({ setActiveSection }) => {
                       <td className="px-4 py-2">{aprendiz.correo}</td>
                       <td className="px-4 py-2">{aprendiz.tipoUsuario === 1 ? 'Administrador' : 'Aprendiz'}</td>
                       <td className="px-4 py-2">
-                        <Button onClick={() => handleEditar(aprendiz)} className="bg-blue-500 hover:bg-blue-600 text-white mr-2">
+                        <Button 
+                          onClick={() => handleEditar(aprendiz)} 
+                          className="bg-blue-500 hover:bg-blue-600 text-white mr-2"
+                          disabled={loading}
+                        >
                           Editar
                         </Button>
-                        <Button onClick={() => handleEliminar(aprendiz.id_aprendiz)} className="bg-red-500 hover:bg-red-600 text-white">
+                        <Button 
+                          onClick={() => handleEliminar(aprendiz.id_aprendiz)} 
+                          className="bg-red-500 hover:bg-red-600 text-white"
+                          disabled={loading}
+                        >
                           Eliminar
                         </Button>
                       </td>

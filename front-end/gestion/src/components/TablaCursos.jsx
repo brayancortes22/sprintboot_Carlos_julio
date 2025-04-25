@@ -3,6 +3,7 @@ import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import CursosService from '../services/cursosService';
 import SecurityUtils from '../utils/securityUtils';
+import AuthService from '../services/authService';
 
 const TablaCursos = ({ setActiveSection }) => {
   const [cursos, setCursos] = useState([]);
@@ -29,11 +30,19 @@ const TablaCursos = ({ setActiveSection }) => {
 
   const cargarCursos = async () => {
     try {
+      setLoading(true);
       const data = await CursosService.getAllCursos();
       setCursos(data);
     } catch (error) {
       console.error('Error al cargar cursos:', error);
-      alert('Error al cargar los cursos');
+      
+      if (error.message && error.message.includes('sesión')) {
+        alert('Su sesión ha expirado. Por favor inicie sesión nuevamente.');
+        AuthService.logout();
+        setActiveSection('login');
+      } else {
+        alert('Error al cargar los cursos: ' + (error.message || 'Error desconocido'));
+      }
     } finally {
       setLoading(false);
     }
@@ -55,28 +64,39 @@ const TablaCursos = ({ setActiveSection }) => {
 
   const handleGuardarEdicion = async () => {
     try {
+      // Verificar que existe token
+      const token = AuthService.getToken();
+      if (!token) {
+        alert('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+        setActiveSection('login');
+        return;
+      }
+
+      setLoading(true);
       await CursosService.updateCurso(editando, cursoEditado);
       alert('Curso actualizado correctamente');
       cargarCursos();
       setEditando(null);
     } catch (error) {
       console.error('Error al actualizar:', error);
-      alert('Error al actualizar el curso');
+      
+      // Mostrar mensaje específico según el tipo de error
+      if (error.message && error.message.includes('sesión')) {
+        alert('Su sesión ha expirado. Por favor inicie sesión nuevamente.');
+        AuthService.logout();
+        setActiveSection('login');
+      } else if (error.message && error.message.includes('403')) {
+        alert('No tiene permisos para actualizar este curso. Por favor verifique su rol.');
+      } else {
+        alert('Error al actualizar el curso: ' + (error.message || 'Error desconocido'));
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleEliminar = async (id) => {
-    if (window.confirm('¿Está seguro de eliminar este curso?')) {
-      try {
-        await CursosService.deleteCurso(id);
-        alert('Curso eliminado correctamente');
-        cargarCursos();
-      } catch (error) {
-        console.error('Error al eliminar:', error);
-        alert('Error al eliminar el curso');
-      }
-    }
-  };
+ 
+    
 
   const handleChange = (e) => {
     setCursoEditado({
@@ -158,10 +178,10 @@ const TablaCursos = ({ setActiveSection }) => {
                         />
                       </td>
                       <td className="px-4 py-2">
-                        <Button onClick={handleGuardarEdicion} className="bg-green-500 hover:bg-green-600 text-white mr-2">
-                          Guardar
+                        <Button onClick={handleGuardarEdicion} className="bg-green-500 hover:bg-green-600 text-white mr-2" disabled={loading}>
+                          {loading ? 'Guardando...' : 'Guardar'}
                         </Button>
-                        <Button onClick={handleCancelarEdicion} className="bg-gray-500 hover:bg-gray-600 text-white">
+                        <Button onClick={handleCancelarEdicion} className="bg-gray-500 hover:bg-gray-600 text-white" disabled={loading}>
                           Cancelar
                         </Button>
                       </td>
@@ -174,12 +194,10 @@ const TablaCursos = ({ setActiveSection }) => {
                       <td className="px-4 py-2">{new Date(curso.fechaInicio).toLocaleDateString()}</td>
                       <td className="px-4 py-2">{new Date(curso.fechaFin).toLocaleDateString()}</td>
                       <td className="px-4 py-2">
-                        <Button onClick={() => handleEditar(curso)} className="bg-blue-500 hover:bg-blue-600 text-white mr-2">
+                        <Button onClick={() => handleEditar(curso)} className="bg-blue-500 hover:bg-blue-600 text-white mr-2" disabled={loading}>
                           Editar
                         </Button>
-                        <Button onClick={() => handleEliminar(curso.idCurso)} className="bg-red-500 hover:bg-red-600 text-white">
-                          Eliminar
-                        </Button>
+                        
                       </td>
                     </>
                   )}

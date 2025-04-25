@@ -5,11 +5,13 @@ import CertificadosService from '../services/certificadosService';
 import AprendizService from '../services/aprendizService';
 import CursosService from '../services/cursosService';
 import SecurityUtils from '../utils/securityUtils';
+import AuthService from '../services/authService';
+import LeccionesService from '../services/leccionesService';
 
 const TablaCertificados = ({ setActiveSection }) => {
   const [certificados, setCertificados] = useState([]);
   const [aprendices, setAprendices] = useState([]);
-  const [cursos, setCursos] = useState([]);
+  const [lecciones, setLecciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editando, setEditando] = useState(null);
   const [certificadoEditado, setCertificadoEditado] = useState({});
@@ -33,18 +35,30 @@ const TablaCertificados = ({ setActiveSection }) => {
 
   const cargarDatos = async () => {
     try {
-      const [certificadosData, aprendicesData, cursosData] = await Promise.all([
+      setLoading(true);
+      const [certificadosData, aprendicesData, leccionesData] = await Promise.all([
         CertificadosService.getAllCertificados(),
         AprendizService.getAllAprendices(),
-        CursosService.getAllCursos()
+        LeccionesService.getAllLecciones()
       ]);
       
       setCertificados(certificadosData);
       setAprendices(aprendicesData);
-      setCursos(cursosData);
+      
+      if (leccionesData && leccionesData.data) {
+        setLecciones(leccionesData.data);
+      }
     } catch (error) {
       console.error('Error al cargar datos:', error);
-      alert('Error al cargar los datos');
+      
+      // Verificar si es un error de autenticación
+      if (error.message && error.message.includes('sesión')) {
+        alert('Su sesión ha expirado. Por favor inicie sesión nuevamente.');
+        AuthService.logout();
+        setActiveSection('login');
+      } else {
+        alert('Error al cargar los datos: ' + (error.message || 'Error desconocido'));
+      }
     } finally {
       setLoading(false);
     }
@@ -65,29 +79,38 @@ const TablaCertificados = ({ setActiveSection }) => {
 
   const handleGuardarEdicion = async () => {
     try {
+      // Verificar que existe token
+      const token = AuthService.getToken();
+      if (!token) {
+        alert('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+        setActiveSection('login');
+        return;
+      }
+      
+      setLoading(true);
       await CertificadosService.updateCertificado(editando, certificadoEditado);
       alert('Certificado actualizado correctamente');
       cargarDatos();
       setEditando(null);
     } catch (error) {
       console.error('Error al actualizar:', error);
-      alert('Error al actualizar el certificado');
-    }
-  };
-
-  const handleEliminar = async (id) => {
-    if (window.confirm('¿Está seguro de eliminar este certificado?')) {
-      try {
-        await CertificadosService.deleteCertificado(id);
-        alert('Certificado eliminado correctamente');
-        cargarDatos();
-      } catch (error) {
-        console.error('Error al eliminar:', error);
-        alert('Error al eliminar el certificado');
+      
+      // Mostrar mensaje específico según el tipo de error
+      if (error.message && error.message.includes('sesión')) {
+        alert('Su sesión ha expirado. Por favor inicie sesión nuevamente.');
+        AuthService.logout();
+        setActiveSection('login');
+      } else if (error.message && error.message.includes('403')) {
+        alert('No tiene permisos para actualizar este certificado. Por favor verifique su rol.');
+      } else {
+        alert('Error al actualizar el certificado: ' + (error.message || 'Error desconocido'));
       }
+    } finally {
+      setLoading(false);
     }
   };
 
+  
   const handleChange = (e) => {
     setCertificadoEditado({
       ...certificadoEditado,
@@ -126,7 +149,7 @@ const TablaCertificados = ({ setActiveSection }) => {
                       <td className="px-4 py-2">
                         <input
                           type="text"
-                          name="nombre_certificado"
+                          name="nombreCertificado"
                           value={certificadoEditado.nombreCertificado || ''}
                           onChange={handleChange}
                           className="w-full p-1 border rounded"
@@ -135,7 +158,7 @@ const TablaCertificados = ({ setActiveSection }) => {
                       <td className="px-4 py-2">
                         <input
                           type="number"
-                          name="numero_documento_certificado"
+                          name="numeroDocumentoCertificado"
                           value={certificadoEditado.numeroDocumentoCertificado || ''}
                           onChange={handleChange}
                           className="w-full p-1 border rounded"
@@ -152,7 +175,7 @@ const TablaCertificados = ({ setActiveSection }) => {
                       </td>
                       <td className="px-4 py-2">
                         <select
-                          name="id_aprendiz"
+                          name="idAprendiz"
                           value={certificadoEditado.idAprendiz || ''}
                           onChange={handleChange}
                           className="w-full p-1 border rounded"
@@ -167,24 +190,32 @@ const TablaCertificados = ({ setActiveSection }) => {
                       </td>
                       <td className="px-4 py-2">
                         <select
-                          name="id_lecciones"
+                          name="idLecciones"
                           value={certificadoEditado.idLecciones || ''}
                           onChange={handleChange}
                           className="w-full p-1 border rounded"
                         >
                           <option value="">Seleccionar lección</option>
-                          {cursos.map(curso => (
-                            <option key={curso.id_curso} value={curso.id_curso}>
-                              {curso.nombre_curso}
+                          {lecciones.map(leccion => (
+                            <option key={leccion.id_leccion} value={leccion.id_leccion}>
+                              {leccion.nombre_leccion}
                             </option>
                           ))}
                         </select>
                       </td>
                       <td className="px-4 py-2">
-                        <Button onClick={handleGuardarEdicion} className="bg-green-500 hover:bg-green-600 text-white mr-2">
-                          Guardar
+                        <Button 
+                          onClick={handleGuardarEdicion} 
+                          className="bg-green-500 hover:bg-green-600 text-white mr-2"
+                          disabled={loading}
+                        >
+                          {loading ? 'Guardando...' : 'Guardar'}
                         </Button>
-                        <Button onClick={handleCancelarEdicion} className="bg-gray-500 hover:bg-gray-600 text-white">
+                        <Button 
+                          onClick={handleCancelarEdicion} 
+                          className="bg-gray-500 hover:bg-gray-600 text-white"
+                          disabled={loading}
+                        >
                           Cancelar
                         </Button>
                       </td>
@@ -198,15 +229,17 @@ const TablaCertificados = ({ setActiveSection }) => {
                         {aprendices.find(a => a.id_aprendiz === certificado.idAprendiz)?.nombre || 'No asignado'}
                       </td>
                       <td className="px-4 py-2">
-                        {cursos.find(c => c.id_curso === certificado.idLecciones)?.nombre_curso || 'No asignado'}
+                        {lecciones.find(l => l.id_leccion === certificado.idLecciones)?.nombre_leccion || 'No asignado'}
                       </td>
                       <td className="px-4 py-2">
-                        <Button onClick={() => handleEditar(certificado)} className="bg-blue-500 hover:bg-blue-600 text-white mr-2">
+                        <Button 
+                          onClick={() => handleEditar(certificado)} 
+                          className="bg-blue-500 hover:bg-blue-600 text-white mr-2"
+                          disabled={loading}
+                        >
                           Editar
                         </Button>
-                        <Button onClick={() => handleEliminar(certificado.idCertificado)} className="bg-red-500 hover:bg-red-600 text-white">
-                          Eliminar
-                        </Button>
+                        
                       </td>
                     </>
                   )}

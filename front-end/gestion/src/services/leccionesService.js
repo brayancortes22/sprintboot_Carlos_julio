@@ -1,4 +1,5 @@
 import httpClient from '../utils/httpClient';
+import AuthService from './authService';
 
 const BASE_URL = '/lecciones';
 
@@ -27,6 +28,13 @@ const LeccionesService = {
     try {
       console.log('Enviando datos de lección:', leccionData);
       
+      // Verificar que exista el token de autenticación
+      const token = AuthService.getToken();
+      if (!token) {
+        console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+        throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+      }
+      
       // Mapear los datos para que coincidan con lo que espera el backend
       const mappedData = {
         nombre_leccion: leccionData.nombre_leccion,
@@ -47,6 +55,13 @@ const LeccionesService = {
 
   updateLeccion: async (id, leccionData) => {
     try {
+      // Verificar que exista el token de autenticación
+      const token = AuthService.getToken();
+      if (!token) {
+        console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+        throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+      }
+      
       const response = await httpClient.put(`${BASE_URL}/actualizar/${id}`, leccionData);
       return response;
     } catch (error) {
@@ -57,6 +72,13 @@ const LeccionesService = {
 
   deleteLeccion: async (id) => {
     try {
+      // Verificar que exista el token de autenticación
+      const token = AuthService.getToken();
+      if (!token) {
+        console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+        throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+      }
+      
       const response = await httpClient.delete(`${BASE_URL}/eliminar/${id}`);
       return response;
     } catch (error) {

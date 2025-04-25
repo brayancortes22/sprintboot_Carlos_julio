@@ -3,6 +3,7 @@ import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import AprendizService from '../services/aprendizService';
 import SecurityUtils from '../utils/securityUtils';
+import AuthService from '../services/authService';
 
 const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
   const [aprendiz, setAprendiz] = useState({
@@ -80,18 +81,38 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
     
     try {
       setLoading(true);
+      
+      // Verificar que exista el token de autenticación
+      const token = AuthService.getToken();
+      if (!token) {
+        console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+        alert('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+        setActiveSection('login');
+        return;
+      }
+      
       const aprendizData = {
         ...aprendiz,
         numeroDocumento: parseInt(aprendiz.numeroDocumento),
         tipoUsuario: parseInt(aprendiz.tipoUsuario)
       };
       
-      await AprendizService.createAprendiz(aprendizData);
+      console.log('Enviando datos de aprendiz al servidor:', aprendizData);
+      
+      const response = await AprendizService.createAprendiz(aprendizData);
+      console.log('Respuesta del servidor al crear aprendiz:', response);
+      
       alert('Aprendiz registrado exitosamente');
       setActiveSection('admin');
     } catch (error) {
       console.error('Error al registrar el aprendiz:', error);
-      alert(error.message || 'Error al registrar el aprendiz');
+      
+      // Mostrar un mensaje más descriptivo según el tipo de error
+      if (error.message && error.message.includes('403')) {
+        alert('No tienes permisos para registrar aprendices. Por favor verifica tu sesión.');
+      } else {
+        alert('Error al registrar el aprendiz: ' + (error.message || 'Error desconocido'));
+      }
     } finally {
       setLoading(false);
     }

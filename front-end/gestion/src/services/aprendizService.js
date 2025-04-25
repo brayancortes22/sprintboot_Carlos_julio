@@ -130,6 +130,11 @@ const AprendizService = {
     updateAprendiz: async (id, aprendizData) => {
         try {
             const token = AuthService.getToken();
+            if (!token) {
+                console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+                throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+            }
+            
             const headers = {
                 'Content-Type': 'application/json'
             };
@@ -160,6 +165,11 @@ const AprendizService = {
     deleteAprendiz: async (id) => {
         try {
             const token = AuthService.getToken();
+            if (!token) {
+                console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+                throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+            }
+            
             const headers = {
                 'Content-Type': 'application/json'
             };

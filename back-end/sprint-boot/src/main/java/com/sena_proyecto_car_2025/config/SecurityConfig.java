@@ -3,6 +3,7 @@ package com.sena_proyecto_car_2025.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,6 +39,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/aprendices/create").permitAll()
                 .requestMatchers("/api/aprendices/obtener").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                // Rutas para cursos - permitir operaciones para administradores
+                .requestMatchers(HttpMethod.POST, "/api/cursos/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/cursos/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/cursos/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/cursos/**").authenticated()
                 // El resto de URLs requieren autenticación
                 .anyRequest().authenticated()
             )

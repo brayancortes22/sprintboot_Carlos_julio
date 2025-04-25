@@ -191,7 +191,20 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
             <p className="text-red-500 text-sm mt-1">El nombre del certificado es requerido</p>
           )}
         </div>
-        
+        <div className="mb-3">
+          <input 
+            className={`${formStyles} ${errors.numeroDocumentoCertificado ? 'border-red-500' : ''}`}
+            name="numeroDocumentoCertificado" 
+            placeholder="numero de Documento del Certificado *" 
+            type="text" 
+            value={certificado.numeroDocumentoCertificado}
+            onChange={handleChange} 
+            disabled={loading}
+          />
+          {errors.numeroDocumentoCertificado && (
+            <p className="text-red-500 text-sm mt-1">Codigo del certificado es requerido</p>
+          )}
+        </div>
         <div className="mb-3">
           <input 
             className={`${formStyles} ${errors.descripcion ? 'border-red-500' : ''}`}

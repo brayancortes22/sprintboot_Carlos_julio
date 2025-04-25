@@ -1,4 +1,7 @@
 import HttpClient from '../utils/httpClient';
+import AuthService from './authService';
+
+const API_URL = 'http://localhost:8080/api';
 
 const CursosService = {
     getAllCursos: async () => {
@@ -61,7 +64,15 @@ const CursosService = {
     // Actualizar un curso
     updateCurso: async (id, cursoData) => {
         try {
-            const response = await HttpClient.put(`/cursos/${id}`, cursoData);
+            // Verificar que exista el token de autenticación
+            const token = AuthService.getToken();
+            if (!token) {
+                console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+                throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+            }
+            
+            // Usar la ruta correcta para actualizar
+            const response = await HttpClient.put(`/cursos/actualizar/${id}`, cursoData);
             if (response && typeof response === 'object' && response.data) {
                 return response.data;
             }
@@ -75,7 +86,15 @@ const CursosService = {
     // Eliminar un curso
     deleteCurso: async (id) => {
         try {
-            const response = await HttpClient.delete(`/cursos/${id}`);
+            // Verificar que exista el token de autenticación
+            const token = AuthService.getToken();
+            if (!token) {
+                console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+                throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+            }
+            
+            // Usar la ruta correcta para eliminar
+            const response = await HttpClient.delete(`/cursos/eliminar/${id}`);
             return response;
         } catch (error) {
             console.error('Error en deleteCurso:', error);

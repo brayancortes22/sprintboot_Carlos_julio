@@ -106,10 +106,29 @@ public class cursos_controller {
                 ));
         }
     }
+    
+    // Endpoint adicional para compatibilidad con frontend existente
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<GenericResponseDTO<Cursos>> updateCursoAlt(
+            @PathVariable Integer id,
+            @RequestBody Cursos curso) {
+        return updateCurso(id, curso);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<GenericResponseDTO<Void>> deleteCurso(@PathVariable Integer id) {
         try {
+            // Primero verificamos si el curso existe
+            Cursos curso = cursosService.findById(id);
+            if (curso == null) {
+                return ResponseEntity.status(404)
+                    .body(new GenericResponseDTO<>(
+                        404,
+                        "No se encontró el curso con ID: " + id,
+                        null
+                    ));
+            }
+            
             if (cursosService.delete(id)) {
                 return ResponseEntity.ok(new GenericResponseDTO<>(
                     200,
@@ -117,15 +136,26 @@ public class cursos_controller {
                     null
                 ));
             } else {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(400)
+                    .body(new GenericResponseDTO<>(
+                        400,
+                        "No se pudo eliminar el curso. Es posible que existan lecciones o inscripciones asociadas a este curso.",
+                        null
+                    ));
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest()
+            return ResponseEntity.status(400)
                 .body(new GenericResponseDTO<>(
                     400,
                     "Error al eliminar el curso: " + e.getMessage(),
                     null
                 ));
         }
+    }
+    
+    // Endpoint adicional para compatibilidad con frontend existente
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<GenericResponseDTO<Void>> deleteCursoAlt(@PathVariable Integer id) {
+        return deleteCurso(id);
     }
 }

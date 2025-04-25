@@ -1,4 +1,5 @@
 import HttpClient from '../utils/httpClient';
+import AuthService from './authService';
 
 const CertificadosService = {
     // Obtener todos los certificados
@@ -31,6 +32,13 @@ const CertificadosService = {
     // Crear un nuevo certificado
     createCertificado: async (certificadoData) => {
         try {
+            // Verificar que exista el token de autenticación
+            const token = AuthService.getToken();
+            if (!token) {
+                console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+                throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+            }
+            
             console.log('Datos enviados al servidor:', certificadoData);
             const response = await HttpClient.post('/certificados/create', certificadoData);
             console.log('Respuesta del servidor:', response);
@@ -44,6 +52,13 @@ const CertificadosService = {
     // Actualizar un certificado
     updateCertificado: async (id, certificadoData) => {
         try {
+            // Verificar que exista el token de autenticación
+            const token = AuthService.getToken();
+            if (!token) {
+                console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+                throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+            }
+            
             const response = await HttpClient.put(`/certificados/actualizar/${id}`, certificadoData);
             return response.data;
         } catch (error) {
@@ -55,6 +70,13 @@ const CertificadosService = {
     // Eliminar un certificado
     deleteCertificado: async (id) => {
         try {
+            // Verificar que exista el token de autenticación
+            const token = AuthService.getToken();
+            if (!token) {
+                console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+                throw new Error('No hay una sesión activa. Por favor inicie sesión nuevamente.');
+            }
+            
             await HttpClient.delete(`/certificados/eliminar/${id}`);
             return true;
         } catch (error) {

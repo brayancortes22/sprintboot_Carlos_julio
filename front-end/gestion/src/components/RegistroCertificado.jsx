@@ -5,6 +5,7 @@ import CertificadosService from '../services/certificadosService';
 import AprendizService from '../services/aprendizService';
 import CursosService from '../services/cursosService';
 import SecurityUtils from '../utils/securityUtils';
+import AuthService from '../services/authService';
 
 const RegistroCertificado = ({ setActiveSection, formStyles }) => {
   const [certificado, setCertificado] = useState({
@@ -48,13 +49,36 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
   const cargarDatos = async () => {
     try {
       setLoadingData(true);
+      console.log('Solicitando datos al servidor...');
+      
       const [aprendicesData, cursosData] = await Promise.all([
         AprendizService.getAllAprendices(),
         CursosService.getAllCursos()
       ]);
       
-      setAprendices(aprendicesData);
-      setCursos(cursosData);
+      console.log('Respuesta de aprendices:', aprendicesData);
+      console.log('Respuesta de cursos:', cursosData);
+      
+      // Verificar si los datos son válidos
+      if (Array.isArray(aprendicesData)) {
+        setAprendices(aprendicesData);
+      } else {
+        console.error('Error: Los datos de aprendices no son un array', aprendicesData);
+        setAprendices([]);
+      }
+      
+      if (Array.isArray(cursosData)) {
+        setCursos(cursosData);
+        
+        // Mostrar estructura del primer curso para depuración
+        if (cursosData.length > 0) {
+          console.log('Estructura del primer curso:', Object.keys(cursosData[0]));
+          console.log('Ejemplo de curso:', cursosData[0]);
+        }
+      } else {
+        console.error('Error: Los datos de cursos no son un array', cursosData);
+        setCursos([]);
+      }
     } catch (error) {
       console.error('Error al cargar datos:', error);
       alert('Error al cargar los datos');
@@ -102,6 +126,13 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
     
     try {
       setLoading(true);
+      
+      // Verificar que exista el token de autenticación
+      const token = AuthService.getToken();
+      if (!token) {
+        console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
+      }
+      
       // Convertir los valores numéricos
       const certificadoData = {
         ...certificado,
@@ -109,12 +140,22 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
         idCurso: parseInt(certificado.idCurso)
       };
       
-      await CertificadosService.createCertificado(certificadoData);
+      console.log('Enviando datos de certificado al servidor:', certificadoData);
+      
+      const response = await CertificadosService.createCertificado(certificadoData);
+      console.log('Respuesta del servidor al crear certificado:', response);
+      
       alert('Certificado registrado exitosamente');
       setActiveSection('admin');
     } catch (error) {
       console.error('Error al registrar el certificado:', error);
-      alert('Error al registrar el certificado');
+      
+      // Mostrar un mensaje más descriptivo según el tipo de error
+      if (error.message && error.message.includes('403')) {
+        alert('No tienes permisos para registrar certificados. Por favor verifica tu sesión.');
+      } else {
+        alert('Error al registrar el certificado: ' + (error.message || 'Error desconocido'));
+      }
     } finally {
       setLoading(false);
     }
@@ -208,11 +249,19 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
             disabled={loading}
           >
             <option value="">Seleccionar Curso *</option>
-            {cursos.map(curso => (
-              <option key={curso.id_curso} value={curso.id_curso}>
-                {curso.nombre_curso}
-              </option>
-            ))}
+            {cursos.map(curso => {
+              // Intentar obtener idCurso o id_curso (diferentes convenciones)
+              const id = curso.idCurso || curso.id_curso;
+              
+              // Intentar obtener nombrePrograma o nombre_curso
+              const nombre = curso.nombrePrograma || curso.nombre_curso || curso.nombre || 'Sin nombre';
+              
+              return (
+                <option key={id} value={id}>
+                  {nombre} - {curso.codigoFicha || curso.codigo_ficha || ''}
+                </option>
+              );
+            })}
           </select>
           {errors.idCurso && (
             <p className="text-red-500 text-sm mt-1">Debe seleccionar un curso</p>

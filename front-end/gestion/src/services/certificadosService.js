@@ -4,7 +4,7 @@ const CertificadosService = {
     // Obtener todos los certificados
     getAllCertificados: async () => {
         try {
-            const response = await HttpClient.get('/api/certificados/obtener');
+            const response = await HttpClient.get('/certificados/obtener');
             
             if (!response.data) {
                 return [];
@@ -20,7 +20,7 @@ const CertificadosService = {
     // Obtener un certificado por ID
     getCertificadoById: async (id) => {
         try {
-            const response = await HttpClient.get(`/api/certificados/obtener/${id}`);
+            const response = await HttpClient.get(`/certificados/obtener/${id}`);
             return response.data;
         } catch (error) {
             console.error('Error en getCertificadoById:', error);
@@ -32,7 +32,7 @@ const CertificadosService = {
     createCertificado: async (certificadoData) => {
         try {
             console.log('Datos enviados al servidor:', certificadoData);
-            const response = await HttpClient.post('/api/certificados/create', certificadoData);
+            const response = await HttpClient.post('/certificados/create', certificadoData);
             console.log('Respuesta del servidor:', response);
             return response.data;
         } catch (error) {
@@ -44,7 +44,7 @@ const CertificadosService = {
     // Actualizar un certificado
     updateCertificado: async (id, certificadoData) => {
         try {
-            const response = await HttpClient.put(`/api/certificados/actualizar/${id}`, certificadoData);
+            const response = await HttpClient.put(`/certificados/actualizar/${id}`, certificadoData);
             return response.data;
         } catch (error) {
             console.error('Error en updateCertificado:', error);
@@ -55,7 +55,7 @@ const CertificadosService = {
     // Eliminar un certificado
     deleteCertificado: async (id) => {
         try {
-            await HttpClient.delete(`/api/certificados/eliminar/${id}`);
+            await HttpClient.delete(`/certificados/eliminar/${id}`);
             return true;
         } catch (error) {
             console.error('Error en deleteCertificado:', error);
@@ -66,7 +66,7 @@ const CertificadosService = {
     // Obtener certificados por aprendiz
     getCertificadosByAprendiz: async (aprendizId) => {
         try {
-            const response = await HttpClient.get(`/api/certificados/aprendiz/${aprendizId}`);
+            const response = await HttpClient.get(`/certificados/aprendiz/${aprendizId}`);
             return response.data || [];
         } catch (error) {
             console.error('Error en getCertificadosByAprendiz:', error);

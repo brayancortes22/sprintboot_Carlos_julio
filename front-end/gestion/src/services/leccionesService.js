@@ -1,57 +1,79 @@
-import HttpClient from '../utils/httpClient';
+import httpClient from '../utils/httpClient';
+
+const BASE_URL = '/lecciones';
 
 const LeccionesService = {
-    getAllLecciones: async () => {
-        try {
-            const response = await HttpClient.get('/api/lecciones/obtener');
-            console.log('Respuesta lecciones:', response);
-            return response;
-        } catch (error) {
-            console.error('Error en getAllLecciones:', error);
-            throw error;
-        }
-    },
-
-    // Obtener una lección por ID
-    getLeccionById: async (id) => {
-        try {
-            return await HttpClient.get(`/api/lecciones/obtener/${id}`);
-        } catch (error) {
-            console.error('Error en getLeccionById:', error);
-            throw error;
-        }
-    },
-
-    // Crear una nueva lección
-    createLeccion: async (leccionData) => {
-        try {
-            return await HttpClient.post('/api/lecciones/create', leccionData);
-        } catch (error) {
-            console.error('Error en createLeccion:', error);
-            throw error;
-        }
-    },
-
-    // Actualizar una lección
-    updateLeccion: async (id, leccionData) => {
-        try {
-            return await HttpClient.put(`/api/lecciones/actualizar/${id}`, leccionData);
-        } catch (error) {
-            console.error('Error en updateLeccion:', error);
-            throw error;
-        }
-    },
-
-    // Eliminar una lección
-    deleteLeccion: async (id) => {
-        try {
-            await HttpClient.delete(`/api/lecciones/eliminar/${id}`);
-            return true;
-        } catch (error) {
-            console.error('Error en deleteLeccion:', error);
-            throw error;
-        }
+  getAllLecciones: async () => {
+    try {
+      const response = await httpClient.get(`${BASE_URL}/obtener`);
+      return response;
+    } catch (error) {
+      console.error('Error al obtener lecciones:', error);
+      throw error;
     }
+  },
+
+  getLeccionById: async (id) => {
+    try {
+      const response = await httpClient.get(`${BASE_URL}/obtener/${id}`);
+      return response;
+    } catch (error) {
+      console.error(`Error al obtener lección con ID ${id}:`, error);
+      throw error;
+    }
+  },
+
+  createLeccion: async (leccionData) => {
+    try {
+      console.log('Enviando datos de lección:', leccionData);
+      
+      // Mapear los datos para que coincidan con lo que espera el backend
+      const mappedData = {
+        nombre_leccion: leccionData.nombre_leccion,
+        ruta_leccion: leccionData.ruta_leccion,
+        descripcion: leccionData.descripcion,
+        id_curso: leccionData.id_curso
+      };
+      
+      console.log('Datos mapeados que se enviarán al backend:', mappedData);
+      
+      const response = await httpClient.post(`${BASE_URL}/create`, mappedData);
+      return response;
+    } catch (error) {
+      console.error('Error al crear lección:', error);
+      throw error;
+    }
+  },
+
+  updateLeccion: async (id, leccionData) => {
+    try {
+      const response = await httpClient.put(`${BASE_URL}/actualizar/${id}`, leccionData);
+      return response;
+    } catch (error) {
+      console.error(`Error al actualizar lección con ID ${id}:`, error);
+      throw error;
+    }
+  },
+
+  deleteLeccion: async (id) => {
+    try {
+      const response = await httpClient.delete(`${BASE_URL}/eliminar/${id}`);
+      return response;
+    } catch (error) {
+      console.error(`Error al eliminar lección con ID ${id}:`, error);
+      throw error;
+    }
+  },
+
+  getLeccionesByCursoId: async (cursoId) => {
+    try {
+      const response = await httpClient.get(`${BASE_URL}/curso/${cursoId}`);
+      return response;
+    } catch (error) {
+      console.error(`Error al obtener lecciones para el curso con ID ${cursoId}:`, error);
+      throw error;
+    }
+  }
 };
 
 export default LeccionesService;

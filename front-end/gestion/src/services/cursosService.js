@@ -3,17 +3,28 @@ import HttpClient from '../utils/httpClient';
 const CursosService = {
     getAllCursos: async () => {
         try {
-            const response = await HttpClient.get('/api/cursos');
+            console.log('Solicitando cursos al servidor...');
+            // Notar que usamos la ruta /cursos sin /api porque HttpClient ya incluye el prefijo /api
+            const response = await HttpClient.get('/cursos');
+            console.log('Respuesta completa del servidor:', response);
             
-            // Verificar si la respuesta tiene la estructura esperada
-            if (response.data) {
-                console.log('Datos de cursos recibidos:', response.data);
+            // Verificar si la respuesta tiene la estructura correcta de la respuesta genérica
+            if (response && typeof response === 'object' && response.data) {
+                console.log('Datos encontrados en response.data:', response.data);
                 return response.data;
+            } 
+            // Si la respuesta es un array directamente
+            else if (response && Array.isArray(response)) {
+                console.log('Respuesta es array directamente:', response);
+                return response;
+            } 
+            // Si no hay datos válidos
+            else {
+                console.warn('Formato de respuesta inesperado:', response);
+                return [];
             }
-            
-            return [];
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error en getAllCursos:', error);
             throw error;
         }
     },
@@ -21,10 +32,14 @@ const CursosService = {
     // Obtener un curso por ID
     getCursoById: async (id) => {
         try {
-            const response = await HttpClient.get(`/api/cursos/${id}`);
-            return response.data;
+            const response = await HttpClient.get(`/cursos/${id}`);
+            // Si la respuesta tiene estructura de respuesta genérica
+            if (response && typeof response === 'object' && response.data) {
+                return response.data;
+            }
+            return response;
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error en getCursoById:', error);
             throw error;
         }
     },
@@ -32,10 +47,13 @@ const CursosService = {
     // Crear un nuevo curso
     createCurso: async (cursoData) => {
         try {
-            const response = await HttpClient.post('/api/cursos', cursoData);
-            return response.data;
+            const response = await HttpClient.post('/cursos', cursoData);
+            if (response && typeof response === 'object' && response.data) {
+                return response.data;
+            }
+            return response;
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error en createCurso:', error);
             throw error;
         }
     },
@@ -43,10 +61,13 @@ const CursosService = {
     // Actualizar un curso
     updateCurso: async (id, cursoData) => {
         try {
-            const response = await HttpClient.put(`/api/cursos/${id}`, cursoData);
-            return response.data;
+            const response = await HttpClient.put(`/cursos/${id}`, cursoData);
+            if (response && typeof response === 'object' && response.data) {
+                return response.data;
+            }
+            return response;
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error en updateCurso:', error);
             throw error;
         }
     },
@@ -54,10 +75,10 @@ const CursosService = {
     // Eliminar un curso
     deleteCurso: async (id) => {
         try {
-            await HttpClient.delete(`/api/cursos/${id}`);
-            return true;
+            const response = await HttpClient.delete(`/cursos/${id}`);
+            return response;
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error en deleteCurso:', error);
             throw error;
         }
     }

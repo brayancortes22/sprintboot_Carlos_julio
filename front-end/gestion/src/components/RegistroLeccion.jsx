@@ -4,6 +4,7 @@ import { Button } from './ui/Button';
 import LeccionesService from '../services/leccionesService';
 import CursosService from '../services/cursosService';
 import SecurityUtils from '../utils/securityUtils';
+import AuthService from '../services/authService';
 
 const RegistroLeccion = ({ setActiveSection, }) => {
   const [leccion, setLeccion] = useState({
@@ -43,11 +44,30 @@ const RegistroLeccion = ({ setActiveSection, }) => {
 
   const cargarCursos = async () => {
     try {
+      setLoadingCursos(true);
       const data = await CursosService.getAllCursos();
-      setCursos(data);
+      console.log("Cursos recibidos en componente:", data);
+      
+      // Verificar que los datos sean válidos antes de asignarlos al estado
+      if (Array.isArray(data) && data.length > 0) {
+        // Asegurarse de que tengamos cursos válidos
+        const cursosValidos = data.filter(curso => curso && typeof curso === 'object');
+        
+        // Verificar la estructura de los datos para depuración
+        if (cursosValidos.length > 0) {
+          console.log("Estructura del primer curso:", Object.keys(cursosValidos[0]));
+          console.log("Ejemplo de curso:", cursosValidos[0]);
+        }
+        
+        setCursos(cursosValidos);
+      } else {
+        console.error('Error: Los datos de cursos no tienen el formato esperado', data);
+        setCursos([]);
+      }
     } catch (error) {
       console.error('Error al cargar cursos:', error);
       alert('Error al cargar los cursos');
+      setCursos([]);
     } finally {
       setLoadingCursos(false);
     }
@@ -103,12 +123,28 @@ const RegistroLeccion = ({ setActiveSection, }) => {
         id_curso: parseInt(leccion.id_curso)
       };
       
-      await LeccionesService.createLeccion(leccionData);
+      console.log('Enviando datos de lección al servidor:', leccionData);
+      
+      // Asegurarnos de que el token de autenticación está disponible
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.warn('No se encontró token de autenticación. Es posible que la solicitud sea rechazada.');
+      }
+      
+      const response = await LeccionesService.createLeccion(leccionData);
+      console.log('Respuesta del servidor:', response);
+      
       alert('Lección registrada exitosamente');
       setActiveSection('admin');
     } catch (error) {
       console.error('Error al registrar la lección:', error);
-      alert('Error al registrar la lección');
+      
+      // Mostrar un mensaje más descriptivo
+      if (error.message && error.message.includes('403')) {
+        alert('No tienes permisos para registrar lecciones. Por favor verifica tu sesión.');
+      } else {
+        alert('Error al registrar la lección: ' + (error.message || 'Error desconocido'));
+      }
     } finally {
       setLoading(false);
     }
@@ -126,7 +162,7 @@ const RegistroLeccion = ({ setActiveSection, }) => {
       <CardContent>
         <h2 className="text-2xl font-bold mb-4 text-indigo-600">Registro de Lección</h2>
         
-        <form onSubmit={handleSubmit}>
+        <form>
           <div className="mb-4">
             <input
               type="text"
@@ -185,12 +221,23 @@ const RegistroLeccion = ({ setActiveSection, }) => {
               }`}
             >
               <option value="">Seleccione un curso</option>
-              {Array.isArray(cursos) && cursos.length > 0 ? (
-                cursos.map((curso) => (
-                  <option key={curso.id_curso} value={curso.id_curso}>
-                    {curso.nombre_programa} - {curso.codigo_ficha}
-                  </option>
-                ))
+              {cursos.length > 0 ? (
+                cursos.map((curso) => {
+                  // Intentar obtener idCurso o id_curso (diferentes convenciones)
+                  const id = curso.idCurso || curso.id_curso;
+                  
+                  // Intentar obtener nombrePrograma o nombre_programa
+                  const nombre = curso.nombrePrograma || curso.nombre_programa || 'Sin nombre';
+                  
+                  // Intentar obtener codigoFicha o codigo_ficha
+                  const codigo = curso.codigoFicha || curso.codigo_ficha || 'Sin código';
+                  
+                  return (
+                    <option key={id} value={id}>
+                      {nombre} - {codigo}
+                    </option>
+                  );
+                })
               ) : (
                 <option value="" disabled>No hay cursos disponibles</option>
               )}

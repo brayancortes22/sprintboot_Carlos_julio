@@ -20,7 +20,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/api/lecciones")
 // Corregimos la anotación CrossOrigin para usar valores literales
-@CrossOrigin(origins = {"http://localhost:5173", "http://192.168.1.23:5173"}, allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:5173", "http://192.168.1.23:5173", "http://172.30.1.191:5173"}, allowCredentials = "true")
 public class lecciones_controller {
 
     @Autowired
@@ -33,20 +33,30 @@ public class lecciones_controller {
     // Crear nueva lección
     @PostMapping("/create")
     public ResponseEntity<GenericResponseDTO<LeccionesDTO>> crear(@RequestBody LeccionesDTO dto) {
+        System.out.println("Recibida solicitud para crear lección: " + dto);
+        
         // Añadir validación explícita para id_curso null
         if (dto.getId_curso() == null) {
+             System.out.println("Error: El ID del curso es nulo");
              return ResponseEntity.badRequest()
                 .body(new GenericResponseDTO<>(400, "El ID del curso no puede ser nulo.", null));
         }
+        
         try {
+            System.out.println("Convirtiendo DTO a entidad con id_curso: " + dto.getId_curso());
             lecciones entity = convertToEntity(dto);
+            System.out.println("Entidad creada, guardando en BD");
             leccionesService.save(entity); 
             LeccionesDTO savedDto = convertToDTO(entity); 
+            System.out.println("Lección guardada exitosamente: " + savedDto);
             return ResponseEntity.ok(new GenericResponseDTO<>(200, "Lección creada exitosamente", savedDto));
         } catch (ResourceNotFoundException e) {
+             System.out.println("Recurso no encontrado: " + e.getMessage());
              return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new GenericResponseDTO<>(404, e.getMessage(), null));
         } catch (Exception e) {
+            System.out.println("Error al crear lección: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest()
                 .body(new GenericResponseDTO<>(400, "Error al crear lección: " + e.getMessage(), null));
         }

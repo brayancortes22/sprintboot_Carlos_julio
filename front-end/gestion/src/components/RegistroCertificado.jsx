@@ -4,6 +4,7 @@ import { Button } from './ui/Button';
 import CertificadosService from '../services/certificadosService';
 import AprendizService from '../services/aprendizService';
 import CursosService from '../services/cursosService';
+import LeccionesService from '../services/leccionesService';
 import SecurityUtils from '../utils/securityUtils';
 import AuthService from '../services/authService';
 
@@ -13,7 +14,7 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
     descripcion: '',
     fechaFin: '',
     idAprendiz: '',
-    idCurso: ''
+    idLeccion: '' // Cambiado de idCurso a idLeccion
   });
   
   const [errors, setErrors] = useState({
@@ -21,11 +22,11 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
     descripcion: false,
     fechaFin: false,
     idAprendiz: false,
-    idCurso: false
+    idLeccion: false // Cambiado de idCurso a idLeccion
   });
   
   const [aprendices, setAprendices] = useState([]);
-  const [cursos, setCursos] = useState([]);
+  const [lecciones, setLecciones] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
@@ -51,15 +52,16 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
       setLoadingData(true);
       console.log('Solicitando datos al servidor...');
       
-      const [aprendicesData, cursosData] = await Promise.all([
+      // Obtener aprendices y lecciones en paralelo
+      const [aprendicesData, leccionesResponse] = await Promise.all([
         AprendizService.getAllAprendices(),
-        CursosService.getAllCursos()
+        LeccionesService.getAllLecciones()
       ]);
       
       console.log('Respuesta de aprendices:', aprendicesData);
-      console.log('Respuesta de cursos:', cursosData);
+      console.log('Respuesta de lecciones:', leccionesResponse);
       
-      // Verificar si los datos son válidos
+      // Procesar aprendices
       if (Array.isArray(aprendicesData)) {
         setAprendices(aprendicesData);
       } else {
@@ -67,17 +69,18 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
         setAprendices([]);
       }
       
-      if (Array.isArray(cursosData)) {
-        setCursos(cursosData);
+      // Procesar lecciones - leccionesResponse tiene estructura con data
+      if (leccionesResponse && leccionesResponse.data && Array.isArray(leccionesResponse.data)) {
+        setLecciones(leccionesResponse.data);
         
-        // Mostrar estructura del primer curso para depuración
-        if (cursosData.length > 0) {
-          console.log('Estructura del primer curso:', Object.keys(cursosData[0]));
-          console.log('Ejemplo de curso:', cursosData[0]);
+        // Mostrar estructura de la primera lección para depuración
+        if (leccionesResponse.data.length > 0) {
+          console.log('Estructura de la primera lección:', Object.keys(leccionesResponse.data[0]));
+          console.log('Ejemplo de lección:', leccionesResponse.data[0]);
         }
       } else {
-        console.error('Error: Los datos de cursos no son un array', cursosData);
-        setCursos([]);
+        console.error('Error: Los datos de lecciones no tienen el formato esperado', leccionesResponse);
+        setLecciones([]);
       }
     } catch (error) {
       console.error('Error al cargar datos:', error);
@@ -109,7 +112,7 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
       descripcion: !certificado.descripcion.trim(),
       fechaFin: !certificado.fechaFin,
       idAprendiz: !certificado.idAprendiz,
-      idCurso: !certificado.idCurso
+      idLeccion: !certificado.idLeccion // Cambiado de idCurso a idLeccion
     };
     
     setErrors(newErrors);
@@ -126,18 +129,19 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
     
     try {
       setLoading(true);
-      
       // Verificar que exista el token de autenticación
       const token = AuthService.getToken();
       if (!token) {
         console.warn('No se encontró token de autenticación. La solicitud puede ser rechazada.');
       }
       
-      // Convertir los valores numéricos
+      // Crear el objeto con los nombres exactos que espera el backend
       const certificadoData = {
-        ...certificado,
-        idAprendiz: parseInt(certificado.idAprendiz),
-        idCurso: parseInt(certificado.idCurso)
+        nombre_certificado: certificado.nombreCertificado,
+        descripcion: certificado.descripcion,
+        fecha_fin: certificado.fechaFin,
+        id_aprendiz: parseInt(certificado.idAprendiz),
+        id_lecciones: parseInt(certificado.idLeccion) // Enviar el ID de la lección, no del curso
       };
       
       console.log('Enviando datos de certificado al servidor:', certificadoData);
@@ -242,29 +246,21 @@ const RegistroCertificado = ({ setActiveSection, formStyles }) => {
         
         <div className="mb-3">
           <select
-            className={`${formStyles} ${errors.idCurso ? 'border-red-500' : ''}`}
-            name="idCurso"
-            value={certificado.idCurso}
+            className={`${formStyles} ${errors.idLeccion ? 'border-red-500' : ''}`}
+            name="idLeccion"
+            value={certificado.idLeccion}
             onChange={handleChange}
             disabled={loading}
           >
-            <option value="">Seleccionar Curso *</option>
-            {cursos.map(curso => {
-              // Intentar obtener idCurso o id_curso (diferentes convenciones)
-              const id = curso.idCurso || curso.id_curso;
-              
-              // Intentar obtener nombrePrograma o nombre_curso
-              const nombre = curso.nombrePrograma || curso.nombre_curso || curso.nombre || 'Sin nombre';
-              
-              return (
-                <option key={id} value={id}>
-                  {nombre} - {curso.codigoFicha || curso.codigo_ficha || ''}
-                </option>
-              );
-            })}
+            <option value="">Seleccionar Lección *</option>
+            {lecciones.map(leccion => (
+              <option key={leccion.id_leccion} value={leccion.id_leccion}>
+                {leccion.nombre_leccion} - Curso: {leccion.id_curso}
+              </option>
+            ))}
           </select>
-          {errors.idCurso && (
-            <p className="text-red-500 text-sm mt-1">Debe seleccionar un curso</p>
+          {errors.idLeccion && (
+            <p className="text-red-500 text-sm mt-1">Debe seleccionar una lección</p>
           )}
         </div>
         

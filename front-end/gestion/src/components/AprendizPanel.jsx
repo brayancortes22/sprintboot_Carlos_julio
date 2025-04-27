@@ -14,7 +14,8 @@ const AprendizPanel = ({ aprendizId, setActiveSection }) => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [userId, setUserId] = useState(null);
   const [error, setError] = useState(null);
-
+  const [filtroFicha, setFiltroFicha] = useState('');
+  
   useEffect(() => {
     // Verificar autenticación y rol al cargar el componente
     const checkAuth = () => {
@@ -223,7 +224,7 @@ const AprendizPanel = ({ aprendizId, setActiveSection }) => {
         </div>
       )}
       
-      <Card className="mb-4">
+      <Card className="mb-4 whidth:800px">
         <CardContent>
           <h2 className="text-2xl font-bold mb-4">Mis Certificados</h2>
           {loading ? (
@@ -319,19 +320,55 @@ const AprendizPanel = ({ aprendizId, setActiveSection }) => {
       <Card className="mb-4">
         <CardContent>
           <h2 className="text-2xl font-bold mb-4">Cursos Disponibles</h2>
+          
+          {/* Campo de búsqueda por número de ficha */}
+          <div className="mb-4">
+            <div className="input-group">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Buscar por número de ficha..."
+                value={filtroFicha}
+                onChange={(e) => setFiltroFicha(e.target.value)}
+              />
+              <button 
+                className="btn btn-outline-secondary" 
+                type="button"
+                onClick={() => setFiltroFicha('')}
+              >
+                Limpiar
+              </button>
+            </div>
+            <small className="text-muted">Ingresa el número de ficha para filtrar los cursos disponibles</small>
+          </div>
+          
           {loading ? (
             <p>Cargando cursos disponibles...</p>
           ) : cursos.length > 0 ? (
             <div className="table-responsive">
               <table className="table table-bordered">
                 <tbody>
-                  {/* Filtrar primero los cursos no inscritos y luego dividirlos en filas de 4 */}
+                  {/* Filtrar por ficha y por no estar inscrito */}
                   {Array.from({ 
-                    length: Math.ceil(cursos.filter(curso => !estaInscrito(curso.idCurso)).length / 4) 
+                    length: Math.ceil(
+                      cursos
+                        .filter(curso => !estaInscrito(curso.idCurso))
+                        .filter(curso => 
+                          filtroFicha === '' || 
+                          (curso.codigoFicha && curso.codigoFicha.toString().includes(filtroFicha))
+                        )
+                        .length / 4
+                    ) 
                   }).map((_, rowIndex) => (
                     <tr key={`row-${rowIndex}`}>
                       {cursos
+                        // Primero filtrar por no estar inscrito
                         .filter(curso => !estaInscrito(curso.idCurso))
+                        // Luego filtrar por número de ficha
+                        .filter(curso => 
+                          filtroFicha === '' || 
+                          (curso.codigoFicha && curso.codigoFicha.toString().includes(filtroFicha))
+                        )
                         .slice(rowIndex * 4, rowIndex * 4 + 4)
                         .map((curso, colIndex) => (
                           <td key={`cell-${rowIndex}-${colIndex}`} className="p-2 text-center align-middle">
@@ -354,10 +391,16 @@ const AprendizPanel = ({ aprendizId, setActiveSection }) => {
                               </Button>
                             </div>
                           </td>
-                      ))}
+                      ))} 
                       {/* Añadir celdas vacías para completar la fila si es necesario */}
                       {Array.from({ 
-                        length: 4 - (cursos.filter(curso => !estaInscrito(curso.idCurso)).slice(rowIndex * 4, rowIndex * 4 + 4).length) 
+                        length: 4 - (cursos
+                          .filter(curso => !estaInscrito(curso.idCurso))
+                          .filter(curso => 
+                            filtroFicha === '' || 
+                            (curso.codigoFicha && curso.codigoFicha.toString().includes(filtroFicha))
+                          )
+                          .slice(rowIndex * 4, rowIndex * 4 + 4).length) 
                       }).map((_, i) => (
                         <td key={`empty-${rowIndex}-${i}`} className="p-2 border text-center"></td>
                       ))}
@@ -369,7 +412,28 @@ const AprendizPanel = ({ aprendizId, setActiveSection }) => {
           ) : (
             <p>No hay cursos disponibles</p>
           )}
-          {cursos.length > 0 && !cursos.some(curso => !estaInscrito(curso.idCurso)) && (
+          
+          {/* Mensaje cuando no hay resultados con el filtro actual */}
+          {cursos.length > 0 && 
+           cursos.filter(curso => !estaInscrito(curso.idCurso))
+            .filter(curso => 
+              filtroFicha === '' || 
+              (curso.codigoFicha && curso.codigoFicha.toString().includes(filtroFicha))
+            ).length === 0 && (
+            <div className="alert alert-info mt-3">
+              No se encontraron cursos con el número de ficha "{filtroFicha}". 
+              <button 
+                className="btn btn-link p-0 ml-2" 
+                onClick={() => setFiltroFicha('')}
+              >
+                Limpiar filtro
+              </button>
+            </div>
+          )}
+          
+          {/* Mensaje cuando está inscrito en todos los cursos */}
+          {cursos.length > 0 && 
+           !cursos.some(curso => !estaInscrito(curso.idCurso)) && (
             <p className="mt-2">Ya estás inscrito en todos los cursos disponibles</p>
           )}
         </CardContent>

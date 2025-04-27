@@ -1,14 +1,17 @@
 # Proyecto SENA CAR 2025 - API REST
 
 ## Descripción
-API REST desarrollada para el proyecto SENA CAR 2025, que gestiona aprendices, cursos, lecciones y certificados.
+API REST desarrollada para el proyecto SENA CAR 2025, que gestiona aprendices, cursos, lecciones y certificados. La plataforma permite administrar el registro de aprendices, la creación de cursos, lecciones y la emisión de certificados.
 
 ## Tecnologías Utilizadas
 - Java 17
 - Spring Boot
 - Spring Data JPA
-- MySQL
+- MySQL/MariaDB
 - Maven
+- React
+- Vite
+- Tailwind CSS
 
 ## Estructura del Proyecto
 ```
@@ -18,8 +21,79 @@ back-end/sprint-boot/
 │   ├── model/             # Entidades
 │   ├── repository/        # Repositorios JPA
 │   ├── service/          # Servicios
-│   └── Dto/              # Objetos de Transferencia de Datos
+│   ├── Dto/              # Objetos de Transferencia de Datos
+│   ├── config/           # Configuraciones (CORS, seguridad)
+│   ├── exceptions/       # Manejo de excepciones
+│   └── security/         # Configuración de seguridad
 ```
+
+## Características Principales
+- Sistema de autenticación y autorización
+- Gestión de aprendices, cursos, lecciones y certificados
+- Diferentes vistas según el tipo de usuario (Admin, Aprendiz)
+- API REST completamente documentada
+- Frontend interactivo desarrollado con React
+
+## Implementación de Seguridad
+
+### Backend
+El proyecto implementa un sistema de seguridad robusto con las siguientes características:
+
+1. **Autenticación JWT (JSON Web Token)**:
+   - Generación de tokens seguros para cada sesión
+   - Validación de tokens en cada solicitud
+   - Manejo de tokens expirados y renovación automática
+
+2. **Cifrado de Contraseñas**:
+   - Las contraseñas se almacenan cifradas usando BCrypt
+   - No se guardan en texto plano en la base de datos
+   - Salt único para cada contraseña
+
+3. **Control de Acceso Basado en Roles (RBAC)**:
+   - Roles definidos: ADMIN y USER (Aprendiz)
+   - Restricción de acceso a endpoints según el rol del usuario
+   - Validación de permisos en cada endpoint protegido
+
+4. **Protección contra Ataques Comunes**:
+   - CSRF (Cross-Site Request Forgery)
+   - XSS (Cross-Site Scripting)
+   - SQL Injection (mediante JPA y validación de parámetros)
+   - Ataques de Fuerza Bruta (limitación de intentos de inicio de sesión)
+
+5. **Configuración CORS Segura**:
+   - Restricción de dominios permitidos
+   - Control de métodos HTTP permitidos
+   - Gestión de headers permitidos
+
+### Frontend
+El frontend implementa medidas de seguridad adicionales:
+
+1. **Almacenamiento Seguro de Tokens**:
+   - Uso de localStorage para tokens (en entorno de desarrollo)
+   - Opción para utilizar cookies HttpOnly en producción
+
+2. **Validación de Formularios**:
+   - Sanitización de entradas para prevenir XSS
+   - Validación en cliente para mejorar UX
+   - Validación adicional en servidor
+
+3. **Protección de Rutas**:
+   - Componentes de rutas protegidas
+   - Redirección automática a login para usuarios no autenticados
+   - Separación de interfaces según roles (Admin/Aprendiz)
+
+4. **Cierre de Sesión Automático**:
+   - Detección de tokens expirados
+   - Redirección a página de login al expirar la sesión
+
+## Credenciales de Administrador por Defecto
+Al ejecutar la aplicación por primera vez, se crea automáticamente un usuario administrador con las siguientes credenciales:
+
+- **Correo**: admin@sena.edu.co
+- **Contraseña**: admin123
+- **Tipo de Usuario**: Administrador
+
+Estas credenciales le permitirán acceder al panel de administración inmediatamente después de iniciar el sistema.
 
 ## Endpoints de la API
 
@@ -113,13 +187,18 @@ Todas las respuestas siguen el siguiente formato:
 ```
 
 ### Instalación del Proyecto
-#### Front-end
-1. Instalar dependencias dentro de la terminal de comandos del proyecto:
-    a) Ingresar a la carpeta del front con el comando: `cd front-end/gestion`
-    b) Descargar dependencias con el comando: `npm install`
-    c) Hacer funcionar el proyecto con el comando: `npm run dev`
+### Requisitos Previos
+- Java 17 o superior
+- Node.js 16 o superior
+- MySQL/MariaDB
+- Maven
 
-#### Back-end
+### Base de Datos
+1. Crear una base de datos llamada `carlos_julio` en MySQL/MariaDB.
+2. El esquema y las tablas se crearán automáticamente al ejecutar el backend.
+3. Un usuario administrador se creará automáticamente en la primera ejecución.
+
+### Back-end
 1. Configurar la base de datos en `application.properties`:
     ```properties
     spring.application.name=sprint-boot
@@ -134,307 +213,62 @@ Todas las respuestas siguen el siguiente formato:
     # Dialecto de Hibernate para MariaDB
     spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MariaDBDialect
     # Tipo de SQL
-    spring.jpa.hibernate.ddl-auto=create-drop
+    spring.jpa.hibernate.ddl-auto=update
     # Mostrar las consultas SQL
     spring.jpa.show-sql=true
+    # Inicializar datos SQL
+    spring.sql.init.mode=always
+    spring.jpa.defer-datasource-initialization=true
+    
+    # Configuración del servidor
+    server.address=0.0.0.0
+    server.port=8080
     ```
-2. Ejecutar el backend:
+2. Navegue a la carpeta del backend:
+    ```sh
+    cd back-end/sprint-boot
+    ```
+3. Ejecute el backend:
     ```sh
     ./mvnw spring-boot:run
     ```
-
-## Operaciones CRUD con Thunder Client
-
-### Crear un Aprendiz
-- **Método:** POST
-- **URL:** `http://localhost:8080/aprendiz/Aprendiz`
-- **Body:**
-    ```json
-    {
-        "nombre": "Juan Perez",
-        "numeroDocumento": 123456789,
-        "correo": "juan.perez@example.com",
-        "contraseña": "password123",
-        "tipoUsuario": true
-    }
+   En Windows, puede usar:
+    ```sh
+    mvnw.cmd spring-boot:run
     ```
 
-### Obtener Todos los Aprendices
-- **Método:** GET
-- **URL:** `http://localhost:8080/aprendiz`
-
-### Obtener Aprendiz por ID
-- **Método:** GET
-- **URL:** `http://localhost:8080/aprendiz/{id}`
-
-### Actualizar Aprendiz
-- **Método:** PUT
-- **URL:** `http://localhost:8080/aprendiz/{id}`
-- **Body:**
-    ```json
-    {
-        "nombre": "Juan Perez Actualizado",
-        "numeroDocumento": 987654321,
-        "correo": "juan.perez.actualizado@example.com",
-        "contraseña": "newpassword123",
-        "tipoUsuario": false
-    }
+### Front-end
+1. Instalar dependencias dentro de la terminal de comandos del proyecto:
+    ```sh
+    # Ingresar a la carpeta del front 
+    cd front-end/gestion
+    
+    # Descargar dependencias
+    npm install
+    
+    # Hacer funcionar el proyecto
+    npm run dev
     ```
 
-### Eliminar Aprendiz
-- **Método:** DELETE
-- **URL:** `http://localhost:8080/aprendiz/{id}`
+## Resumen del Desarrollo
 
-### Crear un Curso
-- **Método:** POST
-- **URL:** `http://localhost:8080/api/cursos`
-- **Body:**
-    ```json
-    {
-        "codigoFicha": 1234,
-        "nombrePrograma": "Programación Java",
-        "descripcion": "Curso de programación en Java",
-        "fechaInicio": "2025-03-24T00:00:00",
-        "fechaFin": "2025-06-24T00:00:00"
-    }
-    ```
+### Backend (Spring Boot)
+- Arquitectura REST API con controladores, servicios y repositorios
+- Modelo de datos con entidades JPA
+- DTOs para transferencia de datos
+- Manejo de excepciones personalizado
+- Configuración de CORS para permitir solicitudes desde el frontend
+- Seguridad básica con autenticación
+- Inicialización automática de datos (usuario admin)
 
-### Obtener Todos los Cursos
-- **Método:** GET
-- **URL:** `http://localhost:8080/api/cursos`
-
-### Obtener Curso por ID
-- **Método:** GET
-- **URL:** `http://localhost:8080/api/cursos/{id}`
-
-### Actualizar Curso
-- **Método:** PUT
-- **URL:** `http://localhost:8080/api/cursos/{id}`
-- **Body:**
-    ```json
-    {
-        "codigoFicha": 5678,
-        "nombrePrograma": "Programación Avanzada en Java",
-        "descripcion": "Curso avanzado de programación en Java",
-        "fechaInicio": "2025-04-01T00:00:00",
-        "fechaFin": "2025-07-01T00:00:00"
-    }
-    ```
-
-### Eliminar Curso
-- **Método:** DELETE
-- **URL:** `http://localhost:8080/api/cursos/{id}`
-
-### Crear una Lección
-- **Método:** POST
-- **URL:** `http://localhost:8080/api/lecciones`
-- **Body:**
-    ```json
-    {
-        "nombre_leccion": "Introducción a Java",
-        "descripcion": "Lección sobre los fundamentos de Java",
-        "ruta_leccion": "/ruta/a/la/leccion",
-        "id_curso": 1
-    }
-    ```
-
-### Obtener Todas las Lecciones
-- **Método:** GET
-- **URL:** `http://localhost:8080/api/lecciones`
-
-### Obtener Lección por ID
-- **Método:** GET
-- **URL:** `http://localhost:8080/api/lecciones/{id}`
-
-### Actualizar Lección
-- **Método:** PUT
-- **URL:** `http://localhost:8080/api/lecciones/{id}`
-- **Body:**
-    ```json
-    {
-        "nombre_leccion": "Introducción a Java Actualizada",
-        "descripcion": "Lección actualizada sobre los fundamentos de Java",
-        "ruta_leccion": "/ruta/a/la/leccion/actualizada",
-        "id_curso": 1
-    }
-    ```
-
-### Eliminar Lección
-- **Método:** DELETE
-- **URL:** `http://localhost:8080/api/lecciones/{id}`
-
-### Crear un Certificado
-- **Método:** POST
-- **URL:** `http://localhost:8080/api/certificados`
-- **Body:**
-    ```json
-    {
-        "id_lecciones": 1,
-        "id_aprendiz": 1,
-        "nombreCertificado": "Certificado de Java",
-        "numeroDocumentoCertificado": 123456,
-        "fechaFin": "2025-06-24T00:00:00"
-    }
-    ```
-
-### Obtener Todos los Certificados
-- **Método:** GET
-- **URL:** `http://localhost:8080/api/certificados`
-
-### Obtener Certificado por ID
-- **Método:** GET
-- **URL:** `http://localhost:8080/api/certificados/{id}`
-
-### Actualizar Certificado
-- **Método:** PUT
-- **URL:** `http://localhost:8080/api/certificados/{id}`
-- **Body:**
-    ```json
-    {
-        "id_lecciones": 1,
-        "id_aprendiz": 1,
-        "nombreCertificado": "Certificado de Java Actualizado",
-        "numeroDocumentoCertificado": 654321,
-        "fechaFin": "2025-12-24T00:00:00"
-    }
-    ```
-
-### Eliminar Certificado
-- **Método:** DELETE
-- **URL:** `http://localhost:8080/api/certificados/{id}`
-
-# Configuración para Acceso Remoto a la API
-
-Este documento describe los pasos necesarios para permitir el acceso remoto a la API y realizar pruebas desde otros dispositivos en la red.
-
-## 1. Configuración de CORS en el Backend
-
-### 1.1 Modificar CorsConfig.java
-Ubicación: `back-end/sprint-boot/src/main/java/com/sena_proyecto_car_2025/config/CorsConfig.java`
-
-```java
-@Configuration
-public class CorsConfig {
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        
-        // Permitir solicitudes desde cualquier origen durante testing
-        config.addAllowedOriginPattern("*");
-        
-        // Permitir todos los métodos HTTP necesarios
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        
-        // Permitir todos los headers necesarios
-        config.setAllowedHeaders(Arrays.asList(
-            "Authorization",
-            "Content-Type",
-            "Accept",
-            "Origin",
-            "Access-Control-Request-Method",
-            "Access-Control-Request-Headers"
-        ));
-        
-        // Deshabilitar credenciales para testing
-        config.setAllowCredentials(false);
-        
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
-}
-```
-
-### 1.2 Agregar anotación CORS a los controladores
-Ejemplo en `AprendizController.java`:
-```java
-@RestController
-@RequestMapping("/aprendiz")
-@CrossOrigin(origins = "*")
-public class AprendizController {
-    // ... resto del código
-}
-```
-
-## 2. Configuración del Frontend
-
-### 2.1 Modificar las URLs de la API
-En todos los archivos de servicio del frontend (`src/services/*.js`), actualizar la URL base:
-
-```javascript
-// Cambiar de localhost a la IP del servidor
-const API_URL = 'http://TU_IP:8080';
-```
-
-Archivos a modificar:
-- `src/services/aprendizService.js`
-- `src/services/certificadosService.js`
-- `src/services/cursosService.js`
-- `src/services/leccionesService.js`
-- `src/services/aprendizCursoService.js`
-
-## 3. Pasos para Compartir la API
-
-1. **Obtener la IP del servidor**:
-   - En Windows: Abrir CMD y ejecutar `ipconfig`
-   - Buscar la dirección IPv4 (ejemplo: 192.168.x.x)
-
-2. **Iniciar el Backend**:
-   ```bash
-   cd back-end/sprint-boot
-   ./mvnw spring-boot:run
-   ```
-   El backend estará disponible en: `http://TU_IP:8080`
-
-3. **Iniciar el Frontend**:
-   ```bash
-   cd front-end/gestion
-   npm run dev
-   ```
-   El frontend estará disponible en: `http://TU_IP:5173`
-
-## 4. Endpoints Disponibles
-
-### 4.1 Aprendices
-- GET `/aprendiz` - Obtener todos los aprendices
-- GET `/aprendiz/{id}` - Obtener un aprendiz por ID
-- POST `/aprendiz` - Crear nuevo aprendiz
-- PUT `/aprendiz/{id}` - Actualizar aprendiz
-- DELETE `/aprendiz/{id}` - Eliminar aprendiz
-
-### 4.2 Certificados
-- GET `/api/certificados` - Obtener todos los certificados
-- GET `/api/certificados/{id}` - Obtener certificado por ID
-- POST `/api/certificados` - Crear nuevo certificado
-- PUT `/api/certificados/{id}` - Actualizar certificado
-- DELETE `/api/certificados/{id}` - Eliminar certificado
-
-### 4.3 Cursos
-- GET `/api/cursos` - Obtener todos los cursos
-- GET `/api/cursos/{id}` - Obtener curso por ID
-- POST `/api/cursos` - Crear nuevo curso
-- PUT `/api/cursos/{id}` - Actualizar curso
-- DELETE `/api/cursos/{id}` - Eliminar curso
-
-## 5. Requisitos para Testers
-
-1. Estar conectado a la misma red que el servidor
-2. Tener acceso a:
-   - Frontend: `http://TU_IP:5173`
-   - Backend: `http://TU_IP:8080`
-3. Para probar los endpoints directamente:
-   - Usar herramientas como Postman o Insomnia
-   - Configurar el header `Content-Type: application/json`
-
-## 6. Consideraciones de Seguridad
-
-⚠️ **Importante**: Esta configuración está pensada para entornos de desarrollo y pruebas. Para producción:
-
-1. No usar `allowedOriginPattern("*")`
-2. Configurar orígenes específicos
-3. Implementar autenticación
-4. Usar HTTPS
-5. Configurar firewalls apropiadamente
+### Frontend (React + Vite)
+- Interfaz de usuario moderna con Tailwind CSS
+- Comunicación con la API mediante servicios
+- Manejo de estados con React Hooks
+- Formularios para registro y gestión de entidades
+- Tablas para visualización de datos
+- Paneles específicos para administradores y aprendices
+- Cliente HTTP para comunicación con el backend
 
 # Solución de Problemas Comunes
 
@@ -505,13 +339,13 @@ Si recibes el error `net::ERR_CONNECTION_REFUSED` al intentar acceder a la API, 
 
 ## Lista de Verificación para Testers
 
-✅ El servidor backend está corriendo
-✅ Los puertos necesarios están abiertos (8080, 5173)
-✅ Estás conectado a la misma red que el servidor
-✅ La IP del servidor es accesible (puedes hacer ping)
-✅ No hay restricciones de firewall bloqueando la conexión
-✅ La configuración CORS permite tu origen
-✅ Estás usando la URL correcta con la IP y puerto adecuados
+✅ El servidor backend está corriendo  
+✅ Los puertos necesarios están abiertos (8080, 5173)  
+✅ Estás conectado a la misma red que el servidor  
+✅ La IP del servidor es accesible (puedes hacer ping)  
+✅ No hay restricciones de firewall bloqueando la conexión  
+✅ La configuración CORS permite tu origen  
+✅ Estás usando la URL correcta con la IP y puerto adecuados  
 
 ## Comandos Útiles para Diagnóstico
 
@@ -531,3 +365,10 @@ tasklist /fi "PID eq PUERTO_PID"
 # Matar proceso si es necesario
 taskkill /PID NUMERO_PID /F
 ```
+
+## Autores
+- Brayan stid cortes lombana - SENA 2025
+
+## Licencia
+Este proyecto está bajo la Licencia bscl
+

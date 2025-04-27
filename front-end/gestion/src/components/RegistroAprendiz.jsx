@@ -4,8 +4,9 @@ import { Button } from './ui/Button';
 import AprendizService from '../services/aprendizService';
 import SecurityUtils from '../utils/securityUtils';
 import AuthService from '../services/authService';
+import formStyles, { getInputClass, getSelectClass } from '../utils/formStyles';
 
-const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
+const RegistroAprendiz = ({ setActiveSection }) => {
   const [aprendiz, setAprendiz] = useState({
     nombre: '',
     numeroDocumento: '',
@@ -128,56 +129,58 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
       <CardContent>
         <h2 className="text-2xl font-bold mb-4 text-indigo-600">Registro Aprendiz</h2>
         
-        <div className="mb-3">
-          <input 
-            className={`${formStyles} ${errors.nombre ? 'border-red-500' : ''}`} 
-            name="nombre" 
-            placeholder="Nombre completo *" 
-            value={aprendiz.nombre} 
-            onChange={handleChange} 
-          />
-          {errors.nombre && <p className="text-red-500 text-sm">El nombre es requerido</p>}
+        <div className={formStyles.formRow}>
+          <div className={formStyles.formCol}>
+            <input 
+              className={getInputClass(errors.nombre)} 
+              name="nombre" 
+              placeholder="Nombre completo *" 
+              value={aprendiz.nombre} 
+              onChange={handleChange} 
+            />
+            {errors.nombre && <div className={formStyles.errorMessage}>El nombre es requerido</div>}
+          </div>
+          <div className={formStyles.formCol}>
+            <input 
+              className={getInputClass(errors.numeroDocumento)} 
+              name="numeroDocumento" 
+              placeholder="Número de documento *" 
+              value={aprendiz.numeroDocumento} 
+              onChange={handleChange} 
+              type="number"
+            />
+            {errors.numeroDocumento && <div className={formStyles.errorMessage}>El número de documento debe ser mayor que 0</div>}
+          </div>
         </div>
-        
-        <div className="mb-3">
-          <input 
-            className={`${formStyles} ${errors.numeroDocumento ? 'border-red-500' : ''}`} 
-            name="numeroDocumento" 
-            placeholder="Número de documento *" 
-            value={aprendiz.numeroDocumento} 
-            onChange={handleChange} 
-            type="number"
-          />
-          {errors.numeroDocumento && <p className="text-red-500 text-sm">El número de documento debe ser mayor que 0</p>}
+
+        <div className={formStyles.formRow}>
+          <div className={formStyles.formCol}>
+            <input 
+              className={getInputClass(errors.correo)} 
+              name="correo" 
+              placeholder="Correo electrónico *" 
+              value={aprendiz.correo} 
+              onChange={handleChange} 
+              type="email"
+            />
+            {errors.correo && <div className={formStyles.errorMessage}>Ingrese un correo electrónico válido</div>}
+          </div>
+          <div className={formStyles.formCol}>
+            <input 
+              className={getInputClass(errors.contraseña)} 
+              name="contraseña" 
+              placeholder="Contraseña *" 
+              value={aprendiz.contraseña} 
+              onChange={handleChange} 
+              type="password"
+            />
+            {errors.contraseña && <div className={formStyles.errorMessage}>La contraseña debe tener al menos 4 caracteres</div>}
+          </div>
         </div>
-        
-        <div className="mb-3">
-          <input 
-            className={`${formStyles} ${errors.correo ? 'border-red-500' : ''}`} 
-            name="correo" 
-            placeholder="Correo electrónico *" 
-            value={aprendiz.correo} 
-            onChange={handleChange} 
-            type="email"
-          />
-          {errors.correo && <p className="text-red-500 text-sm">Ingrese un correo electrónico válido</p>}
-        </div>
-        
-        <div className="mb-3">
-          <input 
-            className={`${formStyles} ${errors.contraseña ? 'border-red-500' : ''}`} 
-            name="contraseña" 
-            placeholder="Contraseña *" 
-            value={aprendiz.contraseña} 
-            onChange={handleChange} 
-            type="password"
-          />
-          {errors.contraseña && <p className="text-red-500 text-sm">La contraseña debe tener al menos 4 caracteres</p>}
-        </div>
-        
-        <div className="mb-3">
+
+        <div className={formStyles.formGroup}>
           <select
-            className={`${formStyles} ${errors.tipoUsuario ? 'border-red-500' : ''}`}
+            className={getSelectClass(errors.tipoUsuario)}
             name="tipoUsuario"
             value={aprendiz.tipoUsuario}
             onChange={handleChange}
@@ -186,7 +189,7 @@ const RegistroAprendiz = ({ setActiveSection, formStyles }) => {
             <option value="1">Administrador</option>
             <option value="2">Aprendiz</option>
           </select>
-          {errors.tipoUsuario && <p className="text-red-500 text-sm">Seleccione un tipo de usuario</p>}
+          {errors.tipoUsuario && <div className={formStyles.errorMessage}>Seleccione un tipo de usuario</div>}
         </div>
         
         <div className="flex justify-between">

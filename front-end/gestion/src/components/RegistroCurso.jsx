@@ -4,7 +4,7 @@ import { Button } from './ui/Button';
 import CursosService from '../services/cursosService';
 import SecurityUtils from '../utils/securityUtils';
 
-const RegistroCurso = ({ setActiveSection, formStyles }) => {
+const RegistroCurso = ({ setActiveSection }) => {
   const [curso, setCurso] = useState({
     nombrePrograma: '',
     codigoFicha: '',
@@ -107,7 +107,7 @@ const RegistroCurso = ({ setActiveSection, formStyles }) => {
         
         <div className="mb-3">
           <input 
-            className={`${formStyles} ${errors.nombrePrograma ? 'border-red-500' : ''}`} 
+            className={`form-control ${errors.nombrePrograma ? 'is-invalid' : ''}`} 
             name="nombrePrograma" 
             placeholder="Nombre del Programa *" 
             type="text" 
@@ -116,13 +116,13 @@ const RegistroCurso = ({ setActiveSection, formStyles }) => {
             disabled={loading}
           />
           {errors.nombrePrograma && (
-            <p className="text-red-500 text-sm mt-1">El nombre del programa es requerido</p>
+            <div className="invalid-feedback">El nombre del programa es requerido</div>
           )}
         </div>
         
         <div className="mb-3">
           <input 
-            className={`${formStyles} ${errors.codigoFicha ? 'border-red-500' : ''}`} 
+            className={`form-control ${errors.codigoFicha ? 'is-invalid' : ''}`} 
             name="codigoFicha" 
             placeholder="Código de Ficha *" 
             type="number" 
@@ -131,13 +131,13 @@ const RegistroCurso = ({ setActiveSection, formStyles }) => {
             disabled={loading}
           />
           {errors.codigoFicha && (
-            <p className="text-red-500 text-sm mt-1">El código de ficha es requerido</p>
+            <div className="invalid-feedback">El código de ficha es requerido</div>
           )}
         </div>
         
         <div className="mb-3">
           <textarea
-            className={`${formStyles} ${errors.descripcion ? 'border-red-500' : ''}`} 
+            className={`form-control ${errors.descripcion ? 'is-invalid' : ''}`} 
             name="descripcion" 
             placeholder="Descripción *" 
             rows="3"
@@ -146,16 +146,16 @@ const RegistroCurso = ({ setActiveSection, formStyles }) => {
             disabled={loading}
           />
           {errors.descripcion && (
-            <p className="text-red-500 text-sm mt-1">La descripción es requerida</p>
+            <div className="invalid-feedback">La descripción es requerida</div>
           )}
         </div>
         
         <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="form-label">
             Fecha de Inicio *
           </label>
           <input 
-            className={`${formStyles} ${errors.fechaInicio ? 'border-red-500' : ''}`} 
+            className={`form-control ${errors.fechaInicio ? 'is-invalid' : ''}`} 
             name="fechaInicio" 
             type="date" 
             value={curso.fechaInicio}
@@ -163,16 +163,16 @@ const RegistroCurso = ({ setActiveSection, formStyles }) => {
             disabled={loading}
           />
           {errors.fechaInicio && (
-            <p className="text-red-500 text-sm mt-1">La fecha de inicio es requerida</p>
+            <div className="invalid-feedback">La fecha de inicio es requerida</div>
           )}
         </div>
         
         <div className="mb-3">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="form-label">
             Fecha de Finalización *
           </label>
           <input 
-            className={`${formStyles} ${errors.fechaFin ? 'border-red-500' : ''}`} 
+            className={`form-control ${errors.fechaFin ? 'is-invalid' : ''}`} 
             name="fechaFin" 
             type="date" 
             value={curso.fechaFin}
@@ -180,7 +180,7 @@ const RegistroCurso = ({ setActiveSection, formStyles }) => {
             disabled={loading}
           />
           {errors.fechaFin && (
-            <p className="text-red-500 text-sm mt-1">La fecha de finalización es requerida</p>
+            <div className="invalid-feedback">La fecha de finalización es requerida</div>
           )}
         </div>
         

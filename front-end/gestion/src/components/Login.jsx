@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import AuthService from '../services/authService';
+import formStyles, { getInputClass, getSelectClass } from '../utils/formStyles';
 
-const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
+const Login = ({ setActiveSection, setLoggedUser }) => {
   const [credentials, setCredentials] = useState({
     correo: '',
     contraseña: '',
@@ -152,14 +153,14 @@ const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
         <h2 className="text-2xl font-bold mb-4 text-indigo-600">Iniciar Sesión</h2>
         
         {errorMessage && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className={formStyles.errorAlert} role="alert">
             {errorMessage}
           </div>
         )}
         
-        <div className="mb-3">
+        <div className={formStyles.formGroup}>
           <input 
-            className={`${formStyles} ${errors.correo ? 'border-red-500' : ''}`}
+            className={getInputClass(errors.correo)}
             name="correo" 
             placeholder="Correo electrónico" 
             type="email" 
@@ -168,13 +169,13 @@ const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
             disabled={loading}
           />
           {errors.correo && (
-            <p className="text-red-500 text-sm mt-1">El correo es requerido</p>
+            <div className={formStyles.errorMessage}>El correo es requerido</div>
           )}
         </div>
         
-        <div className="mb-3">
+        <div className={formStyles.formGroup}>
           <input 
-            className={`${formStyles} ${errors.contraseña ? 'border-red-500' : ''}`}
+            className={getInputClass(errors.contraseña)}
             name="contraseña" 
             placeholder="Contraseña" 
             type="password" 
@@ -183,13 +184,13 @@ const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
             disabled={loading}
           />
           {errors.contraseña && (
-            <p className="text-red-500 text-sm mt-1">La contraseña es requerida</p>
+            <div className={formStyles.errorMessage}>La contraseña es requerida</div>
           )}
         </div>
         
-        <div className="mb-3">
+        <div className={formStyles.formGroup}>
           <select 
-            className={`${formStyles} ${errors.tipoUsuario ? 'border-red-500' : ''}`}
+            className={getSelectClass(errors.tipoUsuario)}
             name="tipoUsuario" 
             value={credentials.tipoUsuario}
             onChange={handleChange}
@@ -200,7 +201,7 @@ const Login = ({ setActiveSection, formStyles, setLoggedUser }) => {
             <option value="2">Aprendiz</option>
           </select>
           {errors.tipoUsuario && (
-            <p className="text-red-500 text-sm mt-1">Seleccione un tipo de usuario</p>
+            <div className={formStyles.errorMessage}>Seleccione un tipo de usuario</div>
           )}
         </div>
         <Button 

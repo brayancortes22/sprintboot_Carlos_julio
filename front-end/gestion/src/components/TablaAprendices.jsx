@@ -145,104 +145,104 @@ const TablaAprendices = ({ setActiveSection }) => {
       <CardContent>
         <h2 className="text-2xl font-bold mb-4">Gestión de Aprendices</h2>
         <div className="overflow-x-auto">
-          <table className="min-w-full table-auto">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="px-4 py-2">Nombre</th>
-                <th className="px-4 py-2">Documento</th>
-                <th className="px-4 py-2">Correo</th>
-                <th className="px-4 py-2">Tipo Usuario</th>
-                <th className="px-4 py-2">Acciones</th>
+          <table className="table table-striped table-hover">
+          <thead className="table-dark">
+            <tr>
+              <th>Nombre</th>
+              <th>Documento</th>
+              <th>Correo</th>
+              <th>Tipo Usuario</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {aprendices.map((aprendiz) => (
+              <tr key={aprendiz.id_aprendiz}>
+                {editando === aprendiz.id_aprendiz ? (
+                  <>
+                    <td>
+                      <input
+                        type="text"
+                        name="nombre"
+                        value={aprendizEditado.nombre || ''}
+                        onChange={handleChange}
+                        className="form-control"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        name="numeroDocumento"
+                        value={aprendizEditado.numeroDocumento || ''}
+                        onChange={handleChange}
+                        className="form-control"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="email"
+                        name="correo"
+                        value={aprendizEditado.correo || ''}
+                        onChange={handleChange}
+                        className="form-control"
+                      />
+                    </td>
+                    <td>
+                      <select
+                        name="tipoUsuario"
+                        value={aprendizEditado.tipoUsuario || ''}
+                        onChange={handleChange}
+                        className="form-select"
+                      >
+                        <option value="1">Administrador</option>
+                        <option value="2">Aprendiz</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button 
+                        onClick={handleGuardarEdicion} 
+                        className="btn btn-success me-2"
+                        disabled={loading}
+                      >
+                        {loading ? 'Guardando...' : 'Guardar'}
+                      </button>
+                      <button 
+                        onClick={handleCancelarEdicion} 
+                        className="btn btn-secondary"
+                        disabled={loading}
+                      >
+                        Cancelar
+                      </button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td>{aprendiz.nombre}</td>
+                    <td>{aprendiz.numeroDocumento}</td>
+                    <td>{aprendiz.correo}</td>
+                    <td>{aprendiz.tipoUsuario === 1 ? 'Administrador' : 'Aprendiz'}</td>
+                    <td>
+                      <button 
+                        onClick={() => handleEditar(aprendiz)} 
+                        className="btn btn-primary me-2"
+                        disabled={loading}
+                      >
+                        Editar
+                      </button>
+                      <button 
+                        onClick={() => handleEliminar(aprendiz.id_aprendiz)} 
+                        className="btn btn-danger"
+                        disabled={loading}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </>
+                )}
               </tr>
-            </thead>
-            <tbody>
-              {aprendices.map((aprendiz) => (
-                <tr key={aprendiz.id_aprendiz} className="border-b">
-                  {editando === aprendiz.id_aprendiz ? (
-                    <>
-                      <td className="px-4 py-2">
-                        <input
-                          type="text"
-                          name="nombre"
-                          value={aprendizEditado.nombre || ''}
-                          onChange={handleChange}
-                          className="w-full p-1 border rounded"
-                        />
-                      </td>
-                      <td className="px-4 py-2">
-                        <input
-                          type="number"
-                          name="numeroDocumento"
-                          value={aprendizEditado.numeroDocumento || ''}
-                          onChange={handleChange}
-                          className="w-full p-1 border rounded"
-                        />
-                      </td>
-                      <td className="px-4 py-2">
-                        <input
-                          type="email"
-                          name="correo"
-                          value={aprendizEditado.correo || ''}
-                          onChange={handleChange}
-                          className="w-full p-1 border rounded"
-                        />
-                      </td>
-                      <td className="px-4 py-2">
-                        <select
-                          name="tipoUsuario"
-                          value={aprendizEditado.tipoUsuario || ''}
-                          onChange={handleChange}
-                          className="w-full p-1 border rounded"
-                        >
-                          <option value="1">Administrador</option>
-                          <option value="2">Aprendiz</option>
-                        </select>
-                      </td>
-                      <td className="px-4 py-2">
-                        <Button 
-                          onClick={handleGuardarEdicion} 
-                          className="bg-green-500 hover:bg-green-600 text-white mr-2"
-                          disabled={loading}
-                        >
-                          {loading ? 'Guardando...' : 'Guardar'}
-                        </Button>
-                        <Button 
-                          onClick={handleCancelarEdicion} 
-                          className="bg-gray-500 hover:bg-gray-600 text-white"
-                          disabled={loading}
-                        >
-                          Cancelar
-                        </Button>
-                      </td>
-                    </>
-                  ) : (
-                    <>
-                      <td className="px-4 py-2">{aprendiz.nombre}</td>
-                      <td className="px-4 py-2">{aprendiz.numeroDocumento}</td>
-                      <td className="px-4 py-2">{aprendiz.correo}</td>
-                      <td className="px-4 py-2">{aprendiz.tipoUsuario === 1 ? 'Administrador' : 'Aprendiz'}</td>
-                      <td className="px-4 py-2">
-                        <Button 
-                          onClick={() => handleEditar(aprendiz)} 
-                          className="bg-blue-500 hover:bg-blue-600 text-white mr-2"
-                          disabled={loading}
-                        >
-                          Editar
-                        </Button>
-                        <Button 
-                          onClick={() => handleEliminar(aprendiz.id_aprendiz)} 
-                          className="bg-red-500 hover:bg-red-600 text-white"
-                          disabled={loading}
-                        >
-                          Eliminar
-                        </Button>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </tbody>
+        </table>
         </div>
       </CardContent>
     </Card>

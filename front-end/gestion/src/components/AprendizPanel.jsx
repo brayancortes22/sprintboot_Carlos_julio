@@ -139,6 +139,7 @@ const AprendizPanel = ({ aprendizId, setActiveSection }) => {
   const inscribirseEnCurso = async (cursoId) => {
     try {
       setLoading(true);
+      setError(null);
       const idToUse = aprendizId || userId;
       
       if (!idToUse) {
@@ -148,22 +149,57 @@ const AprendizPanel = ({ aprendizId, setActiveSection }) => {
       }
       
       console.log(`Inscribiendo al aprendiz ${idToUse} en curso ${cursoId}`);
-      const fecha = new Date();
-      await AprendizCursoService.createAprendizCurso({
-        id_aprendiz: idToUse,
-        id_curso: cursoId,
-        fecha_inscripcion: fecha.toISOString().slice(0, 19).replace('T', ' ')
-      });
-      alert('Inscripción exitosa');
-      console.log("Inscripción exitosa, recargando datos");
-      cargarCursos();
-      if (idToUse) {
-        cargarDatosAprendiz(idToUse);
+      
+      // Crear fecha actual en formato correcto para MySQL (YYYY-MM-DD)
+      const hoy = new Date();
+      const fechaFormateada = hoy.toISOString().split('T')[0];
+      
+      // Datos de inscripción siguiendo exactamente la estructura de la tabla en la base de datos
+      const datosInscripcion = {
+        // Nota: id_aprendiz_curso es autoincremental, no lo enviamos
+        fecha_inscripcion: fechaFormateada,
+        id_aprendiz: parseInt(idToUse),
+        id_curso: parseInt(cursoId)
+      };
+      
+      console.log("Datos de inscripción según estructura de BD:", datosInscripcion);
+      
+      // Intentar la inscripción
+      const resultado = await AprendizCursoService.createAprendizCurso(datosInscripcion);
+      
+      if (resultado && resultado.status === 200) {
+        alert('Te has inscrito al curso exitosamente');
+        // Recargar datos actualizados
+        await cargarCursos();
+        await cargarDatosAprendiz(idToUse);
+      } else {
+        setError("La respuesta del servidor no fue la esperada. Intenta nuevamente.");
+        console.error("Respuesta inesperada:", resultado);
       }
     } catch (error) {
       console.error('Error al inscribirse:', error);
-      setError("Error al inscribirse al curso. Por favor, intenta nuevamente");
-      alert('Error al inscribirse al curso');
+      
+      // Mensaje de error más descriptivo según el tipo de error
+      let mensajeError = "Error al inscribirse al curso. ";
+      
+      if (error.message) {
+        if (error.message.includes('403')) {
+          mensajeError += "No tienes los permisos necesarios para inscribirte. Contacta al administrador.";
+        } else if (error.message.includes('sesión')) {
+          mensajeError += "Tu sesión ha expirado. Inicia sesión nuevamente.";
+          setTimeout(() => {
+            AuthService.logout();
+            setActiveSection('login');
+          }, 2000);
+        } else {
+          mensajeError += error.message;
+        }
+      } else {
+        mensajeError += "Por favor, intenta nuevamente más tarde.";
+      }
+      
+      setError(mensajeError);
+      alert(mensajeError);
     } finally {
       setLoading(false);
     }

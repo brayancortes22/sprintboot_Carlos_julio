@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Card, CardContent } from './ui/Card';
 import { Button } from './ui/Button';
 import AprendizService from '../services/aprendizService';
+import formStyles, { getInputClass } from '../utils/formStyles';
 
-const Registro = ({ setActiveSection, formStyles }) => {
+const Registro = ({ setActiveSection }) => {
   const [aprendiz, setAprendiz] = useState({
     nombre: '',
     numeroDocumento: '',
@@ -112,62 +113,62 @@ const Registro = ({ setActiveSection, formStyles }) => {
         <h2 className="text-2xl font-bold mb-4 text-indigo-600">Crear una cuenta</h2>
         
         {successMessage && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          <div className={formStyles.successAlert} role="alert">
             {successMessage}
           </div>
         )}
         
         {errorMessage && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className={formStyles.errorAlert} role="alert">
             {errorMessage}
           </div>
         )}
         
-        <div className="mb-3">
+        <div className={formStyles.formGroup}>
           <input 
-            className={`${formStyles} ${errors.nombre ? 'border-red-500' : ''}`} 
+            className={getInputClass(errors.nombre)} 
             name="nombre" 
             placeholder="Nombre completo *" 
             value={aprendiz.nombre} 
             onChange={handleChange} 
           />
-          {errors.nombre && <p className="text-red-500 text-sm">El nombre es requerido</p>}
+          {errors.nombre && <div className={formStyles.errorMessage}>El nombre es requerido</div>}
         </div>
         
-        <div className="mb-3">
+        <div className={formStyles.formGroup}>
           <input 
-            className={`${formStyles} ${errors.numeroDocumento ? 'border-red-500' : ''}`} 
+            className={getInputClass(errors.numeroDocumento)} 
             name="numeroDocumento" 
             placeholder="Número de documento *" 
             value={aprendiz.numeroDocumento} 
             onChange={handleChange} 
             type="number"
           />
-          {errors.numeroDocumento && <p className="text-red-500 text-sm">El número de documento debe ser mayor que 0</p>}
+          {errors.numeroDocumento && <div className={formStyles.errorMessage}>El número de documento debe ser mayor que 0</div>}
         </div>
         
-        <div className="mb-3">
+        <div className={formStyles.formGroup}>
           <input 
-            className={`${formStyles} ${errors.correo ? 'border-red-500' : ''}`} 
+            className={getInputClass(errors.correo)} 
             name="correo" 
             placeholder="Correo electrónico *" 
             value={aprendiz.correo} 
             onChange={handleChange} 
             type="email"
           />
-          {errors.correo && <p className="text-red-500 text-sm">Ingrese un correo electrónico válido</p>}
+          {errors.correo && <div className={formStyles.errorMessage}>Ingrese un correo electrónico válido</div>}
         </div>
         
-        <div className="mb-3">
+        <div className={formStyles.formGroup}>
           <input 
-            className={`${formStyles} ${errors.contraseña ? 'border-red-500' : ''}`} 
+            className={getInputClass(errors.contraseña)} 
             name="contraseña" 
             placeholder="Contraseña *" 
             value={aprendiz.contraseña} 
             onChange={handleChange} 
             type="password"
           />
-          {errors.contraseña && <p className="text-red-500 text-sm">La contraseña debe tener al menos 4 caracteres</p>}
+          {errors.contraseña && <div className={formStyles.errorMessage}>La contraseña debe tener al menos 4 caracteres</div>}
         </div>
         
         <Button 

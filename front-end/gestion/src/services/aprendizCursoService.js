@@ -24,15 +24,41 @@ const AprendizCursoService = {
         }
     },
 
-    // Crear una nueva relación
+    // Crear una nueva relación/inscripción
     createAprendizCurso: async (aprendizCursoData) => {
         try {
-            console.log('Creando inscripción con datos:', aprendizCursoData);
-            console.log('Endpoint utilizado:', APRENDIZ_CURSO_ENDPOINTS.CREATE);
-            const response = await HttpClient.post(APRENDIZ_CURSO_ENDPOINTS.CREATE, aprendizCursoData);
+            // Asegurar que los IDs sean números
+            const datosFormateados = {
+                id_aprendiz: parseInt(aprendizCursoData.id_aprendiz),
+                id_curso: parseInt(aprendizCursoData.id_curso),
+                fecha_inscripcion: aprendizCursoData.fecha_inscripcion
+            };
+            
+            console.log('Enviando solicitud de inscripción con datos:', datosFormateados);
+            console.log('Usando el endpoint de inscripción:', APRENDIZ_CURSO_ENDPOINTS.CREATE);
+            
+            // Verificar token antes de hacer la petición
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.warn('No hay token disponible para crear inscripción. La petición posiblemente sea rechazada.');
+                throw new Error('No hay sesión activa. Por favor inicie sesión nuevamente.');
+            }
+            
+            console.log('Token disponible para petición de inscripción:', token.substring(0, 15) + '...');
+            
+            // Enviar solicitud al backend
+            const response = await HttpClient.post(APRENDIZ_CURSO_ENDPOINTS.CREATE, datosFormateados);
+            console.log('Respuesta exitosa de inscripción:', response);
             return response;
         } catch (error) {
             console.error('Error en createAprendizCurso:', error);
+            
+            // Información detallada sobre el error para depuración
+            if (error.message && error.message.includes('403')) {
+                console.error('Error de permisos (403): No tienes autorización para inscribirte en este curso.');
+                console.error('Verifica que tu cuenta tiene los permisos necesarios y que el curso está disponible.');
+            }
+            
             throw error;
         }
     },

@@ -36,7 +36,7 @@ export const APRENDIZ_CURSO_ENDPOINTS = {
     GET_BY_ID: (id) => `${API_URL}/aprendices-cursos/obtener/${id}`,
     GET_BY_APRENDIZ: (id) => `${API_URL}/aprendices-cursos/aprendiz/${id}`,
     GET_BY_CURSO: (id) => `${API_URL}/aprendices-cursos/curso/${id}`,
-    CREATE: `${API_URL}/aprendices-cursos/create`,
+    CREATE: `${API_URL}/aprendices-cursos/inscribir`, // Cambiado a un endpoint específico para inscripción
     UPDATE: (id) => `${API_URL}/aprendices-cursos/actualizar/${id}`,
     DELETE: (id) => `${API_URL}/aprendices-cursos/eliminar/${id}`
 };

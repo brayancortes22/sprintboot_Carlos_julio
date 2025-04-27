@@ -14,8 +14,11 @@ import com.sena_proyecto_car_2025.model.Cursos;
 
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/aprendices-cursos")
@@ -23,8 +26,8 @@ public class aprendiz_curso_controller {
     @Autowired
     private AprendizCursoService aprendizCursoService;
 
-    // Crear nuevo registro
-    @PostMapping("/api/aprendiz_curso")
+    // Crear nuevo registro - Corregido el endpoint
+    @PostMapping("/create")
     public ResponseEntity<GenericResponseDTO<AprendizCursoDTO>> crear(@RequestBody AprendizCursoDTO dto) {
         try {
             // Asegurarnos de que la fecha de inscripción no sea nula
@@ -38,6 +41,42 @@ public class aprendiz_curso_controller {
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(new GenericResponseDTO<>(400, "Error al crear registro: " + e.getMessage(), null));
+        }
+    }
+    
+    // Endpoint específico para inscripciones de aprendices a cursos
+    @PostMapping("/inscribir")
+    public ResponseEntity<GenericResponseDTO<AprendizCursoDTO>> inscribir(@RequestBody Map<String, Object> datos) {
+        try {
+            // Extraer datos del JSON recibido
+            Integer idAprendiz = Integer.parseInt(datos.get("id_aprendiz").toString());
+            Integer idCurso = Integer.parseInt(datos.get("id_curso").toString());
+            String fechaStr = datos.get("fecha_inscripcion").toString();
+            
+            // Crear DTO
+            AprendizCursoDTO dto = new AprendizCursoDTO();
+            dto.setId_aprendiz(idAprendiz);
+            dto.setId_curso(idCurso);
+            
+            // Convertir la fecha de String a Timestamp
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                Date fechaDate = dateFormat.parse(fechaStr);
+                Timestamp timestamp = new Timestamp(fechaDate.getTime());
+                dto.setFechaInscripcion(timestamp);
+            } catch (Exception e) {
+                // Si hay error en el formato, usar fecha actual
+                dto.setFechaInscripcion(new Timestamp(System.currentTimeMillis()));
+            }
+            
+            // Convertir a entidad y guardar
+            aprendiz_curso entity = convertToEntity(dto);
+            aprendizCursoService.save(entity);
+            
+            return ResponseEntity.ok(new GenericResponseDTO<>(200, "Inscripción exitosa", dto));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(new GenericResponseDTO<>(400, "Error al realizar la inscripción: " + e.getMessage(), null));
         }
     }
 

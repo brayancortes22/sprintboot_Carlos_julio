@@ -163,62 +163,54 @@ const RegistroLeccion = ({ setActiveSection, }) => {
         <h2 className="text-2xl font-bold mb-4 text-indigo-600">Registro de Lección</h2>
         
         <form>
-          <div className="mb-4">
+          <div className="mb-3">
             <input
               type="text"
               name="nombre_leccion"
               placeholder="Nombre de la lección"
               value={leccion.nombre_leccion}
               onChange={handleChange}
-              className={`w-full p-2 border rounded ${
-                errors.nombre_leccion ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`form-control ${errors.nombre_leccion ? 'is-invalid' : ''}`}
             />
             {errors.nombre_leccion && (
-              <p className="text-red-500 text-sm mt-1">{errors.nombre_leccion}</p>
+              <div className="invalid-feedback">{errors.nombre_leccion}</div>
             )}
           </div>
 
-          <div className="mb-4">
+          <div className="mb-3">
             <input
               type="text"
               name="ruta_leccion"
               placeholder="Ruta de la lección"
               value={leccion.ruta_leccion}
               onChange={handleChange}
-              className={`w-full p-2 border rounded ${
-                errors.ruta_leccion ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`form-control ${errors.ruta_leccion ? 'is-invalid' : ''}`}
             />
             {errors.ruta_leccion && (
-              <p className="text-red-500 text-sm mt-1">{errors.ruta_leccion}</p>
+              <div className="invalid-feedback">{errors.ruta_leccion}</div>
             )}
           </div>
 
-          <div className="mb-4">
+          <div className="mb-3">
             <textarea
               name="descripcion"
               placeholder="Descripción de la lección"
               value={leccion.descripcion}
               onChange={handleChange}
-              className={`w-full p-2 border rounded ${
-                errors.descripcion ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`form-control ${errors.descripcion ? 'is-invalid' : ''}`}
               rows="3"
             />
             {errors.descripcion && (
-              <p className="text-red-500 text-sm mt-1">{errors.descripcion}</p>
+              <div className="invalid-feedback">{errors.descripcion}</div>
             )}
           </div>
 
-          <div className="mb-4">
+          <div className="mb-3">
             <select
               name="id_curso"
               value={leccion.id_curso}
               onChange={handleChange}
-              className={`w-full p-2 border rounded ${
-                errors.id_curso ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className={`form-select ${errors.id_curso ? 'is-invalid' : ''}`}
             >
               <option value="">Seleccione un curso</option>
               {cursos.length > 0 ? (
@@ -243,7 +235,7 @@ const RegistroLeccion = ({ setActiveSection, }) => {
               )}
             </select>
             {errors.id_curso && (
-              <p className="text-red-500 text-sm mt-1">{errors.id_curso}</p>
+              <div className="invalid-feedback">{errors.id_curso}</div>
             )}
           </div>
 

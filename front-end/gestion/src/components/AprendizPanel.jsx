@@ -218,26 +218,48 @@ const AprendizPanel = ({ aprendizId, setActiveSection }) => {
   return (
     <div className="space-y-6">
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="alert alert-danger" role="alert">
           {error}
         </div>
       )}
       
-      <Card>
+      <Card className="mb-4">
         <CardContent>
           <h2 className="text-2xl font-bold mb-4">Mis Certificados</h2>
           {loading ? (
             <p>Cargando certificados...</p>
           ) : certificados.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {certificados.map((certificado) => (
-                <Card key={certificado.idCertificado} className="bg-white shadow">
-                  <CardContent>
-                    <h3 className="font-bold">{certificado.nombreCertificado}</h3>
-                    <p>Fecha: {new Date(certificado.fechaFin).toLocaleDateString()}</p>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <tbody>
+                  {/* Dividir en filas de 4 elementos */}
+                  {Array.from({ length: Math.ceil(certificados.length / 4) }).map((_, rowIndex) => (
+                    <tr key={`row-${rowIndex}`}>
+                      {certificados.slice(rowIndex * 4, rowIndex * 4 + 4).map((certificado, colIndex) => (
+                        <td key={`cell-${rowIndex}-${colIndex}`} className="p-2 text-center align-middle">
+                          <div className="border border-danger rounded shadow-sm p-3 bg-white h-100" style={{borderWidth: "2px"}}>
+                            <h3 className="font-bold text-lg text-success border-bottom pb-2 mb-2">{certificado.nombreCertificado}</h3>
+                            <div className="p-2 border rounded mb-2" style={{backgroundColor: "#f8f9fa"}}>
+                              <p className="text-sm text-muted mb-0">
+                                <i className="bi bi-calendar-check me-1"></i> Fecha: <span className="fw-bold">{new Date(certificado.fechaFin).toLocaleDateString()}</span>
+                              </p>
+                            </div>
+                            {certificado.curso && (
+                              <div className="mt-2 p-1 bg-light rounded">
+                                <small className="text-muted">Curso: {certificado.curso.nombrePrograma}</small>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      ))}
+                      {/* Añadir celdas vacías para completar la fila si es necesario */}
+                      {Array.from({ length: 4 - (certificados.slice(rowIndex * 4, rowIndex * 4 + 4).length) }).map((_, i) => (
+                        <td key={`empty-${rowIndex}-${i}`} className="p-2 border text-center"></td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
             <p>No tienes certificados aún</p>
@@ -245,21 +267,48 @@ const AprendizPanel = ({ aprendizId, setActiveSection }) => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="mb-4">
         <CardContent>
           <h2 className="text-2xl font-bold mb-4">Mis Cursos</h2>
           {loading ? (
             <p>Cargando cursos...</p>
           ) : misCursos.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {misCursos.map((inscripcion) => (
-                <Card key={inscripcion.id_aprendiz_curso || inscripcion.idCurso} className="bg-white shadow">
-                  <CardContent>
-                    <h3 className="font-bold">{inscripcion.curso ? inscripcion.curso.nombrePrograma : 'Curso sin nombre'}</h3>
-                    <p>Fecha inscripción: {inscripcion.fechaInscripcion ? new Date(inscripcion.fechaInscripcion).toLocaleDateString() : 'Fecha no disponible'}</p>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <tbody>
+                  {/* Dividir en filas de 4 elementos */}
+                  {Array.from({ length: Math.ceil(misCursos.length / 4) }).map((_, rowIndex) => (
+                    <tr key={`row-${rowIndex}`}>
+                      {misCursos.slice(rowIndex * 4, rowIndex * 4 + 4).map((inscripcion, colIndex) => (
+                        <td key={`cell-${rowIndex}-${colIndex}`} className="p-2 text-center align-middle">
+                          <div className="border border-danger rounded shadow-sm p-3 bg-white h-100" style={{borderWidth: "2px"}}>
+                            <h3 className="font-bold text-lg text-info border-bottom pb-2 mb-2">
+                              {inscripcion.curso ? inscripcion.curso.nombrePrograma : 'Curso sin nombre'}
+                            </h3>
+                            <div className="p-2 border rounded mb-2" style={{backgroundColor: "#f8f9fa"}}>
+                              <p className="text-sm text-muted mb-0">
+                                <i className="bi bi-calendar3 me-1"></i> Inscrito: 
+                                <span className="fw-bold ms-1">
+                                  {inscripcion.fechaInscripcion ? new Date(inscripcion.fechaInscripcion).toLocaleDateString() : 'Fecha no disponible'}
+                                </span>
+                              </p>
+                            </div>
+                            {inscripcion.curso && inscripcion.curso.codigoFicha && (
+                              <div className="mt-2 p-1 bg-light rounded">
+                                <small className="text-muted">Ficha: {inscripcion.curso.codigoFicha}</small>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      ))}
+                      {/* Añadir celdas vacías para completar la fila si es necesario */}
+                      {Array.from({ length: 4 - (misCursos.slice(rowIndex * 4, rowIndex * 4 + 4).length) }).map((_, i) => (
+                        <td key={`empty-${rowIndex}-${i}`} className="p-2 border text-center"></td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
             <p>No estás inscrito en ningún curso</p>
@@ -267,31 +316,55 @@ const AprendizPanel = ({ aprendizId, setActiveSection }) => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="mb-4">
         <CardContent>
           <h2 className="text-2xl font-bold mb-4">Cursos Disponibles</h2>
           {loading ? (
             <p>Cargando cursos disponibles...</p>
           ) : cursos.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {cursos
-                // Filtrar los cursos en los que ya está inscrito
-                .filter(curso => !estaInscrito(curso.idCurso))
-                .map((curso) => (
-                  <Card key={curso.idCurso} className="bg-white shadow">
-                    <CardContent>
-                      <h3 className="font-bold">{curso.nombrePrograma}</h3>
-                      <p className="mb-2">{curso.descripcion}</p>
-                      <Button
-                        onClick={() => inscribirseEnCurso(curso.idCurso)}
-                        disabled={loading || !userId}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white"
-                      >
-                        Inscribirse
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
+            <div className="table-responsive">
+              <table className="table table-bordered">
+                <tbody>
+                  {/* Filtrar primero los cursos no inscritos y luego dividirlos en filas de 4 */}
+                  {Array.from({ 
+                    length: Math.ceil(cursos.filter(curso => !estaInscrito(curso.idCurso)).length / 4) 
+                  }).map((_, rowIndex) => (
+                    <tr key={`row-${rowIndex}`}>
+                      {cursos
+                        .filter(curso => !estaInscrito(curso.idCurso))
+                        .slice(rowIndex * 4, rowIndex * 4 + 4)
+                        .map((curso, colIndex) => (
+                          <td key={`cell-${rowIndex}-${colIndex}`} className="p-2 text-center align-middle">
+                            <div className="border border-danger rounded shadow-sm p-3 bg-white h-100" style={{borderWidth: "2px"}}>
+                              <h3 className="font-bold text-lg text-primary border-bottom pb-2 mb-2">{curso.nombrePrograma}</h3>
+                              <div className="mb-2 p-1 bg-light rounded">
+                                <small className="text-sm text-muted">Ficha: <span className="font-weight-bold">{curso.codigoFicha}</span></small>
+                              </div>
+                              <div className="p-2 border rounded mb-3" style={{height: "80px", overflow: "hidden", backgroundColor: "#f8f9fa"}}>
+                                <p className="text-sm">
+                                  {curso.descripcion ? curso.descripcion.substring(0, 100) + (curso.descripcion.length > 100 ? '...' : '') : 'Sin descripción'}
+                                </p>
+                              </div>
+                              <Button
+                                onClick={() => inscribirseEnCurso(curso.idCurso)}
+                                disabled={loading || !userId}
+                                className="btn btn-primary w-100"
+                              >
+                                Inscribirse
+                              </Button>
+                            </div>
+                          </td>
+                      ))}
+                      {/* Añadir celdas vacías para completar la fila si es necesario */}
+                      {Array.from({ 
+                        length: 4 - (cursos.filter(curso => !estaInscrito(curso.idCurso)).slice(rowIndex * 4, rowIndex * 4 + 4).length) 
+                      }).map((_, i) => (
+                        <td key={`empty-${rowIndex}-${i}`} className="p-2 border text-center"></td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
             <p>No hay cursos disponibles</p>

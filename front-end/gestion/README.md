@@ -181,7 +181,7 @@ Para verificar que la configuración es correcta:
 Al ejecutar la aplicación por primera vez junto con el backend, se crea automáticamente un usuario administrador con las siguientes credenciales:
 
 - **Correo**: admin@sena.edu.co
-- **Contraseña**: admin123
+- **Contraseña**: 1234
 
 ## Notas Sobre Seguridad
 

@@ -90,7 +90,7 @@ El frontend implementa medidas de seguridad adicionales:
 Al ejecutar la aplicación por primera vez, se crea automáticamente un usuario administrador con las siguientes credenciales:
 
 - **Correo**: admin@sena.edu.co
-- **Contraseña**: admin123
+- **Contraseña**: 1234
 - **Tipo de Usuario**: Administrador
 
 Estas credenciales le permitirán acceder al panel de administración inmediatamente después de iniciar el sistema.

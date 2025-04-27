@@ -18,6 +18,7 @@ public class CorsConfig implements WebMvcConfigurer {
         "http://172.30.1.191:5173",
         "http://172.30.208.1:5173",
         "http://172.30.5.207:5173",
+        "http://192.168.1.3:5173"
         
         
         // Wildcard para permitir cualquier origen en desarrollo (opcional, comenta en producción)

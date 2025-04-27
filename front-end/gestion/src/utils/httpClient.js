@@ -1,7 +1,8 @@
 import AuthService from '../services/authService';
 
 // const API_URL = 'http://localhost:8080/api';
-const API_URL = 'http://172.30.1.191:8080/api';
+// const API_URL = 'http://172.30.1.191:8080/api';
+const API_URL = 'http://192.168.1.3:8080/api';
 
 const handleErrorResponse = (response, url) => {
   if (!response.ok) {

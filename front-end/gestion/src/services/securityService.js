@@ -3,7 +3,8 @@
  */
 
 // const API_URL = 'http://localhost:8080/api/security';
-const API_URL = 'http://172.30.5.207:8080/api/security';
+// const API_URL = 'http://172.30.5.207:8080/api/security';
+const API_URL = 'http://192.168.1.3:8080/api/security';
 
 export const SecurityService = {
   /**

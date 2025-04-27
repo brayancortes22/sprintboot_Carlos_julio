@@ -73,7 +73,7 @@ public class aprendiz_curso_controller {
     }
 
     // Obtener cursos por aprendiz
-    @GetMapping("/aprendiz_curso/{id}")
+    @GetMapping("/aprendiz/{id}")
     public ResponseEntity<GenericResponseDTO<List<aprendiz_curso>>> getCursosByAprendiz(@PathVariable Integer id) {
         try {
             Aprendiz aprendiz = new Aprendiz();

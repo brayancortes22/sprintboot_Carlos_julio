@@ -148,11 +148,11 @@ const TablaAprendices = ({ setActiveSection }) => {
           <table className="table table-striped table-hover">
           <thead className="table-dark">
             <tr>
-              <th>Nombre</th>
-              <th>Documento</th>
-              <th>Correo</th>
-              <th>Tipo Usuario</th>
-              <th>Acciones</th>
+              <th className="px-6 py-3">Nombre</th>
+              <th className="px-6 py-3">Documento</th>
+              <th className="px-6 py-3">Correo</th>
+              <th className="px-6 py-3">Tipo Usuario</th>
+              <th className="px-6 py-3">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -160,7 +160,7 @@ const TablaAprendices = ({ setActiveSection }) => {
               <tr key={aprendiz.id_aprendiz}>
                 {editando === aprendiz.id_aprendiz ? (
                   <>
-                    <td>
+                    <td className="px-6 py-3">
                       <input
                         type="text"
                         name="nombre"
@@ -169,7 +169,7 @@ const TablaAprendices = ({ setActiveSection }) => {
                         className="form-control"
                       />
                     </td>
-                    <td>
+                    <td className="px-6 py-3">
                       <input
                         type="number"
                         name="numeroDocumento"
@@ -178,7 +178,7 @@ const TablaAprendices = ({ setActiveSection }) => {
                         className="form-control"
                       />
                     </td>
-                    <td>
+                    <td className="px-6 py-3">
                       <input
                         type="email"
                         name="correo"
@@ -187,7 +187,7 @@ const TablaAprendices = ({ setActiveSection }) => {
                         className="form-control"
                       />
                     </td>
-                    <td>
+                    <td className="px-6 py-3">
                       <select
                         name="tipoUsuario"
                         value={aprendizEditado.tipoUsuario || ''}
@@ -198,7 +198,7 @@ const TablaAprendices = ({ setActiveSection }) => {
                         <option value="2">Aprendiz</option>
                       </select>
                     </td>
-                    <td>
+                    <td className="px-6 py-3">
                       <button 
                         onClick={handleGuardarEdicion} 
                         className="btn btn-success me-2"
@@ -217,11 +217,11 @@ const TablaAprendices = ({ setActiveSection }) => {
                   </>
                 ) : (
                   <>
-                    <td>{aprendiz.nombre}</td>
-                    <td>{aprendiz.numeroDocumento}</td>
-                    <td>{aprendiz.correo}</td>
-                    <td>{aprendiz.tipoUsuario === 1 ? 'Administrador' : 'Aprendiz'}</td>
-                    <td>
+                    <td className="px-6 py-3">{aprendiz.nombre}</td>
+                    <td className="px-6 py-3">{aprendiz.numeroDocumento}</td>
+                    <td className="px-6 py-3">{aprendiz.correo}</td>
+                    <td className="px-6 py-3">{aprendiz.tipoUsuario === 1 ? 'Administrador' : 'Aprendiz'}</td>
+                    <td className="px-6 py-3">
                       <button 
                         onClick={() => handleEditar(aprendiz)} 
                         className="btn btn-primary me-2"

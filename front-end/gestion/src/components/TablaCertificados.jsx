@@ -162,12 +162,12 @@ const TablaCertificados = ({ setActiveSection }) => {
           <table className="min-w-full table-auto">
             <thead>
               <tr className="bg-gray-100">
-                <th className="px-4 py-2">Nombre</th>
-                <th className="px-4 py-2">Documento</th>
-                <th className="px-4 py-2">Fecha Fin</th>
-                <th className="px-4 py-2">Aprendiz</th>
-                <th className="px-4 py-2">Lección</th>
-                <th className="px-4 py-2">Acciones</th>
+                <th className="px-6 py-3">Nombre</th>
+                <th className="px-6 py-3">Documento</th>
+                <th className="px-6 py-3">Fecha Fin</th>
+                <th className="px-6 py-3">Aprendiz</th>
+                <th className="px-6 py-3">Lección</th>
+                <th className="px-6 py-3">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -175,7 +175,7 @@ const TablaCertificados = ({ setActiveSection }) => {
                 <tr key={certificado.idCertificado} className="border-b">
                   {editando === certificado.idCertificado ? (
                     <>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <input
                           type="text"
                           name="nombreCertificado"
@@ -184,7 +184,7 @@ const TablaCertificados = ({ setActiveSection }) => {
                           className="w-full p-1 border rounded"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <input
                           type="number"
                           name="numeroDocumentoCertificado"
@@ -193,7 +193,7 @@ const TablaCertificados = ({ setActiveSection }) => {
                           className="w-full p-1 border rounded"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <input
                           type="date"
                           name="fecha_fin"
@@ -202,7 +202,7 @@ const TablaCertificados = ({ setActiveSection }) => {
                           className="w-full p-1 border rounded"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <select
                           name="idAprendiz"
                           value={certificadoEditado.idAprendiz || ''}
@@ -217,7 +217,7 @@ const TablaCertificados = ({ setActiveSection }) => {
                           ))}
                         </select>
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <select
                           name="idLecciones"
                           value={certificadoEditado.idLecciones || ''}
@@ -232,7 +232,7 @@ const TablaCertificados = ({ setActiveSection }) => {
                           ))}
                         </select>
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <Button 
                           onClick={handleGuardarEdicion} 
                           className="bg-green-500 hover:bg-green-600 text-white mr-2"
@@ -251,16 +251,16 @@ const TablaCertificados = ({ setActiveSection }) => {
                     </>
                   ) : (
                     <>
-                      <td className="px-4 py-2">{certificado.nombreCertificado || 'No asignado'}</td>
-                      <td className="px-4 py-2">{certificado.numeroDocumentoCertificado || 'No asignado'}</td>
-                      <td className="px-4 py-2">{new Date(certificado.fechaFin).toLocaleDateString()}</td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">{certificado.nombreCertificado || 'No asignado'}</td>
+                      <td className="px-6 py-3">{certificado.numeroDocumentoCertificado || 'No asignado'}</td>
+                      <td className="px-6 py-3">{new Date(certificado.fechaFin).toLocaleDateString()}</td>
+                      <td className="px-6 py-3">
                         {aprendices.find(a => a.id_aprendiz === certificado.idAprendiz)?.nombre || 'No asignado'}
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         {lecciones.find(l => l.id_leccion === certificado.idLecciones)?.nombre_leccion || 'No asignado'}
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <Button 
                           onClick={() => handleEditar(certificado)} 
                           className="bg-blue-500 hover:bg-blue-600 text-white mr-2"

@@ -166,11 +166,11 @@ const TablaLecciones = ({ setActiveSection }) => {
             <table className="min-w-full table-auto">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="px-4 py-2">Nombre</th>
-                  <th className="px-4 py-2">Descripción</th>
-                  <th className="px-4 py-2">Ruta</th>
-                  <th className="px-4 py-2">Curso</th>
-                  <th className="px-4 py-2">Acciones</th>
+                  <th className="px-6 py-3">Nombre</th>
+                  <th className="px-6 py-3">Descripción</th>
+                  <th className="px-6 py-3">Ruta</th>
+                  <th className="px-6 py-3">Curso</th>
+                  <th className="px-6 py-3">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -178,7 +178,7 @@ const TablaLecciones = ({ setActiveSection }) => {
                   <tr key={leccion.id_leccion} className="border-b">
                     {editando === leccion.id_leccion ? (
                       <>
-                        <td className="px-4 py-2">
+                        <td className="px-6 py-3">
                           <input
                             type="text"
                             name="nombre_leccion"
@@ -187,7 +187,7 @@ const TablaLecciones = ({ setActiveSection }) => {
                             className="w-full p-1 border rounded"
                           />
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="px-6 py-3">
                           <textarea
                             name="descripcion"
                             value={leccionEditada.descripcion || ''}
@@ -195,7 +195,7 @@ const TablaLecciones = ({ setActiveSection }) => {
                             className="w-full p-1 border rounded"
                           />
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="px-6 py-3">
                           <input
                             type="text"
                             name="ruta_leccion"
@@ -204,7 +204,7 @@ const TablaLecciones = ({ setActiveSection }) => {
                             className="w-full p-1 border rounded"
                           />
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="px-6 py-3">
                           <select
                             name="id_curso"
                             value={leccionEditada.id_curso || ''}
@@ -219,7 +219,7 @@ const TablaLecciones = ({ setActiveSection }) => {
                             ))}
                           </select>
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="px-6 py-3">
                           <Button 
                             onClick={handleGuardarEdicion} 
                             className="bg-green-500 hover:bg-green-600 text-white mr-2"
@@ -238,15 +238,15 @@ const TablaLecciones = ({ setActiveSection }) => {
                       </>
                     ) : (
                       <>
-                        <td className="px-4 py-2">{leccion.nombre_leccion}</td>
-                        <td className="px-4 py-2">{leccion.descripcion}</td>
-                        <td className="px-4 py-2">{leccion.ruta_leccion}</td>
-                        <td className="px-4 py-2">
+                        <td className="px-6 py-3">{leccion.nombre_leccion}</td>
+                        <td className="px-6 py-3">{leccion.descripcion}</td>
+                        <td className="px-6 py-3">{leccion.ruta_leccion}</td>
+                        <td className="px-6 py-3">
                           {cursos.find(c => (c.idCurso || c.id_curso) === leccion.id_curso)?.nombrePrograma || 
                            cursos.find(c => (c.idCurso || c.id_curso) === leccion.id_curso)?.nombre_programa || 
                            'No asignado'}
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="px-6 py-3">
                           <Button 
                             onClick={() => handleEditar(leccion)} 
                             className="bg-blue-500 hover:bg-blue-600 text-white mr-2"

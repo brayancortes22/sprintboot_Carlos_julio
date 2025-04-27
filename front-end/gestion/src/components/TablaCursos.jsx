@@ -120,12 +120,12 @@ const TablaCursos = ({ setActiveSection }) => {
           <table className="min-w-full table-auto">
             <thead>
               <tr className="bg-gray-100">
-                <th className="px-4 py-2">Nombre del Programa</th>
-                <th className="px-4 py-2">Código Ficha</th>
-                <th className="px-4 py-2">Descripción</th>
-                <th className="px-4 py-2">Fecha Inicio</th>
-                <th className="px-4 py-2">Fecha Fin</th>
-                <th className="px-4 py-2">Acciones</th>
+                <th className="px-6 py-3">Nombre del Programa</th>
+                <th className="px-6 py-3">Código Ficha</th>
+                <th className="px-6 py-3">Descripción</th>
+                <th className="px-6 py-3">Fecha Inicio</th>
+                <th className="px-6 py-3">Fecha Fin</th>
+                <th className="px-6 py-3">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -133,7 +133,7 @@ const TablaCursos = ({ setActiveSection }) => {
                 <tr key={curso.idCurso} className="border-b">
                   {editando === curso.idCurso ? (
                     <>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <input
                           type="text"
                           name="nombrePrograma"
@@ -142,7 +142,7 @@ const TablaCursos = ({ setActiveSection }) => {
                           className="w-full p-1 border rounded"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <input
                           type="number"
                           name="codigoFicha"
@@ -151,7 +151,7 @@ const TablaCursos = ({ setActiveSection }) => {
                           className="w-full p-1 border rounded"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <textarea
                           name="descripcion"
                           value={cursoEditado.descripcion || ''}
@@ -159,7 +159,7 @@ const TablaCursos = ({ setActiveSection }) => {
                           className="w-full p-1 border rounded"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <input
                           type="date"
                           name="fechaInicio"
@@ -168,7 +168,7 @@ const TablaCursos = ({ setActiveSection }) => {
                           className="w-full p-1 border rounded"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <input
                           type="date"
                           name="fechaFin"
@@ -177,7 +177,7 @@ const TablaCursos = ({ setActiveSection }) => {
                           className="w-full p-1 border rounded"
                         />
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">
                         <Button onClick={handleGuardarEdicion} className="bg-green-500 hover:bg-green-600 text-white mr-2" disabled={loading}>
                           {loading ? 'Guardando...' : 'Guardar'}
                         </Button>
@@ -188,12 +188,12 @@ const TablaCursos = ({ setActiveSection }) => {
                     </>
                   ) : (
                     <>
-                      <td className="px-4 py-2">{curso.nombrePrograma}</td>
-                      <td className="px-4 py-2">{curso.codigoFicha}</td>
-                      <td className="px-4 py-2">{curso.descripcion}</td>
-                      <td className="px-4 py-2">{new Date(curso.fechaInicio).toLocaleDateString()}</td>
-                      <td className="px-4 py-2">{new Date(curso.fechaFin).toLocaleDateString()}</td>
-                      <td className="px-4 py-2">
+                      <td className="px-6 py-3">{curso.nombrePrograma}</td>
+                      <td className="px-6 py-3">{curso.codigoFicha}</td>
+                      <td className="px-6 py-3">{curso.descripcion}</td>
+                      <td className="px-6 py-3">{new Date(curso.fechaInicio).toLocaleDateString()}</td>
+                      <td className="px-6 py-3">{new Date(curso.fechaFin).toLocaleDateString()}</td>
+                      <td className="px-6 py-3">
                         <Button onClick={() => handleEditar(curso)} className="bg-blue-500 hover:bg-blue-600 text-white mr-2" disabled={loading}>
                           Editar
                         </Button>

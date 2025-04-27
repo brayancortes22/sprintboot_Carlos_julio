@@ -102,28 +102,28 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <nav className="bg-indigo-600 p-4 shadow-md text-white">
-        <div className="container mx-auto flex justify-between">
-          <span className="font-bold">Sistema Académico</span>
-          <div>
+      <nav className="bg-indigo-600 p-4 shadow-md text-white fixed w-full z-10">
+        <div className="container mx-auto flex flex-wrap justify-between items-center">
+          <span className="font-bold text-xl px-4 py-2 mr-auto ">Sistema Académico</span>
+          <div className="px-4 py-2 ml-auto">
             {activeSection !== 'login' && activeSection !== 'registro' && (
               <Button 
-                className="bg-white text-indigo-600" 
+                className="bg-white text-indigo-600 m-1 px-4 py-2 text-lg shadow-lg hover:bg-gray-100" 
                 onClick={handleLogout}
               >
                 Cerrar Sesión
               </Button>
             )}
             {(activeSection === 'login' || activeSection === 'registro') && (
-              <div className="flex space-x-2">
+              <div className="flex space-x-4">
                 <Button 
-                  className={`${activeSection === 'login' ? 'bg-white text-indigo-600' : 'bg-indigo-500 text-white'}`}
+                  className={`${activeSection === 'login' ? 'bg-white text-indigo-600' : 'bg-indigo-500 text-white'} px-4 py-2`}
                   onClick={() => setActiveSection('login')}
                 >
                   Iniciar Sesión
                 </Button>
                 <Button 
-                  className={`${activeSection === 'registro' ? 'bg-white text-indigo-600' : 'bg-indigo-500 text-white'}`}
+                  className={`${activeSection === 'registro' ? 'bg-white text-indigo-600' : 'bg-indigo-500 text-white'} px-4 py-2`}
                   onClick={() => setActiveSection('registro')}
                 >
                   Registrarse
@@ -133,6 +133,7 @@ function App() {
           </div>
         </div>
       </nav>
+      
       <div className="p-10 flex justify-center items-center">
         {sections[activeSection]}
       </div>
